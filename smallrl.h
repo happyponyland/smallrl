@@ -4,35 +4,36 @@
 int current_depth;
 
 
-enum tile_t
+typedef enum
 {
   tile_void,
   tile_floor,
   tile_wall,
   tile_stair
-}
+} tile_t;
 
 
 struct map_t
 {
   tile_t map[MAP_H][MAP_W];
-} map;
+};
 
 
 #define MOBS 40
 
-enum mob_type_t
+typedef enum
 {
   mob_none,
   mob_player = '@',
   mob_newbie = 'n'
-};
+} mob_type_t;
 
 struct mob_t
 {
   mob_type_t type;
   int y;
   int x;
+  int hp;
 } mob[MOBS];
 
 
