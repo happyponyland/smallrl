@@ -40,15 +40,6 @@ void boring_level()
     int x;
     int i;
 
-//  int center_y;
-//  int center_x;
-
-//  int ok;
-//  int t;
-
-//  int x_size;
-//  int y_size;
-
     /* Clear the map */
     for (y = 0; y < MAP_H; y++)
         for (x = 0; x < MAP_W; x++)
