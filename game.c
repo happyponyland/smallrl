@@ -4,6 +4,7 @@
 int play()
 {
 	int i;
+    int turn;
 
     explore();
 
@@ -15,8 +16,12 @@ int play()
 		if (mob[0].hp <= 0)
 			return prompt_yn("You died. Play again?");
 
-		if (player_turn())
+		turn = player_turn();
+        
+        if (turn == 1)
 			return 0;
+        else if (turn == 2)
+            continue; // give player the first turn on a new level
 
 		for (i = 1; i < MOBS; i++)
 		{
@@ -39,6 +44,8 @@ void enemy_turn(int id)
 void new_game()
 {
 	//clear_map();
+    current_depth = 1;
+
 	boring_level(&mob[0].x, &mob[0].y);
 
 	mob[0].type = mob_player;

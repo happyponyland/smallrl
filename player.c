@@ -5,7 +5,9 @@
 int player_turn()
 {
 	int input;
-
+    int x_speed = 0;
+    int y_speed = 0;
+    
 	while (1)
 	{
 		input = getch();
@@ -25,39 +27,29 @@ int player_turn()
 			continue;
 
 		case KEY_LEFT:
-			if (move_mob(player, 0, -1))
-            {
-                explore();
-				goto turn_done;
-            }
-
-			print_msg("You cannot go there.");
-			continue;
-
 		case KEY_RIGHT:
-			if (move_mob(player, 0, +1))
-            {
-                explore();
-				goto turn_done;
-            }
-
-			print_msg("You cannot go there.");
-			continue;
-
 		case KEY_UP:
-			if (move_mob(player, -1, 0))
-            {
-                explore();
-				goto turn_done;
-            }
-
-			print_msg("You cannot go there.");
-			continue;
-
 		case KEY_DOWN:
-			if (move_mob(player, +1, 0))
+            if (input == KEY_LEFT)   x_speed = -1;
+            if (input == KEY_RIGHT)  x_speed = +1;
+            if (input == KEY_UP)     y_speed = -1;
+            if (input == KEY_DOWN)   y_speed = +1;
+
+			if (move_mob(player, y_speed, x_speed))
             {
                 explore();
+
+                if (level.map[player->y][player->x].type == tile_stair)
+                {
+                    if (prompt_yn("Go down the stairs?"))
+                    {
+                        current_depth++;
+                        boring_level(&mob[0].x, &mob[0].y);
+                        explore();
+                        return 2;
+                    }
+                }
+
 				goto turn_done;
             }
 
