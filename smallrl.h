@@ -9,36 +9,36 @@ int current_depth;
 
 typedef enum
 {
-  tile_void,
-  tile_floor,
-  tile_wall_t,
-  tile_wall_b,
-  tile_wall_r,
-  tile_wall_l,
-  tile_wall_ll,
-  tile_wall_lr,
-  tile_wall_ul,
-  tile_wall_ur,
-  tile_corridor,
-  tile_stair
+    tile_void,
+    tile_floor,
+    tile_wall_t,
+    tile_wall_b,
+    tile_wall_r,
+    tile_wall_l,
+    tile_wall_ll,
+    tile_wall_lr,
+    tile_wall_ul,
+    tile_wall_ur,
+    tile_corridor,
+    tile_stair
 } tile_t;
 
 
 struct level_t
 {
-  tile_t map[MAP_H][MAP_W];
+    tile_t map[MAP_H][MAP_W];
 } level;
 
 
 enum color_t
 {
-  color_black,
-  color_yellow,
-  color_blue,
-  color_red,
-  color_green,
-  color_cyan,
-  color_magenta
+    color_black,
+    color_yellow,
+    color_blue,
+    color_red,
+    color_green,
+    color_cyan,
+    color_magenta
 };
 typedef enum color_t color_t;
 
@@ -47,17 +47,17 @@ typedef enum color_t color_t;
 
 typedef enum
 {
-  mob_none,
-  mob_player = '@',
-  mob_newbie = 'n'
+    mob_none,
+    mob_player = '@',
+    mob_newbie = 'n'
 } mob_type_t;
 
 struct mob_t
 {
-  mob_type_t type;
-  int y;
-  int x;
-  int hp;
+    mob_type_t type;
+    int y;
+    int x;
+    int hp;
 } mob[MOBS];
 
 
@@ -92,4 +92,3 @@ int prompt_yn(char * m);
 void print_msg(char * m);
 void clear_msg(void);
 void wait(void);
-

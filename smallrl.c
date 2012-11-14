@@ -5,58 +5,58 @@
 
 int main(int argc, char ** argv)
 {
-  srand(time(NULL));
+    srand(time(NULL));
 
-  initscr();
-  cbreak();
-  noecho();
-  curs_set(0);
-  keypad(stdscr, TRUE);
+    initscr();
+    cbreak();
+    noecho();
+    curs_set(0);
+    keypad(stdscr, TRUE);
 
-  start_color();
-  init_pair(color_black,   COLOR_BLACK,   COLOR_BLACK);
-  init_pair(color_yellow,  COLOR_YELLOW,  COLOR_BLACK);
-  init_pair(color_blue,    COLOR_BLUE,    COLOR_BLACK);
-  init_pair(color_red,     COLOR_RED,     COLOR_BLACK);
-  init_pair(color_green,   COLOR_GREEN,   COLOR_BLACK);
-  init_pair(color_cyan,    COLOR_CYAN,    COLOR_BLACK);
-  init_pair(color_magenta, COLOR_MAGENTA, COLOR_BLACK);
- 
+    start_color();
+    init_pair(color_black,   COLOR_BLACK,   COLOR_BLACK);
+    init_pair(color_yellow,  COLOR_YELLOW,  COLOR_BLACK);
+    init_pair(color_blue,    COLOR_BLUE,    COLOR_BLACK);
+    init_pair(color_red,     COLOR_RED,     COLOR_BLACK);
+    init_pair(color_green,   COLOR_GREEN,   COLOR_BLACK);
+    init_pair(color_cyan,    COLOR_CYAN,    COLOR_BLACK);
+    init_pair(color_magenta, COLOR_MAGENTA, COLOR_BLACK);
 
-  if (LINES < 24 || COLS < 80)
-  {
-    shutdown();
-    printf("Terminal too small.");
-    exit(1);
-  }
 
-  if (argc > 1)
-  {
-    map_test();
-  }
-  else
-  {
-    do
+    if (LINES < 24 || COLS < 80)
     {
-      erase();
-      new_game();
+        shutdown();
+        printf("Terminal too small.");
+        exit(1);
     }
-    while (play());
-  }
 
-  shutdown();
-  
-  return 0;
+    if (argc > 1)
+    {
+        map_test();
+    }
+    else
+    {
+        do
+        {
+            erase();
+            new_game();
+        }
+        while (play());
+    }
+
+    shutdown();
+
+    return 0;
 }
 
 
 
- 
+
 
 void shutdown()
 {
-  endwin();
-  return;
+    endwin();
+    return;
 }
 
 
@@ -64,17 +64,17 @@ void shutdown()
 
 void map_test()
 {
-  int i;
+    int i;
 
-  i = 20;
-  
-  while (i--)
-  {
-    clear_map();
-    boring_level();
-    draw_map();
-    getch();
-  }
+    i = 20;
 
-  return;
+    while (i--)
+    {
+        clear_map();
+        boring_level();
+        draw_map();
+        getch();
+    }
+
+    return;
 }
