@@ -106,10 +106,9 @@ void boring_level(int* startx, int* starty)
 
     /* Place stairs */
     random_room = (random_room + 1 + rand() % (rooms - 2)) % rooms;
-    
-    set_tile(room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room]),
-             room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room]),
-             tile_stair);
+    y = room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room]);
+    x = room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room]),
+    set_tile(y, x, tile_stair);
     
     return;
 }
