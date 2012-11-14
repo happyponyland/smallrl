@@ -22,28 +22,40 @@ int player_turn()
 
 		case KEY_LEFT:
 			if (move_mob(player, 0, -1))
+            {
+                explore();
 				goto turn_done;
+            }
 
 			print_msg("You cannot go there.");
 			continue;
 
 		case KEY_RIGHT:
 			if (move_mob(player, 0, +1))
+            {
+                explore();
 				goto turn_done;
+            }
 
 			print_msg("You cannot go there.");
 			continue;
 
 		case KEY_UP:
 			if (move_mob(player, -1, 0))
+            {
+                explore();
 				goto turn_done;
+            }
 
 			print_msg("You cannot go there.");
 			continue;
 
 		case KEY_DOWN:
 			if (move_mob(player, +1, 0))
+            {
+                explore();
 				goto turn_done;
+            }
 
 			print_msg("You cannot go there.");
 			continue;
@@ -54,7 +66,6 @@ int player_turn()
 	}
 
 turn_done:
-    explore();
     
 	return 0;
 }
@@ -74,9 +85,9 @@ void explore()
 
     for (y = 0; y < MAP_H; y++)
     {
-        for (x = 0; x < MAP_H; x++)
+        for (x = 0; x < MAP_W; x++)
         {
-            level.map[p_y][p_x].lit = 0;
+            level.map[y][x].lit = 0;
         }
     }
 
@@ -93,6 +104,35 @@ void explore()
     }
 
     /* floodfill open rooms */
+
+    int change;
+
+    do
+    {
+        change = 0;
+
+        for (y = 1; y < MAP_H - 1; y++)
+        {
+            for (x = 1; x < MAP_W - 1; x++)
+            {
+                if (level.map[y][x].lit == 0 &&
+                    level.map[y][x].flags & tile_permalit)
+                {
+                    if (level.map[y - 1][x].lit ||
+                        level.map[y][x - 1].lit ||
+                        level.map[y + 1][x].lit ||
+                        level.map[y][x + 1].lit )
+                    {
+                        level.map[y][x].lit = 1;
+                        level.map[y][x].explored = 1;
+
+                        change = 1;
+                    }
+                        
+                }
+            }
+        }
+    } while (change);
 
     return;
 }

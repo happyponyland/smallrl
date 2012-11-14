@@ -188,6 +188,10 @@ void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
             tile->flags |= tile_unpassable;
             break;
 
+        case tile_floor:
+            tile->flags |= tile_permalit;
+            break;
+
         default:
             break;
     }

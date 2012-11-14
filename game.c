@@ -5,6 +5,8 @@ int play()
 {
 	int i;
 
+    explore();
+
 	while (1)
 	{
 		draw_map();
