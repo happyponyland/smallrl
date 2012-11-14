@@ -30,10 +30,29 @@ int player_turn()
 		case KEY_RIGHT:
 		case KEY_UP:
 		case KEY_DOWN:
-            if (input == KEY_LEFT)   x_speed = -1;
-            if (input == KEY_RIGHT)  x_speed = +1;
-            if (input == KEY_UP)     y_speed = -1;
-            if (input == KEY_DOWN)   y_speed = +1;
+            if (input == KEY_LEFT)
+            {
+                x_speed = -1;
+                y_speed = 0;
+            }
+
+            if (input == KEY_RIGHT)
+            {
+                x_speed = +1;
+                y_speed = 0;
+            }
+
+            if (input == KEY_UP)
+            {
+                y_speed = -1;
+                x_speed = 0;
+            }
+
+            if (input == KEY_DOWN)
+            {
+                y_speed = +1;
+                x_speed = 0;
+            }
 
 			if (move_mob(player, y_speed, x_speed))
             {
