@@ -105,42 +105,45 @@ void explore()
 
     /* floodfill open rooms */
 
-    int change;
-
-    do
+    if (level.map[p_y][p_x].flags & tile_permalit)
     {
-        change = 0;
+        int change;
 
-        for (y = 1; y < MAP_H - 1; y++)
+        do
         {
-            for (x = 1; x < MAP_W - 1; x++)
+            change = 0;
+            
+            for (y = 1; y < MAP_H - 1; y++)
             {
-                if (level.map[y][x].lit == 0 &&
-                    (level.map[y][x].flags & tile_permalit ||
-                     level.map[y - 1][x - 1].flags & tile_permalit ||
-                     level.map[y - 1][x + 1].flags & tile_permalit ||
-                     level.map[y + 1][x - 1].flags & tile_permalit ||
-                     level.map[y + 1][x + 1].flags & tile_permalit ||
-                     level.map[y - 1][x].flags & tile_permalit ||
-                     level.map[y][x - 1].flags & tile_permalit ||
-                     level.map[y + 1][x].flags & tile_permalit ||
-                     level.map[y][x + 1].flags & tile_permalit ))
+                for (x = 1; x < MAP_W - 1; x++)
                 {
-                    if (level.map[y - 1][x].lit ||
-                        level.map[y][x - 1].lit ||
-                        level.map[y + 1][x].lit ||
-                        level.map[y][x + 1].lit)
+                    if (level.map[y][x].lit == 0 &&
+                        (level.map[y][x].flags & tile_permalit ||
+                         level.map[y - 1][x - 1].flags & tile_permalit ||
+                         level.map[y - 1][x + 1].flags & tile_permalit ||
+                         level.map[y + 1][x - 1].flags & tile_permalit ||
+                         level.map[y + 1][x + 1].flags & tile_permalit ||
+                         level.map[y - 1][x].flags & tile_permalit ||
+                         level.map[y][x - 1].flags & tile_permalit ||
+                         level.map[y + 1][x].flags & tile_permalit ||
+                         level.map[y][x + 1].flags & tile_permalit ))
                     {
-                        level.map[y][x].lit = 1;
-                        level.map[y][x].explored = 1;
-
-                        change = 1;
-                    }
+                        if (level.map[y - 1][x].lit ||
+                            level.map[y][x - 1].lit ||
+                            level.map[y + 1][x].lit ||
+                            level.map[y][x + 1].lit)
+                        {
+                            level.map[y][x].lit = 1;
+                            level.map[y][x].explored = 1;
+                            
+                            change = 1;
+                        }
                         
+                    }
                 }
             }
-        }
-    } while (change);
+        } while (change);
+    }
 
     return;
 }
