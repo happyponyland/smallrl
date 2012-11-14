@@ -116,12 +116,20 @@ void explore()
             for (x = 1; x < MAP_W - 1; x++)
             {
                 if (level.map[y][x].lit == 0 &&
-                    level.map[y][x].flags & tile_permalit)
+                    (level.map[y][x].flags & tile_permalit ||
+                     level.map[y - 1][x - 1].flags & tile_permalit ||
+                     level.map[y - 1][x + 1].flags & tile_permalit ||
+                     level.map[y + 1][x - 1].flags & tile_permalit ||
+                     level.map[y + 1][x + 1].flags & tile_permalit ||
+                     level.map[y - 1][x].flags & tile_permalit ||
+                     level.map[y][x - 1].flags & tile_permalit ||
+                     level.map[y + 1][x].flags & tile_permalit ||
+                     level.map[y][x + 1].flags & tile_permalit ))
                 {
                     if (level.map[y - 1][x].lit ||
                         level.map[y][x - 1].lit ||
                         level.map[y + 1][x].lit ||
-                        level.map[y][x + 1].lit )
+                        level.map[y][x + 1].lit)
                     {
                         level.map[y][x].lit = 1;
                         level.map[y][x].explored = 1;
