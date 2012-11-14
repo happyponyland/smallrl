@@ -70,16 +70,6 @@ void boring_level()
         room_r[i] -= 1 + rand() % 11;
     }
 
-/*
-    center_y = ((float)y + 0.5f) * ((float)MAP_H / 2);
-    center_x = ((float)x + 0.5f) * ((float)MAP_W / 3);
-
-    room_t[rooms] = center_y - 2 - rand() % 2;
-    room_b[rooms] = center_y + 2 + rand() % 2;
-    room_l[rooms] = center_x - 2 - rand() % 4;
-    room_r[rooms] = center_x + 2 + rand() % 4;
-*/
-
     for (i = 0; i < rooms; i++)
     {
         build_room(room_t[i], room_l[i], room_b[i], room_r[i], 0);
