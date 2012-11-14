@@ -106,9 +106,9 @@ void boring_level()
     b = (b + c) % rooms;
     
     connect_rooms(room_t[a] + rand() % (room_b[a] - room_t[a]),
-		  room_l[a] + rand() % (room_r[a] - room_l[a]),
-		  room_t[b] + rand() % (room_b[b] - room_t[b]),
-		  room_l[b] + rand() % (room_r[b] - room_l[b]));
+                  room_l[a] + rand() % (room_r[a] - room_l[a]),
+                  room_t[b] + rand() % (room_b[b] - room_t[b]),
+                  room_l[b] + rand() % (room_r[b] - room_l[b]));
   }
 
   for (i = 0; i < rooms; i++)
@@ -217,18 +217,18 @@ void h_corridor(int y, int x1, int x2)
   for (x = x1; x <= x2; x++)
   {
     if (get_tile(y, x - 1) == tile_wall_lr || 
-	//get_tile(y, x - 1) == tile_wall_ll || 
-	get_tile(y, x + 1) == tile_wall_ll //||
-	/*get_tile(y, x + 1) == tile_wall_lr*/)
+        //get_tile(y, x - 1) == tile_wall_ll || 
+        get_tile(y, x + 1) == tile_wall_ll //||
+        /*get_tile(y, x + 1) == tile_wall_lr*/)
     {
       set_tile(y, x, tile_corridor);
       set_tile(y + 1, x, tile_corridor);
     }
 
     if (get_tile(y, x - 1) == tile_wall_ur || 
-	//get_tile(y, x - 1) == tile_wall_ul || 
-	get_tile(y, x + 1) == tile_wall_ul //||
-	/*get_tile(y, x + 1) == tile_wall_ur*/)
+        //get_tile(y, x - 1) == tile_wall_ul || 
+        get_tile(y, x + 1) == tile_wall_ul //||
+        /*get_tile(y, x + 1) == tile_wall_ur*/)
     {
       set_tile(y, x, tile_corridor);
       set_tile(y - 1, x, tile_corridor);
@@ -237,14 +237,14 @@ void h_corridor(int y, int x1, int x2)
     t = get_tile(y, x);
 
     if (t == tile_wall_lr ||
-	t == tile_wall_ll ||
-	t == tile_wall_b)
+        t == tile_wall_ll ||
+        t == tile_wall_b)
     {
       set_tile(y + 1, x, tile_corridor);
     }
     else if (t == tile_wall_ur ||
-	     t == tile_wall_ul ||
-	     t == tile_wall_t)
+             t == tile_wall_ul ||
+             t == tile_wall_t)
     {
       set_tile(y - 1, x, tile_corridor);
     }
@@ -273,18 +273,18 @@ void v_corridor(int y1, int y2, int x)
   for (y = y1; y <= y2; y++)
   {
     if (//get_tile(y - 1, x) == tile_wall_ul || 
-	get_tile(y - 1, x) == tile_wall_ll || 
-	//get_tile(y + 1, x) == tile_wall_ul ||
-	get_tile(y + 1, x) == tile_wall_ul)
+        get_tile(y - 1, x) == tile_wall_ll || 
+        //get_tile(y + 1, x) == tile_wall_ul ||
+        get_tile(y + 1, x) == tile_wall_ul)
     {
       set_tile(y, x, tile_corridor);
       set_tile(y, x - 1, tile_corridor);
     }
 
     if (//get_tile(y - 1, x) == tile_wall_ur || 
-	get_tile(y - 1, x) == tile_wall_lr || 
-	//get_tile(y + 1, x) == tile_wall_ur ||
-	get_tile(y + 1, x) == tile_wall_ur)
+        get_tile(y - 1, x) == tile_wall_lr || 
+        //get_tile(y + 1, x) == tile_wall_ur ||
+        get_tile(y + 1, x) == tile_wall_ur)
     {
       set_tile(y, x, tile_corridor);
       set_tile(y, x + 1, tile_corridor);
@@ -293,14 +293,14 @@ void v_corridor(int y1, int y2, int x)
     t = get_tile(y, x);
 
     if (t == tile_wall_ul ||
-	t == tile_wall_ll ||
-	t == tile_wall_l)
+        t == tile_wall_ll ||
+        t == tile_wall_l)
     {
       set_tile(y, x - 1, tile_corridor);
     }
     else if (t == tile_wall_ur ||
-	     t == tile_wall_lr ||
-	     t == tile_wall_r)
+             t == tile_wall_lr ||
+             t == tile_wall_r)
     {
       set_tile(y, x + 1, tile_corridor);
     }
