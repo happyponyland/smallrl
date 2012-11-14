@@ -72,5 +72,27 @@ void explore()
     p_y = mob[0].y;
     p_x = mob[0].x;
 
-    level.map[p_y][p_x].explored = 1;
+    for (y = 0; y < MAP_H; y++)
+    {
+        for (x = 0; x < MAP_H; x++)
+        {
+            level.map[p_y][p_x].lit = 0;
+        }
+    }
+
+    for (y = p_y - 1; y <= p_y + 1; y++)
+    {
+        for (x = p_x - 1; x <= p_x + 1; x++)
+        {
+            if (on_map(y, x))
+            {
+                level.map[y][x].explored = 1;
+                level.map[y][x].lit = 1;
+            }
+        }
+    }
+
+    /* floodfill open rooms */
+
+    return;
 }
