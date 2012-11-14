@@ -21,8 +21,9 @@ void clear_map()
 
     for (y = 0; y < MAP_H; y++)
         for (x = 0; x < MAP_W; x++) {
-            level.map[y][x].type = tile_floor;
-            level.map[y][x].flags = tile_none;
+            set_tile(y, x, tile_void);
+            level.map[y][x].explored = 0;
+            level.map[y][x].lit = 0;
         }
 
     return;
@@ -43,10 +44,7 @@ void boring_level(int* startx, int* starty)
     int i;
 
     /* Clear the map */
-    for (y = 0; y < MAP_H; y++)
-        for (x = 0; x < MAP_W; x++) {
-            set_tile(y, x, tile_void);
-        }
+    clear_map();
 
     /* Place random rooms */
     rooms = 0;

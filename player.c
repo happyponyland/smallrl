@@ -54,5 +54,23 @@ int player_turn()
 	}
 
 turn_done:
+    explore();
+    
 	return 0;
+}
+
+
+
+void explore()
+{
+    int p_y;
+    int p_x;
+
+    int y;
+    int x;
+
+    p_y = mob[0].y;
+    p_x = mob[0].x;
+
+    level.map[p_y][p_x].explored = 1;
 }

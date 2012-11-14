@@ -31,6 +31,8 @@ typedef struct tile_s
 {
     tile_type_t type;
     tile_flag_t flags;
+    int explored;
+    int lit;
 } tile_t;
 
 typedef struct level_s
@@ -74,6 +76,7 @@ void shutdown(void);
 
 /* player.c */
 int player_turn(void);
+void explore(void);
 
 /* level.c */
 void clear_map(void);

@@ -13,6 +13,17 @@ void draw_map()
 
 		for (x = 0; x < MAP_W; x++)
 		{
+            if (level.map[y][x].explored == 0)
+            {
+				addch(' ');
+                continue;
+            }
+
+            attrset(A_NORMAL);
+
+            if (level.map[y][x].lit)
+                attrset(A_BOLD);
+
 			switch (level.map[y][x].type)
 			{
 			case tile_void:
@@ -20,59 +31,60 @@ void draw_map()
 				break;
 
 			case tile_floor:
-				attrset(COLOR_PAIR(color_green));
+				attron(COLOR_PAIR(color_green));
 				addch('.');
 				break;
 
 			case tile_corridor:
-				attrset(A_NORMAL);
 				addch('#');
 				break;
 
 			case tile_wall_r:
 			case tile_wall_l:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_VLINE);
 				break;
 
 			case tile_wall_t:
 			case tile_wall_b:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_HLINE);
 				break;
 
 			case tile_wall_ll:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_LLCORNER);
 				break;
 
 			case tile_wall_lr:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_LRCORNER);
 				break;
 
 			case tile_wall_ul:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_ULCORNER);
 				break;
 
 			case tile_wall_ur:
-				attrset(COLOR_PAIR(color_yellow));
+				attron(COLOR_PAIR(color_yellow));
 				addch(ACS_URCORNER);
 				break;
 
 			case tile_stair:
-				attrset(A_NORMAL);
+				attron(A_NORMAL);
 				addch('>');
 				break;
 
 			default:
-				attrset(COLOR_PAIR(color_red));
+				attron(COLOR_PAIR(color_red));
 				addch('?');
 				break;
 			}
 		}
 	}
+
+    attrset(A_NORMAL);
 
 	for (i = 0; i < MOBS; i++)
 	{
