@@ -82,19 +82,23 @@ void explore(void);
 /* level.c */
 void clear_map(void);
 int on_map(int y, int x);
-void boring_level(int*, int*);
-void build_room(int t, int l, int b, int r, int flags);
 void set_tile(int y, int x, tile_type_t t);
 tile_type_t get_tile_type(int y, int x);
-void connect_rooms(int y1, int x1, int y2, int x2);
+void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type);
+
+/* boring.c */
+void boring_level(int*, int*);
+void build_room(int t, int l, int b, int r, int flags);
 void h_corridor(int y, int x1, int x2);
 void v_corridor(int y1, int y2, int x);
-void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type);
+void connect_rooms(int y1, int x1, int y2, int x2);
 
 /* game.c */
 void new_game(void);
 int move_mob(mob_t *, int x_speed, int y_speed);
 int play(void);
+
+/* ai.c */
 void enemy_turn(int id);
 
 /* ui.c */

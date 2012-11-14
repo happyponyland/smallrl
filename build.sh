@@ -6,6 +6,8 @@ FILES=(
     "smallrl.c"
     "ui.c"
     "game.c"
+    "ai.c"
+    "boring.c"
 )
 
 gcc -lm -lcurses -Wshadow -Wall -Wstrict-prototypes \

@@ -35,11 +35,6 @@ int play()
 
 
 
-void enemy_turn(int id)
-{
-}
-
-
 
 void new_game()
 {
