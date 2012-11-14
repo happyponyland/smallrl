@@ -21,18 +21,12 @@ typedef enum
   tile_wall_ur,
   tile_corridor,
   tile_stair
-<<<<<<< HEAD
-};
-typedef enum tile_t tile_t;
-=======
 } tile_t;
->>>>>>> 60d21137971a5f8bd27958b953f8011c172578fe
 
 
 struct level_t
 {
   tile_t map[MAP_H][MAP_W];
-<<<<<<< HEAD
 } level;
 
 
@@ -47,9 +41,6 @@ enum color_t
   color_magenta
 };
 typedef enum color_t color_t;
-=======
-};
->>>>>>> 60d21137971a5f8bd27958b953f8011c172578fe
 
 
 #define MOBS 40
@@ -59,22 +50,13 @@ typedef enum
   mob_none,
   mob_player = '@',
   mob_newbie = 'n'
-<<<<<<< HEAD
-};
-typedef enum mob_type_t mob_type_t;
-=======
 } mob_type_t;
->>>>>>> 60d21137971a5f8bd27958b953f8011c172578fe
 
 struct mob_t
 {
   mob_type_t type;
   int y;
   int x;
-<<<<<<< HEAD
-
-=======
->>>>>>> 60d21137971a5f8bd27958b953f8011c172578fe
   int hp;
 } mob[MOBS];
 
