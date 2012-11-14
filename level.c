@@ -20,8 +20,10 @@ void clear_map()
         mob[i].type = mob_none;
 
     for (y = 0; y < MAP_H; y++)
-        for (x = 0; x < MAP_W; x++)
-            level.map[y][x] = tile_floor;
+        for (x = 0; x < MAP_W; x++) {
+            level.map[y][x].type = tile_floor;
+            level.map[y][x].flags = tile_none;
+        }
 
     return;
 }
@@ -42,8 +44,10 @@ void boring_level(int* startx, int* starty)
 
     /* Clear the map */
     for (y = 0; y < MAP_H; y++)
-        for (x = 0; x < MAP_W; x++)
-            level.map[y][x] = tile_void;
+        for (x = 0; x < MAP_W; x++) {
+            level.map[y][x].type = tile_void;
+            level.map[y][x].flags = tile_none;
+        }
 
     /* Place random rooms */
     rooms = 0;
@@ -113,12 +117,12 @@ void build_room(int t, int l, int b, int r, int flags)
 
     for (y = t; y <= b; y++)
     {
-        if (get_tile(y, l - 1) == tile_corridor)
+        if (get_tile_type(y, l - 1) == tile_corridor)
             set_tile(y, l - 1, tile_floor);
         else
             set_tile(y, l - 1, tile_wall_l);
 
-        if (get_tile(y, r + 1) == tile_corridor)
+        if (get_tile_type(y, r + 1) == tile_corridor)
             set_tile(y, r + 1, tile_floor);
         else
             set_tile(y, r + 1, tile_wall_r);
@@ -126,12 +130,12 @@ void build_room(int t, int l, int b, int r, int flags)
 
     for (x = l; x <= r; x++)
     {
-        if (get_tile(t - 1, x) == tile_corridor)
+        if (get_tile_type(t - 1, x) == tile_corridor)
             set_tile(t - 1, x, tile_floor);
         else
             set_tile(t - 1, x, tile_wall_t);
 
-        if (get_tile(b + 1, x) == tile_corridor)
+        if (get_tile_type(b + 1, x) == tile_corridor)
             set_tile(b + 1, x, tile_floor);
         else
             set_tile(b + 1, x, tile_wall_b);
@@ -143,27 +147,46 @@ void build_room(int t, int l, int b, int r, int flags)
     set_tile(t - 1, r + 1, tile_wall_ur);
 
     for (y = t; y <= b; y++)
-        for (x = l; x <= r; x++)
-            level.map[y][x] = tile_floor;
+        for (x = l; x <= r; x++) {
+            set_tile(y, x, tile_floor);
+        }
 
     return;
 }
 
 
-
-void set_tile(int y, int x, tile_t t)
+void set_tile(int y, int x, tile_type_t t)
 {
-    if (on_map(y, x))
-        level.map[y][x] = t;
+    if (on_map(y, x)) {
+        level.map[y][x].type = t;
+        set_tile_flags_by_type(&level.map[y][x], t);
+    }
 
     return;
 }
 
+void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
+{
+    switch(tile_type) {
+        case tile_wall_t:
+        case tile_wall_b:
+        case tile_wall_r:
+        case tile_wall_l:
+        case tile_wall_ll:
+        case tile_wall_lr:
+        case tile_wall_ul:
+        case tile_wall_ur:
+            tile->flags |= tile_unpassable;
+            break;
+        default:
+            break;
+    }
+}
 
-tile_t get_tile(int y, int x)
+tile_type_t get_tile_type(int y, int x)
 {
     if (on_map(y, x))
-        return level.map[y][x];
+        return level.map[y][x].type;
 
     return tile_void;
 }
@@ -190,7 +213,7 @@ void connect_rooms(int y1, int x1, int y2, int x2)
 void h_corridor(int y, int x1, int x2)
 {
     int x;
-    tile_t t;
+    tile_type_t t;
 
     if (x2 < x1)
     {
@@ -201,25 +224,25 @@ void h_corridor(int y, int x1, int x2)
 
     for (x = x1; x <= x2; x++)
     {
-        if (get_tile(y, x - 1) == tile_wall_lr ||
+        if (get_tile_type(y, x - 1) == tile_wall_lr ||
             //get_tile(y, x - 1) == tile_wall_ll ||
-            get_tile(y, x + 1) == tile_wall_ll //||
+            get_tile_type(y, x + 1) == tile_wall_ll //||
             /*get_tile(y, x + 1) == tile_wall_lr*/)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y + 1, x, tile_corridor);
         }
 
-        if (get_tile(y, x - 1) == tile_wall_ur ||
+        if (get_tile_type(y, x - 1) == tile_wall_ur ||
             //get_tile(y, x - 1) == tile_wall_ul ||
-            get_tile(y, x + 1) == tile_wall_ul //||
+            get_tile_type(y, x + 1) == tile_wall_ul //||
             /*get_tile(y, x + 1) == tile_wall_ur*/)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y - 1, x, tile_corridor);
         }
 
-        t = get_tile(y, x);
+        t = get_tile_type(y, x);
 
         if (t == tile_wall_lr ||
             t == tile_wall_ll ||
@@ -246,7 +269,7 @@ void h_corridor(int y, int x1, int x2)
 void v_corridor(int y1, int y2, int x)
 {
     int y;
-    tile_t t;
+    tile_type_t t;
 
     if (y2 < y1)
     {
@@ -258,24 +281,24 @@ void v_corridor(int y1, int y2, int x)
     for (y = y1; y <= y2; y++)
     {
         if (//get_tile(y - 1, x) == tile_wall_ul ||
-            get_tile(y - 1, x) == tile_wall_ll ||
+            get_tile_type(y - 1, x) == tile_wall_ll ||
             //get_tile(y + 1, x) == tile_wall_ul ||
-            get_tile(y + 1, x) == tile_wall_ul)
+            get_tile_type(y + 1, x) == tile_wall_ul)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y, x - 1, tile_corridor);
         }
 
         if (//get_tile(y - 1, x) == tile_wall_ur ||
-            get_tile(y - 1, x) == tile_wall_lr ||
+            get_tile_type(y - 1, x) == tile_wall_lr ||
             //get_tile(y + 1, x) == tile_wall_ur ||
-            get_tile(y + 1, x) == tile_wall_ur)
+            get_tile_type(y + 1, x) == tile_wall_ur)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y, x + 1, tile_corridor);
         }
 
-        t = get_tile(y, x);
+        t = get_tile_type(y, x);
 
         if (t == tile_wall_ul ||
             t == tile_wall_ll ||
