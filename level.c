@@ -71,9 +71,7 @@ void boring_level()
     }
 
     for (i = 0; i < rooms; i++)
-    {
         build_room(room_t[i], room_l[i], room_b[i], room_r[i], 0);
-    }
 
     int a;
     int b;
