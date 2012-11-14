@@ -45,8 +45,7 @@ void boring_level(int* startx, int* starty)
     /* Clear the map */
     for (y = 0; y < MAP_H; y++)
         for (x = 0; x < MAP_W; x++) {
-            level.map[y][x].type = tile_void;
-            level.map[y][x].flags = tile_none;
+            set_tile(y, x, tile_void);
         }
 
     /* Place random rooms */
@@ -176,6 +175,8 @@ void set_tile(int y, int x, tile_type_t t)
 
 void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
 {
+    tile->flags = 0;
+
     switch(tile_type) {
         case tile_wall_t:
         case tile_wall_b:
@@ -185,8 +186,10 @@ void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
         case tile_wall_lr:
         case tile_wall_ul:
         case tile_wall_ur:
+        case tile_void:
             tile->flags |= tile_unpassable;
             break;
+
         default:
             break;
     }
