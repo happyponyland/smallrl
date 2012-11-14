@@ -1,5 +1,7 @@
 #include "smallrl.h"
 
+
+
 int player_turn()
 {
 	int input;
@@ -7,6 +9,8 @@ int player_turn()
 	while (1)
 	{
 		input = getch();
+
+        clear_msg();
 
 		switch (input)
 		{
@@ -17,7 +21,7 @@ int player_turn()
 			continue;
 
 		case ' ':
-			clear_msg();
+			//clear_msg();
 			continue;
 
 		case KEY_LEFT:
@@ -72,6 +76,9 @@ turn_done:
 
 
 
+/*
+  Lights up the area near the player, marks it as explored.
+*/
 void explore()
 {
     int p_y;
@@ -84,12 +91,8 @@ void explore()
     p_x = mob[0].x;
 
     for (y = 0; y < MAP_H; y++)
-    {
         for (x = 0; x < MAP_W; x++)
-        {
             level.map[y][x].lit = 0;
-        }
-    }
 
     for (y = p_y - 1; y <= p_y + 1; y++)
     {
@@ -103,7 +106,7 @@ void explore()
         }
     }
 
-    /* floodfill open rooms */
+    /* Floodfill open permalit rooms */
 
     if (level.map[p_y][p_x].flags & tile_permalit)
     {

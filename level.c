@@ -189,6 +189,7 @@ void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
             break;
 
         case tile_floor:
+        case tile_stair:
             tile->flags |= tile_permalit;
             break;
 
@@ -196,6 +197,8 @@ void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
             break;
     }
 }
+
+
 
 tile_type_t get_tile_type(int y, int x)
 {
@@ -239,18 +242,14 @@ void h_corridor(int y, int x1, int x2)
     for (x = x1; x <= x2; x++)
     {
         if (get_tile_type(y, x - 1) == tile_wall_lr ||
-            //get_tile(y, x - 1) == tile_wall_ll ||
-            get_tile_type(y, x + 1) == tile_wall_ll //||
-            /*get_tile(y, x + 1) == tile_wall_lr*/)
+            get_tile_type(y, x + 1) == tile_wall_ll)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y + 1, x, tile_corridor);
         }
 
         if (get_tile_type(y, x - 1) == tile_wall_ur ||
-            //get_tile(y, x - 1) == tile_wall_ul ||
-            get_tile_type(y, x + 1) == tile_wall_ul //||
-            /*get_tile(y, x + 1) == tile_wall_ur*/)
+            get_tile_type(y, x + 1) == tile_wall_ul)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y - 1, x, tile_corridor);
@@ -294,18 +293,14 @@ void v_corridor(int y1, int y2, int x)
 
     for (y = y1; y <= y2; y++)
     {
-        if (//get_tile(y - 1, x) == tile_wall_ul ||
-            get_tile_type(y - 1, x) == tile_wall_ll ||
-            //get_tile(y + 1, x) == tile_wall_ul ||
+        if (get_tile_type(y - 1, x) == tile_wall_ll ||
             get_tile_type(y + 1, x) == tile_wall_ul)
         {
             set_tile(y, x, tile_corridor);
             set_tile(y, x - 1, tile_corridor);
         }
 
-        if (//get_tile(y - 1, x) == tile_wall_ur ||
-            get_tile_type(y - 1, x) == tile_wall_lr ||
-            //get_tile(y + 1, x) == tile_wall_ur ||
+        if (get_tile_type(y - 1, x) == tile_wall_lr ||
             get_tile_type(y + 1, x) == tile_wall_ur)
         {
             set_tile(y, x, tile_corridor);
