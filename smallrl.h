@@ -63,7 +63,6 @@ struct mob_t
 
 /* smallrl.c */
 void shutdown(void);
-void map_test(void);
 
 /* player.c */
 int player_turn(void);
@@ -71,7 +70,7 @@ int player_turn(void);
 /* level.c */
 void clear_map(void);
 int on_map(int y, int x);
-void boring_level(void);
+void boring_level(int*, int*);
 void build_room(int t, int l, int b, int r, int flags);
 void set_tile(int y, int x, tile_t t);
 tile_t get_tile(int y, int x);

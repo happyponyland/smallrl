@@ -27,7 +27,7 @@ void clear_map()
 }
 
 
-void boring_level()
+void boring_level(int* startx, int* starty)
 {
     int rooms;
 
@@ -94,6 +94,12 @@ void boring_level()
     {
         build_room(room_t[i], room_l[i], room_b[i], room_r[i], 0);
     }
+
+    int random_room;
+    random_room = rand() % rooms;
+
+    *starty = room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room]);
+    *startx = room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room]);
 
     return;
 }

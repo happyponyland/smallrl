@@ -37,11 +37,9 @@ void enemy_turn(int id)
 void new_game()
 {
     //clear_map();
-    boring_level();
+    boring_level(&mob[0].x, &mob[0].y);
 
     mob[0].type = mob_player;
-    mob[0].y = 1;
-    mob[0].x = 1;
     mob[0].hp = 20;
 
     return;

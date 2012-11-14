@@ -30,19 +30,12 @@ int main(int argc, char ** argv)
         exit(1);
     }
 
-    if (argc > 1)
+    do
     {
-        map_test();
+      erase();
+      new_game();
     }
-    else
-    {
-        do
-        {
-            erase();
-            new_game();
-        }
-        while (play());
-    }
+    while (play());
 
     shutdown();
 
@@ -56,25 +49,5 @@ int main(int argc, char ** argv)
 void shutdown()
 {
     endwin();
-    return;
-}
-
-
-
-
-void map_test()
-{
-    int i;
-
-    i = 20;
-
-    while (i--)
-    {
-        clear_map();
-        boring_level();
-        draw_map();
-        getch();
-    }
-
     return;
 }
