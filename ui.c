@@ -20,18 +20,54 @@ void draw_map()
 	  break;
 
 	case tile_floor:
+	  attrset(COLOR_PAIR(color_green));
 	  addch('.');
 	  break;
 
-	case tile_wall:
+	case tile_corridor:
+	  attrset(A_NORMAL);
 	  addch('#');
 	  break;
 
+	case tile_wall_r:
+	case tile_wall_l:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_VLINE);
+	  break;
+
+	case tile_wall_t:
+	case tile_wall_b:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_HLINE);
+	  break;
+
+	case tile_wall_ll:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_LLCORNER);
+	  break;
+
+	case tile_wall_lr:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_LRCORNER);
+	  break;
+
+	case tile_wall_ul:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_ULCORNER);
+	  break;
+
+	case tile_wall_ur:
+	  attrset(COLOR_PAIR(color_yellow));
+	  addch(ACS_URCORNER);
+	  break;
+
 	case tile_stair:
+	  attrset(A_NORMAL);
 	  addch('>');
 	  break;
 
 	default:
+	  attrset(COLOR_PAIR(color_red));
 	  addch('?');
 	  break;
       }
@@ -47,6 +83,8 @@ void draw_map()
     }
   }
 
+  attrset(A_NORMAL);
+
   refresh();
 
   return;
@@ -57,7 +95,7 @@ void draw_map()
 void draw_stats(void)
 {
   move(22, 0);
-  printw("HP: %d", mob[0].hp);
+  printw("HP: %d   Dlvl: %d", mob[0].hp, current_depth);
   clrtoeol();
 
   refresh();

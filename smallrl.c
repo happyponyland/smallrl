@@ -1,14 +1,27 @@
-#include <curses.h>
-#include <stdlib.h>
-
 #include "smallrl.h"
+
+#include <time.h>
 
 
 int main(int argc, char ** argv)
 {
-  int i;
+  srand(time(NULL));
 
   initscr();
+  cbreak();
+  noecho();
+  curs_set(0);
+  keypad(stdscr, TRUE);
+
+  start_color();
+  init_pair(color_black,   COLOR_BLACK,   COLOR_BLACK);
+  init_pair(color_yellow,  COLOR_YELLOW,  COLOR_BLACK);
+  init_pair(color_blue,    COLOR_BLUE,    COLOR_BLACK);
+  init_pair(color_red,     COLOR_RED,     COLOR_BLACK);
+  init_pair(color_green,   COLOR_GREEN,   COLOR_BLACK);
+  init_pair(color_cyan,    COLOR_CYAN,    COLOR_BLACK);
+  init_pair(color_magenta, COLOR_MAGENTA, COLOR_BLACK);
+ 
 
   if (LINES < 24 || COLS < 80)
   {
@@ -17,7 +30,19 @@ int main(int argc, char ** argv)
     exit(1);
   }
 
-  new_game();
+  if (argc > 1)
+  {
+    map_test();
+  }
+  else
+  {
+    do
+    {
+      erase();
+      new_game();
+    }
+    while (play());
+  }
 
   shutdown();
   
@@ -26,47 +51,30 @@ int main(int argc, char ** argv)
 
 
 
-void draw_map()
+ 
+
+void shutdown()
 {
-  int y;
-  int x;
-  int i;
-
-  for (y = 0; y < MAP_H; y++)
-    for (x = 0; x < MAP_W; x++)
-      map[y][x] = tile_floor;
-
-  for (i = 1; i < MOBS; i++)
-    mob[i].type = MOB_NONE;
-
+  endwin();
   return;
 }
 
 
 
-void new_game()
-{
-  clear_map();
-}
 
- 
-void clear_map()
+void map_test()
 {
-  int y;
-  int x;
   int i;
 
-  for (i = 1; i < MOBS; i++)
-    mob[i].type = MOB_NONE;
+  i = 20;
+  
+  while (i--)
+  {
+    clear_map();
+    boring_level();
+    draw_map();
+    getch();
+  }
 
-  for (y = 0; y < MAP_H; y++)
-    for (x = 0; x < MAP_W; x++)
-      map[y][x] = tile_floor;
-}
-
-
-void shutdown()
-{
-  endwin();
   return;
 }
