@@ -4,32 +4,32 @@
 
 int player_turn()
 {
-	int input;
+    int input;
     int x_speed = 0;
     int y_speed = 0;
-    
-	while (1)
-	{
-		input = getch();
+
+    while (1)
+    {
+        input = getch();
 
         clear_msg();
 
-		switch (input)
-		{
-		case 'Q':
-			if (prompt_yn("Do you want to quit?"))
-				return 1;
+        switch (input)
+        {
+        case 'Q':
+            if (prompt_yn("Do you want to quit?"))
+                return 1;
 
-			continue;
+            continue;
 
-		case ' ':
-			//clear_msg();
-			continue;
+        case ' ':
+            //clear_msg();
+            continue;
 
-		case KEY_LEFT:
-		case KEY_RIGHT:
-		case KEY_UP:
-		case KEY_DOWN:
+        case KEY_LEFT:
+        case KEY_RIGHT:
+        case KEY_UP:
+        case KEY_DOWN:
             if (input == KEY_LEFT)
             {
                 x_speed = -1;
@@ -54,7 +54,7 @@ int player_turn()
                 x_speed = 0;
             }
 
-			if (move_mob(player, y_speed, x_speed))
+            if (move_mob(player, y_speed, x_speed))
             {
                 explore();
 
@@ -69,20 +69,20 @@ int player_turn()
                     }
                 }
 
-				goto turn_done;
+                goto turn_done;
             }
 
-			print_msg("You cannot go there.");
-			continue;
+            print_msg("You cannot go there.");
+            continue;
 
-		default:
-			continue;
-		}
-	}
+        default:
+            continue;
+        }
+    }
 
 turn_done:
-    
-	return 0;
+
+    return 0;
 }
 
 
@@ -98,8 +98,8 @@ void explore()
     int y;
     int x;
 
-    p_y = mob[0].y;
-    p_x = mob[0].x;
+    p_y = player->y;
+    p_x = player->x;
 
     for (y = 0; y < MAP_H; y++)
         for (x = 0; x < MAP_W; x++)
@@ -126,7 +126,7 @@ void explore()
         do
         {
             change = 0;
-            
+
             for (y = 1; y < MAP_H - 1; y++)
             {
                 for (x = 1; x < MAP_W - 1; x++)
@@ -149,10 +149,10 @@ void explore()
                         {
                             level.map[y][x].lit = 1;
                             level.map[y][x].explored = 1;
-                            
+
                             change = 1;
                         }
-                        
+
                     }
                 }
             }
