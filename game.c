@@ -79,9 +79,21 @@ int make_mob(mob_type_t type, int y, int x)
     {
         if (mob[i].type == mob_none)
         {
-            mob[i].type = type;
             mob[i].y = y;
             mob[i].x = x;
+
+            mob[i].type = type;
+
+            switch (type)
+            {
+            case mob_newbie:
+                mob[i].hp = 5;
+                break;
+
+            default:
+                mob[i].hp = 2;
+                break;
+            }
 
             return 1;
         }
@@ -101,4 +113,26 @@ int get_mob(int y, int x)
             return i;
 
     return -1;
+}
+
+
+
+void mob_name(char * s, mob_type_t type)
+{
+    switch (type)
+    {
+    case mob_player:
+        strcpy(s, "player");
+        break;
+
+    case mob_newbie:
+        strcpy(s, "newbie");
+        break;
+
+    default:
+        strcpy(s, "???");
+        break;
+    }
+
+    return;
 }

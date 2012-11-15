@@ -1,5 +1,6 @@
 #include <curses.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAP_H 20
 #define MAP_W 80
@@ -94,12 +95,16 @@ void h_corridor(int y, int x1, int x2);
 void v_corridor(int y1, int y2, int x);
 void connect_rooms(int y1, int x1, int y2, int x2);
 
+/* combat.c */
+void melee(int att, int def);
+
 /* game.c */
 void new_game(void);
 int move_mob(mob_t *, int x_speed, int y_speed);
 int make_mob(mob_type_t type, int y, int x);
 int get_mob(int y, int x);
 int play(void);
+void mob_name(char * s, mob_type_t type);
 
 /* ai.c */
 void enemy_turn(int id);

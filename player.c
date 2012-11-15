@@ -58,7 +58,7 @@ int player_turn()
 
             if ((mob_id = get_mob(player->y + y_speed, player->x + x_speed)) != -1)
             {
-                print_msg("combat goes here");
+                melee(0, mob_id);
                 goto turn_done;
             }
             else if (move_mob(player, y_speed, x_speed))
