@@ -88,7 +88,7 @@ void draw_map()
 
     for (i = 0; i < MOBS; i++)
     {
-        if (mob[i].type)
+        if (mob[i].type && level.map[mob[i].y][mob[i].x].lit)
         {
             move(mob[i].y + 1, mob[i].x);
             addch(mob[i].type);

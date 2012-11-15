@@ -71,9 +71,27 @@ void boring_level(int* startx, int* starty)
 
     /* Place player */
     random_room = rand() % rooms;
-
     *starty = room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room]);
     *startx = room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room]);
+
+    /* Place monsters */
+    for (i = 0; i < rooms; i++)
+    {
+        int monsters;
+
+        monsters = 1 + rand() % 3;
+        
+        while (monsters--)
+        {
+            y = room_t[i] + rand() % (room_b[i] - room_t[i]);
+            x = room_l[i] + rand() % (room_r[i] - room_l[i]);
+            
+            if (get_mob(y, x) == -1)
+            {
+                make_mob(mob_newbie, y, x);
+            }
+        }
+    }
 
     /* Place stairs */
     random_room = (random_room + 1 + rand() % (rooms - 2)) % rooms;

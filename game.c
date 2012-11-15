@@ -68,3 +68,37 @@ int move_mob(mob_t * mob_to_move, int y_speed, int x_speed)
 
     return 0;
 }
+
+
+
+int make_mob(mob_type_t type, int y, int x)
+{
+    int i;
+
+    for (i = 0; i < MOBS; i++)
+    {
+        if (mob[i].type == mob_none)
+        {
+            mob[i].type = type;
+            mob[i].y = y;
+            mob[i].x = x;
+
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
+
+
+int get_mob(int y, int x)
+{
+    int i;
+
+    for (i = 0; i < MOBS; i++)
+        if (mob[i].type && mob[i].y == y && mob[i].x == x)
+            return i;
+
+    return -1;
+}

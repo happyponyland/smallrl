@@ -34,6 +34,7 @@ typedef struct tile_s
     tile_flag_t flags;
     int explored;
     int lit;
+    int path;
 } tile_t;
 
 typedef struct level_s
@@ -54,7 +55,7 @@ typedef enum color_e
 
 typedef enum mob_type_e
 {
-    mob_none,
+    mob_none = 0,
     mob_player = '@',
     mob_newbie = 'n'
 } mob_type_t;
@@ -96,10 +97,13 @@ void connect_rooms(int y1, int x1, int y2, int x2);
 /* game.c */
 void new_game(void);
 int move_mob(mob_t *, int x_speed, int y_speed);
+int make_mob(mob_type_t type, int y, int x);
+int get_mob(int y, int x);
 int play(void);
 
 /* ai.c */
 void enemy_turn(int id);
+int pathfind(int id, int dest_y, int dest_x, int * y_speed, int * x_speed);
 
 /* ui.c */
 void draw_map(void);

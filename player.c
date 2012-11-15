@@ -54,7 +54,14 @@ int player_turn()
                 x_speed = 0;
             }
 
-            if (move_mob(player, y_speed, x_speed))
+            int mob_id;
+
+            if ((mob_id = get_mob(player->y + y_speed, player->x + x_speed)) != -1)
+            {
+                print_msg("combat goes here");
+                goto turn_done;
+            }
+            else if (move_mob(player, y_speed, x_speed))
             {
                 explore();
 
