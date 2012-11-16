@@ -1,10 +1,15 @@
 #include "smallrl.h"
-
+#include <sys/time.h>
 
 int play()
 {
-    int i;
+    int i,j;
     int turn;
+    long last_gametime;
+    long current_gametime;
+    int ticks_to_perform;
+
+    last_gametime = get_time();
 
     explore();
 
@@ -23,30 +28,64 @@ int play()
         else if (turn == 2)
             continue; // give player the first turn on a new level
 
+        current_gametime = get_time();
+
+        ticks_to_perform = (current_gametime - last_gametime) / TIMESTEP;
+
+        if(ticks_to_perform == 0)
+            continue;
+
         for (i = 1; i < MOBS; i++)
         {
-            enemy_turn(i);
+            mob_t * current_mob = &mob[i];
+
+            if(!(current_mob->flags & mf_active))
+                continue;
+
+            if(current_mob->next_think < current_gametime) {
+                for(j = 0; j < ticks_to_perform; ++j) {
+                    enemy_tick(current_mob);
+                }
+            }
         }
+
+        last_gametime = current_gametime;
     }
 
     return 0;
 }
 
+/* ms */
+long get_time()
+{
+    struct timeval current_time;
 
+    gettimeofday(&current_time, NULL);
+
+    return current_time.tv_sec * 1000 + current_time.tv_usec / 1000;
+}
 
 
 
 void new_game()
 {
-    //clear_map();
+    int i;
+
     current_depth = 1;
 
-    boring_level(&mob[0].x, &mob[0].y);
-
-    mob[0].type = mob_player;
-    mob[0].hp = 20;
+    /* reset all enemies */
+    for(i = 1; i < MOBS; ++i) {
+        mob[i].flags = mf_none;
+        mob[i].type = mob_none;
+    }
 
     player = &mob[0];
+
+    boring_level(&player->x, &player->y);
+
+    player->type = mob_player;
+    player->hp = 20;
+
     return;
 }
 
@@ -83,6 +122,8 @@ int make_mob(mob_type_t type, int y, int x)
             mob[i].x = x;
 
             mob[i].type = type;
+            mob[i].flags = mf_active;
+            mob[i].next_think = get_time() + 10 * TIMESTEP;
 
             switch (type)
             {

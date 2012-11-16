@@ -8,24 +8,19 @@ int player_turn()
     int x_speed = 0;
     int y_speed = 0;
 
-    while (1)
+    input = getch();
+
+    clear_msg();
+
+    switch (input)
     {
-        input = getch();
-
-        clear_msg();
-
-        switch (input)
-        {
         case 'Q':
             if (prompt_yn("Do you want to quit?"))
                 return 1;
-
-            continue;
-
+            break;;
         case ' ':
             //clear_msg();
-            continue;
-
+            break;
         case KEY_LEFT:
         case KEY_RIGHT:
         case KEY_UP:
@@ -59,7 +54,6 @@ int player_turn()
             if ((mob_id = get_mob(player->y + y_speed, player->x + x_speed)) != -1)
             {
                 melee(0, mob_id);
-                goto turn_done;
             }
             else if (move_mob(player, y_speed, x_speed))
             {
@@ -76,18 +70,10 @@ int player_turn()
                     }
                 }
 
-                goto turn_done;
             }
-
-            print_msg("You cannot go there.");
-            continue;
-
         default:
-            continue;
-        }
+            break;
     }
-
-turn_done:
 
     return 0;
 }
@@ -95,7 +81,7 @@ turn_done:
 
 
 /*
-  Lights up the area near the player, marks it as explored.
+    Lights up the area near the player, marks it as explored.
 */
 void explore()
 {

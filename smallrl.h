@@ -5,68 +5,77 @@
 #define MAP_H 20
 #define MAP_W 80
 #define MOBS 40
+#define TIMESTEP 50 /* ms */
 
 typedef enum tile_type_e
 {
-    tile_void,
-    tile_floor,
-    tile_wall_t,
-    tile_wall_b,
-    tile_wall_r,
-    tile_wall_l,
-    tile_wall_ll,
-    tile_wall_lr,
-    tile_wall_ul,
-    tile_wall_ur,
-    tile_corridor,
-    tile_stair
+	tile_void,
+	tile_floor,
+	tile_wall_t,
+	tile_wall_b,
+	tile_wall_r,
+	tile_wall_l,
+	tile_wall_ll,
+	tile_wall_lr,
+	tile_wall_ul,
+	tile_wall_ur,
+	tile_corridor,
+	tile_stair
 } tile_type_t;
 
 typedef enum tile_flag_e
 {
-    tile_none = 0x0,
-    tile_unpassable = 0x1,
-    tile_permalit = 0x2
+	tile_none = 0x0,
+	tile_unpassable = 0x1,
+	tile_permalit = 0x2
 } tile_flag_t;
 
 typedef struct tile_s
 {
-    tile_type_t type;
-    tile_flag_t flags;
-    int explored;
-    int lit;
-    int path;
+	tile_type_t type;
+	tile_flag_t flags;
+	int explored;
+	int lit;
+	int path;
 } tile_t;
 
 typedef struct level_s
 {
-    tile_t map[MAP_H][MAP_W];
+	tile_t map[MAP_H][MAP_W];
 } level_t;
 
 typedef enum color_e
 {
-    color_black,
-    color_yellow,
-    color_blue,
-    color_red,
-    color_green,
-    color_cyan,
-    color_magenta
+	color_black,
+	color_yellow,
+	color_blue,
+	color_red,
+	color_green,
+	color_cyan,
+	color_magenta
 } color_t;
 
 typedef enum mob_type_e
 {
-    mob_none = 0,
-    mob_player = '@',
-    mob_newbie = 'n'
+	mob_none = 0,
+	mob_player = '@',
+	mob_newbie = 'n'
 } mob_type_t;
+
+typedef enum mob_flag_e
+{
+	mf_none = 0x0,
+	mf_active = 0x1
+} mob_flag_t;
 
 typedef struct mob_s
 {
-    mob_type_t type;
-    int y;
-    int x;
-    int hp;
+	mob_type_t type;
+	mob_flag_t flags;
+	int y;
+	int x;
+	int hp;
+	long next_think;
 } mob_t;
 
 int current_depth;
@@ -105,9 +114,10 @@ int make_mob(mob_type_t type, int y, int x);
 int get_mob(int y, int x);
 int play(void);
 void mob_name(char * s, mob_type_t type);
+long get_time(void);
 
 /* ai.c */
-void enemy_turn(int id);
+void enemy_tick(mob_t *);
 int pathfind(int id, int dest_y, int dest_x, int * y_speed, int * x_speed);
 
 /* ui.c */

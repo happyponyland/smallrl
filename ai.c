@@ -1,20 +1,15 @@
 #include "smallrl.h"
 
 
-void enemy_turn(int id)
+void enemy_tick(mob_t * enemy)
 {
-//    int x_speed;
-//    int y_speed;
-
-//    if (pathfind(id, mob[0].y, mob[0].x, &y_speed, &x_speed) == 1)
-//  {
-//        move_mob(&mob[id], y_speed, x_speed);
-//    }
+	move_mob(enemy, -1 + rand() % 3, -1 + rand() % 3);
+	enemy->next_think += TIMESTEP * 10;
 }
 
 
 int pathfind(int id, int dest_y, int dest_x, int * y_speed, int * x_speed)
 {
 
-    return 0;
+	return 0;
 }
