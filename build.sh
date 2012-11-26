@@ -9,6 +9,7 @@ FILES=(
     "ai.c"
     "boring.c"
     "combat.c"
+    "mob.c"
 )
 
 gcc -lm -lcurses -Wshadow -Wall -Wstrict-prototypes \
