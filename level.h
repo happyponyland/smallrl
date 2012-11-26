@@ -11,11 +11,11 @@
 
 typedef struct level_s
 {
-	tile_t map[MAP_H][MAP_W];
-	mob_t mobs[MAX_MOBS_PER_LEVEL];
-	int depth;
-	struct level_s * down_level;
-	struct level_s * up_level;
+    tile_t map[MAP_H][MAP_W];
+    mob_t mobs[MAX_MOBS_PER_LEVEL];
+    int depth;
+    struct level_s * down_level;
+    struct level_s * up_level;
 } level_t;
 
 /* List of all levels */

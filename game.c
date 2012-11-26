@@ -12,54 +12,56 @@
 
 int play()
 {
-	int i;
-	int turn;
+    int i;
+    int turn;
 
-	while (1)
-	{
-		explore();
+    while (1)
+    {
+        explore();
 
-		draw_map(current_level);
-		draw_stats(player, current_level);
+        draw_map(current_level);
+        draw_stats(player, current_level);
 
-		if (player->hp <= 0)
-			return prompt_yn("You died. Play again?");
+        if (player->hp <= 0)
+            return prompt_yn("You died. Play again?");
 
-		turn = player_turn();
+        turn = player_turn();
 
-		if (turn == 1)
-			return 0;
-		else if (turn == 2) {
-			level_t * new_level = create_new_level(current_level);
-			player = &new_level->mobs[0];
+        if (turn == 1)
+            return 0;
+        else if (turn == 2) {
+            level_t * new_level = create_new_level(current_level);
+            player = &new_level->mobs[0];
 
-			boring_level(new_level, &player->x, &player->y);
+            boring_level(new_level, &player->x, &player->y);
 
-			current_level = new_level;
+            player->hp = current_level->mobs[0].hp;
 
-			continue; // give player the first turn on a new level
-		}
+            current_level = new_level;
 
-		for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
-		{
-			enemy_turn(i);
-		}
-	}
+            continue; // give player the first turn on a new level
+        }
 
-	return 0;
+        for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
+        {
+            enemy_turn(i);
+        }
+    }
+
+    return 0;
 }
 
 
 void new_game()
 {
-	level_t * new_level = create_new_level(NULL);
+    level_t * new_level = create_new_level(NULL);
 
-	player = &new_level->mobs[0];
-	current_level = new_level;
+    player = &new_level->mobs[0];
+    current_level = new_level;
 
-	boring_level(new_level, &player->x, &player->y);
+    boring_level(new_level, &player->x, &player->y);
 
-	player->hp = 20;
+    player->hp = 20;
 
-	return;
+    return;
 }

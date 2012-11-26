@@ -17,5 +17,5 @@ void enemy_turn(int id)
 static int pathfind(int id, int dest_y, int dest_x, int * y_speed, int * x_speed)
 {
 
-	return 0;
+    return 0;
 }
