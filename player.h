@@ -4,6 +4,8 @@
 #include "mob.h"
 
 /* player.c */
+void get_speed(int key, int * x, int * y);
+int player_move(int input);
 int player_turn(void);
 void explore(void);
 

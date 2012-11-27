@@ -6,11 +6,58 @@
 #include "level.h"
 #include "ui.h"
 
+void get_speed(int key, int * x, int * y)
+{
+    switch (key)
+    {
+    case KEY_LEFT:
+        *x = -1;
+        break;
+    case KEY_RIGHT:
+        *x = 1;
+        break;
+    case KEY_UP:
+        *y = -1;
+        break;
+    case KEY_DOWN:
+        *y = 1;
+        break;
+    default:
+        break;
+    }
+    return;
+}
+
+
+int player_move(int input)
+{
+    int x_speed = 0, y_speed = 0;
+    int mob_id;
+    get_speed(input, &x_speed, &y_speed);
+    mob_id = get_mob(current_level, player->y + y_speed, player->x + x_speed)
+
+    if (mob_id != -1)
+    {
+        melee(player, &current_level->mobs[mob_id]);
+        return 0;
+    }
+    else if (try_move_mob(current_level, player, y_speed, x_speed))
+    {
+        explore();
+        if (current_level->map[player->y][player->x].type == tile_stair &&
+            prompt_yn("Go down the stairs?"))
+            return 2;
+        return 0;
+    }
+
+    print_msg("You cannot go there.");
+    return -1;
+}
+
+
 int player_turn(void)
 {
-    int input;
-    int x_speed = 0;
-    int y_speed = 0;
+    int input, move;
 
     while (1)
     {
@@ -23,7 +70,6 @@ int player_turn(void)
         case 'Q':
             if (prompt_yn("Do you want to quit?"))
                 return 1;
-
             continue;
 
         case ' ':
@@ -34,63 +80,16 @@ int player_turn(void)
         case KEY_RIGHT:
         case KEY_UP:
         case KEY_DOWN:
-            if (input == KEY_LEFT)
-            {
-                x_speed = -1;
-                y_speed = 0;
-            }
-
-            if (input == KEY_RIGHT)
-            {
-                x_speed = +1;
-                y_speed = 0;
-            }
-
-            if (input == KEY_UP)
-            {
-                y_speed = -1;
-                x_speed = 0;
-            }
-
-            if (input == KEY_DOWN)
-            {
-                y_speed = +1;
-                x_speed = 0;
-            }
-
-            int mob_id;
-
-            if ((mob_id = get_mob(current_level, player->y + y_speed, player->x + x_speed)) != -1)
-            {
-                melee(player, &current_level->mobs[mob_id]);
-                goto turn_done;
-            }
-            else if (try_move_mob(current_level, player, y_speed, x_speed))
-            {
-                explore();
-
-                if (current_level->map[player->y][player->x].type == tile_stair)
-                {
-                    if (prompt_yn("Go down the stairs?"))
-                    {
-                        return 2;
-                    }
-                }
-
-                goto turn_done;
-            }
-
-            print_msg("You cannot go there.");
-            continue;
+            move = player_move(input);
+            if (move == -1)
+                continue;
+            else
+                return move;
 
         default:
             continue;
         }
     }
-
-turn_done:
-
-    return 0;
 }
 
 
