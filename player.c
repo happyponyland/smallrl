@@ -34,7 +34,7 @@ int player_move(int input)
     int x_speed = 0, y_speed = 0;
     int mob_id;
     get_speed(input, &x_speed, &y_speed);
-    mob_id = get_mob(current_level, player->y + y_speed, player->x + x_speed)
+    mob_id = get_mob(current_level, player->y + y_speed, player->x + x_speed);
 
     if (mob_id != -1)
     {
