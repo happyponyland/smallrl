@@ -7,6 +7,7 @@ static void connect_rooms(level_t *, int, int, int, int);
 static void h_corridor(level_t *, int, int, int);
 static void v_corridor(level_t *, int, int, int);
 
+static mob_type_t random_mob_type(void);
 
 void boring_level(level_t * level, int * startx, int * starty)
 {
@@ -93,7 +94,7 @@ void boring_level(level_t * level, int * startx, int * starty)
 
             if (get_mob(level, y, x) == -1)
             {
-                try_make_mob(level, mob_newbie, y, x);
+                try_make_mob(level, random_mob_type(), y, x);
             }
         }
     }
@@ -105,6 +106,18 @@ void boring_level(level_t * level, int * startx, int * starty)
         set_tile(level, y, x, tile_stair);
 
     return;
+}
+
+static mob_type_t random_mob_type(void)
+{
+    switch(rand() % 2)
+    {
+        case 0:
+            return mob_newbie;
+        case 1:
+        default:
+            return mob_zombie;
+    }
 }
 
 

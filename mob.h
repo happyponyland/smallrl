@@ -5,7 +5,8 @@ typedef enum mob_type_e
 {
     mob_none = 0,
     mob_player = '@',
-    mob_newbie = 'n'
+    mob_newbie = 'n',
+    mob_zombie = 'z'
 } mob_type_t;
 
 typedef struct mob_s
@@ -14,6 +15,7 @@ typedef struct mob_s
     int y;
     int x;
     int hp;
+    int turn_counter;
 } mob_t;
 
 void mob_name(char *, mob_type_t);

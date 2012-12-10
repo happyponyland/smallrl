@@ -14,6 +14,10 @@ void mob_name(char * s, mob_type_t type)
         strcpy(s, "newbie");
         break;
 
+    case mob_zombie:
+        strcpy(s, "zombie");
+        break;
+
     default:
         strcpy(s, "???");
         break;

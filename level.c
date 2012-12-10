@@ -1,6 +1,8 @@
 #include <stdlib.h>
 
 #include "level.h"
+#include "player.h"
+#include "combat.h"
 
 static void clear_level(level_t *);
 static void set_tile_flags_by_type(tile_t *, tile_type_t);
@@ -99,6 +101,21 @@ int try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
     if (on_map(level, new_y, new_x) &&
         !(level->map[new_y][new_x].flags & tile_unpassable))
     {
+        if(new_y == player->y && new_x == player->x)
+        {
+            attack(mob_to_move, player);
+            return 0;
+        }
+
+        for(int i = 1; i < MAX_MOBS_PER_LEVEL; ++i)
+        {
+            if(level->mobs[i].type == mob_none)
+                continue;
+
+            if(new_y == level->mobs[i].y && new_x == level->mobs[i].x)
+                return 0;
+        }
+
         mob_to_move->y = new_y;
         mob_to_move->x = new_x;
 
@@ -120,6 +137,7 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
             level->mobs[i].x = x;
 
             level->mobs[i].type = type;
+            level->mobs[i].turn_counter = 0;
 
             switch (type)
             {

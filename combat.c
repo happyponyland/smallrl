@@ -5,8 +5,14 @@
 #include "mob.h"
 #include "ui.h"
 
+static void melee(mob_t * attacker, mob_t * defender);
 
-void melee(mob_t * attacker, mob_t * defender)
+void attack(mob_t * attacker, mob_t * defender)
+{
+    melee(attacker, defender);
+}
+
+static void melee(mob_t * attacker, mob_t * defender)
 {
     char line[100];
     char att_n[50];

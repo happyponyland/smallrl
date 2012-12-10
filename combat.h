@@ -3,6 +3,6 @@
 
 #include "mob.h"
 
-void melee(mob_t *, mob_t *);
+void attack(mob_t *, mob_t *);
 
 #endif

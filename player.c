@@ -38,7 +38,7 @@ int player_move(int input)
 
     if (mob_id != -1)
     {
-        melee(player, &current_level->mobs[mob_id]);
+        attack(player, &current_level->mobs[mob_id]);
         return 0;
     }
     else if (try_move_mob(current_level, player, y_speed, x_speed))

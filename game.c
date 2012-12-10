@@ -44,7 +44,7 @@ int play()
 
         for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
         {
-            enemy_turn(i);
+            enemy_turn(current_level, &current_level->mobs[i]);
         }
     }
 
