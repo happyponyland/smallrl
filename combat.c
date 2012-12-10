@@ -45,12 +45,13 @@ static void melee(mob_t * attacker, mob_t * defender)
 
         print_msg(line);
         wait();
+        clear_msg();
         return;
     }
 
     /* It was a hit */
     damage = attacker->attr[ATTR_MINDAM] +
-        (rand() % (attacker->attr[ATTR_MINDAM] + 1));
+        (rand() % (attacker->attr[ATTR_MAXDAM] + 1));
     
     defender->attr[ATTR_HP] -= damage;
 
@@ -79,6 +80,11 @@ static void melee(mob_t * attacker, mob_t * defender)
         
         mob_adjective(def_a, defender->type);
         snprintf(line, MSGLEN, "The %s%s dies!", def_a, def_n);
+
+        /* show that the mob is gone before printing message*/
+        defender->type = mob_none;
+        draw_map(current_level);
+
         print_msg(line);
         wait();
         clear_msg();
@@ -87,8 +93,6 @@ static void melee(mob_t * attacker, mob_t * defender)
         {
             give_exp(defender->attr[ATTR_EXP]);
         }
-
-        defender->type = mob_none;
     }
 
     return;

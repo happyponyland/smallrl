@@ -111,11 +111,18 @@ void draw_map(level_t * level)
 void draw_stats(level_t * level)
 {
     move(22, 0);
-    printw("HP: %d   CLVL: %d (%ld TNL)  DLVL: %d",
+    printw("HP: %d    Damage: %d-%d",
            player->attr[ATTR_HP],
+           player->attr[ATTR_MINDAM],
+           player->attr[ATTR_MINDAM] + player->attr[ATTR_MAXDAM]);
+    clrtoeol();
+
+    move(23, 0);
+    printw("LVL: %d (%ld TNL)  DLVL: %d",
            player_level, (player_tnl[player_level] - player_exp),
            level->depth);
     clrtoeol();
+
 
     refresh();
 

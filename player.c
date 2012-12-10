@@ -76,7 +76,11 @@ int player_move(int input)
         explore();
         if (current_level->map[player->y][player->x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
+        {
             return 2;
+        }
+
+        draw_map(current_level);
         return 0;
     }
 
@@ -213,14 +217,17 @@ void give_exp(const int amount)
     while (player_exp >= player_tnl[player_level])
     {
         player_level++;
-
+        
+        attron(A_REVERSE | A_BLINK | A_BOLD | COLOR_PAIR(color_green));
         print_msg("You have gained a level!!");
+        attrset(0);
         wait();
 
         snprintf(line, MSGLEN,
                  "You are now level %d.", player_level);
         print_msg(line);
         wait();
+        clear_msg();
 
         player->attr[ATTR_HP] += 10;
         player->attr[ATTR_MINDAM] += 1;
