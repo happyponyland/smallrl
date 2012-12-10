@@ -19,7 +19,7 @@ typedef enum color_e
 
 /* ui.c */
 void draw_map(level_t *);
-void draw_stats(mob_t *, level_t *);
+void draw_stats(level_t *);
 int prompt_yn(char *);
 void print_msg(char *);
 void clear_msg(void);

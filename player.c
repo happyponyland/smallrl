@@ -6,6 +6,36 @@
 #include "level.h"
 #include "ui.h"
 
+int player_level = 1;
+long player_exp = 0;
+long player_tnl[] =
+{
+    0,
+    100,
+    250,
+    500,
+    900,
+    1500,
+    2500,
+    3800,
+    7000,
+    12000,
+    15000,
+    25000,
+    60000,
+    90000,
+    200000,
+    350000,
+    600000,
+    1000000,
+    2000000,
+    3000000,
+    4000000,
+    5000000,
+    6000000,
+    7000000
+};
+
 void get_speed(int key, int * x, int * y)
 {
     switch (key)
@@ -164,6 +194,38 @@ void explore(void)
                 }
             }
         } while (change);
+    }
+
+    return;
+}
+
+
+
+void give_exp(const int amount)
+{
+    char line[MSGLEN];
+
+    if (player_level >= PLAYER_MAXLEVEL)
+        return;
+
+    player_exp += amount;
+
+    while (player_exp >= player_tnl[player_level])
+    {
+        player_level++;
+
+        print_msg("You have gained a level!!");
+        wait();
+
+        snprintf(line, MSGLEN,
+                 "You are now level %d.", player_level);
+        print_msg(line);
+        wait();
+
+        player->attr[ATTR_HP] += 10;
+        player->attr[ATTR_MINDAM] += 1;
+        player->attr[ATTR_ATTACK] += 5;
+        player->attr[ATTR_DODGE] += 5;
     }
 
     return;

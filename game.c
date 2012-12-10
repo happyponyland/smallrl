@@ -20,7 +20,7 @@ int play()
         explore();
 
         draw_map(current_level);
-        draw_stats(player, current_level);
+        draw_stats(current_level);
 
         if (player->attr[ATTR_HP] <= 0)
             return prompt_yn("You died. Play again?");

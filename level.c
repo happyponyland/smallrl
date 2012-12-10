@@ -147,6 +147,7 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 level->mobs[i].attr[ATTR_MAXDAM] = 3;
                 level->mobs[i].attr[ATTR_ATTACK] = 40;
                 level->mobs[i].attr[ATTR_DODGE] = 20;
+                level->mobs[i].attr[ATTR_EXP] = 30;
                 break;
 
             case mob_zombie:
@@ -155,6 +156,7 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 level->mobs[i].attr[ATTR_MAXDAM] = 5;
                 level->mobs[i].attr[ATTR_ATTACK] = 30;
                 level->mobs[i].attr[ATTR_DODGE] = 10;
+                level->mobs[i].attr[ATTR_EXP] = 45;
                 break;
 
             default:

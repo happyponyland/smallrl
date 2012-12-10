@@ -6,6 +6,7 @@
 #define ATTR_MAXDAM  2
 #define ATTR_ATTACK  3
 #define ATTR_DODGE   4
+#define ATTR_EXP     5
 #define ATTRIBUTES 15
 
 typedef enum mob_type_e

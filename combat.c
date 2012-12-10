@@ -82,6 +82,12 @@ static void melee(mob_t * attacker, mob_t * defender)
         print_msg(line);
         wait();
         clear_msg();
+
+        if (attacker == player)
+        {
+            give_exp(defender->attr[ATTR_EXP]);
+        }
+
         defender->type = mob_none;
     }
 

@@ -3,6 +3,7 @@
 #include "ui.h"
 
 #include "level.h"
+#include "player.h"
 
 void draw_map(level_t * level)
 {
@@ -107,10 +108,13 @@ void draw_map(level_t * level)
 
 
 
-void draw_stats(mob_t * player, level_t * level)
+void draw_stats(level_t * level)
 {
     move(22, 0);
-    printw("HP: %d   Dlvl: %d", player->attr[ATTR_HP], level->depth);
+    printw("HP: %d   CLVL: %d (%ld TNL)  DLVL: %d",
+           player->attr[ATTR_HP],
+           player_level, (player_tnl[player_level] - player_exp),
+           level->depth);
     clrtoeol();
 
     refresh();
