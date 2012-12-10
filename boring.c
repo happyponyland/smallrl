@@ -7,7 +7,7 @@ static void connect_rooms(level_t *, int, int, int, int);
 static void h_corridor(level_t *, int, int, int);
 static void v_corridor(level_t *, int, int, int);
 
-static mob_type_t random_mob_type(void);
+static mob_type_t random_mob_type(int);
 
 void boring_level(level_t * level, int * startx, int * starty)
 {
@@ -94,7 +94,9 @@ void boring_level(level_t * level, int * startx, int * starty)
 
             if (get_mob(level, y, x) == -1)
             {
-                try_make_mob(level, random_mob_type(), y, x);
+                try_make_mob(level,
+                             random_mob_type(level->depth),
+                             y, x);
             }
         }
     }
@@ -108,15 +110,25 @@ void boring_level(level_t * level, int * startx, int * starty)
     return;
 }
 
-static mob_type_t random_mob_type(void)
+/*
+  Returns a mob suitable for depth.
+*/
+static mob_type_t random_mob_type(const int depth)
 {
-    switch(rand() % 2)
+    switch((depth / 2) + rand() % (depth + 2))
     {
-        case 0:
-            return mob_newbie;
-        case 1:
-        default:
-            return mob_zombie;
+    case 0:
+        return mob_newbie;
+    case 1:
+        return mob_zombie;
+    case 2:
+        return mob_1337hax0r;
+    case 3:
+        return mob_hobbyist;
+    case 4:
+        return mob_war_troll;
+    default:
+        return mob_zombie;
     }
 }
 

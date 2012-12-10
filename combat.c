@@ -6,7 +6,7 @@
 #include "mob.h"
 #include "ui.h"
 
-static void melee(mob_t * attacker, mob_t * defender);
+static void melee(mob_t *, mob_t *);
 
 void attack(mob_t * attacker, mob_t * defender)
 {
@@ -29,6 +29,27 @@ static void melee(mob_t * attacker, mob_t * defender)
     mob_adjective(att_a, attacker->type);
     mob_adjective(def_a, defender->type);
     
+    if ((attacker->type == mob_newbie
+         || attacker->type == mob_1337hax0r)
+        && rand() % 5 == 0)
+    {
+        snprintf(line, MSGLEN,
+                 "The %s%s drains you of your time and patience!",
+                 att_a, att_n);
+        print_msg(line);
+        wait();
+        
+        if (player_exp > 50)
+            player_exp -= 50;
+        else
+            player_exp = 0;
+
+        draw_stats();
+
+        clear_msg();
+        return;
+    }
+
     /* Hit/miss roll */
     att_skill = attacker->attr[ATTR_ATTACK];
     def_dodge = attacker->attr[ATTR_DODGE];

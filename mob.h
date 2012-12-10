@@ -14,7 +14,10 @@ typedef enum mob_type_e
     mob_none = 0,
     mob_player = '@',
     mob_newbie = 'n',
-    mob_zombie = 'z'
+    mob_zombie = 'z',
+    mob_1337hax0r = '1',
+    mob_hobbyist = 'h',
+    mob_war_troll = 'T'
 } mob_type_t;
 
 typedef struct mob_s

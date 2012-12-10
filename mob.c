@@ -20,6 +20,18 @@ void mob_name(char * s, mob_type_t type)
         strcpy(s, "zombie");
         break;
 
+    case mob_1337hax0r:
+        strcpy(s, "1337-hax0r");
+        break;
+
+    case mob_hobbyist:
+        strcpy(s, "hobbyist programmer");
+        break;
+
+    case mob_war_troll:
+        strcpy(s, "war-troll");
+        break;
+
     default:
         strcpy(s, "???");
         break;
@@ -52,6 +64,14 @@ void mob_adjective(char * s, mob_type_t type)
 
     case 4:
         strcpy(s, "grisly ");
+        break;
+
+    case 5:
+        strcpy(s, "sweaty ");
+        break;
+
+    case 6:
+        strcpy(s, "smelly ");
         break;
 
     default:

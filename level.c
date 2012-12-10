@@ -151,12 +151,39 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 break;
 
             case mob_zombie:
-                level->mobs[i].attr[ATTR_HP] = 6;
-                level->mobs[i].attr[ATTR_MINDAM] = 1;
+                level->mobs[i].attr[ATTR_HP] = 12;
+                level->mobs[i].attr[ATTR_MINDAM] = 2;
                 level->mobs[i].attr[ATTR_MAXDAM] = 5;
                 level->mobs[i].attr[ATTR_ATTACK] = 30;
                 level->mobs[i].attr[ATTR_DODGE] = 10;
                 level->mobs[i].attr[ATTR_EXP] = 45;
+                break;
+
+            case mob_1337hax0r:
+                level->mobs[i].attr[ATTR_HP] = 1;
+                level->mobs[i].attr[ATTR_MINDAM] = 1;
+                level->mobs[i].attr[ATTR_MAXDAM] = 0;
+                level->mobs[i].attr[ATTR_ATTACK] = 1;
+                level->mobs[i].attr[ATTR_DODGE] = 60;
+                level->mobs[i].attr[ATTR_EXP] = 15;
+                break;
+
+            case mob_hobbyist:
+                level->mobs[i].attr[ATTR_HP] = 5;
+                level->mobs[i].attr[ATTR_MINDAM] = 1;
+                level->mobs[i].attr[ATTR_MAXDAM] = 3;
+                level->mobs[i].attr[ATTR_ATTACK] = 30;
+                level->mobs[i].attr[ATTR_DODGE] = 50;
+                level->mobs[i].attr[ATTR_EXP] = 40;
+                break;
+
+            case mob_war_troll:
+                level->mobs[i].attr[ATTR_HP] = 20;
+                level->mobs[i].attr[ATTR_MINDAM] = 2;
+                level->mobs[i].attr[ATTR_MAXDAM] = 6;
+                level->mobs[i].attr[ATTR_ATTACK] = 20;
+                level->mobs[i].attr[ATTR_DODGE] = 10;
+                level->mobs[i].attr[ATTR_EXP] = 90;
                 break;
 
             default:
