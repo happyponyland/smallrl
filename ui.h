@@ -3,6 +3,9 @@
 
 #include "level.h"
 
+/* Size of default message buffer */
+#define MSGLEN 200
+
 typedef enum color_e
 {
     color_black,

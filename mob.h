@@ -19,5 +19,6 @@ typedef struct mob_s
 } mob_t;
 
 void mob_name(char *, mob_type_t);
+void mob_adjective(char *, mob_type_t);
 
 #endif
