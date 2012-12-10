@@ -26,7 +26,7 @@ static void melee(mob_t * attacker, mob_t * defender)
     mob_adjective(att_a, attacker->type);
     mob_adjective(def_a, defender->type);
     
-    defender->hp -= rand() % 4;
+    defender->hp -= 1 + (rand() % 4);
 
     if (attacker == player)
         snprintf(line, MSGLEN, "You hit the %s%s!", def_a, def_n);
