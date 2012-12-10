@@ -23,8 +23,8 @@ level_t * create_new_level(level_t * old_level)
 
     new_level->mobs[0].type = mob_player;
     new_level->up_level = old_level;
-    new_level->depth = old_level != NULL ? old_level->depth + 1 : 0;
-
+    new_level->depth = old_level != NULL ? old_level->depth + 1 : 1;
+    
     return new_level;
 }
 
