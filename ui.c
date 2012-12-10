@@ -110,7 +110,7 @@ void draw_map(level_t * level)
 void draw_stats(mob_t * player, level_t * level)
 {
     move(22, 0);
-    printw("HP: %d   Dlvl: %d", player->hp, level->depth);
+    printw("HP: %d   Dlvl: %d", player->attr[ATTR_HP], level->depth);
     clrtoeol();
 
     refresh();

@@ -142,11 +142,23 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
             switch (type)
             {
             case mob_newbie:
-                level->mobs[i].hp = 5;
+                level->mobs[i].attr[ATTR_HP] = 5;
+                level->mobs[i].attr[ATTR_MINDAM] = 1;
+                level->mobs[i].attr[ATTR_MAXDAM] = 3;
+                level->mobs[i].attr[ATTR_ATTACK] = 40;
+                level->mobs[i].attr[ATTR_DODGE] = 20;
+                break;
+
+            case mob_zombie:
+                level->mobs[i].attr[ATTR_HP] = 6;
+                level->mobs[i].attr[ATTR_MINDAM] = 1;
+                level->mobs[i].attr[ATTR_MAXDAM] = 5;
+                level->mobs[i].attr[ATTR_ATTACK] = 30;
+                level->mobs[i].attr[ATTR_DODGE] = 10;
                 break;
 
             default:
-                level->mobs[i].hp = 2;
+                level->mobs[i].attr[ATTR_HP] = 5;
                 break;
             }
 

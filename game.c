@@ -22,7 +22,7 @@ int play()
         draw_map(current_level);
         draw_stats(player, current_level);
 
-        if (player->hp <= 0)
+        if (player->attr[ATTR_HP] <= 0)
             return prompt_yn("You died. Play again?");
 
         turn = player_turn();
@@ -35,7 +35,12 @@ int play()
 
             boring_level(new_level, &player->x, &player->y);
 
-            player->hp = current_level->mobs[0].hp;
+            memcpy(player,
+                   &current_level->mobs[0],
+                   sizeof(level_t));
+            //player->attr[ATTR_HP] = current_level->mobs[0].hp;
+
+            free(current_level);
 
             current_level = new_level;
 
@@ -61,7 +66,11 @@ void new_game()
 
     boring_level(new_level, &player->x, &player->y);
 
-    player->hp = 20;
+    player->attr[ATTR_HP] = 20;
+    player->attr[ATTR_ATTACK] = 20;
+    player->attr[ATTR_DODGE] = 20;
+    player->attr[ATTR_MINDAM] = 1;
+    player->attr[ATTR_MAXDAM] = 5;
 
     return;
 }

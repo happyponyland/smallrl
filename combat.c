@@ -20,36 +20,68 @@ static void melee(mob_t * attacker, mob_t * defender)
     char def_n[50];
     char att_a[50];
     char def_a[50];
+    int def_dodge;
+    int att_skill;
+    int damage;
 
     mob_name(att_n, attacker->type);
     mob_name(def_n, defender->type);
     mob_adjective(att_a, attacker->type);
     mob_adjective(def_a, defender->type);
     
-    defender->hp -= 1 + (rand() % 4);
+    /* Hit/miss roll */
+    att_skill = attacker->attr[ATTR_ATTACK];
+    def_dodge = attacker->attr[ATTR_DODGE];
+
+    if ((rand() % 100) < (def_dodge - att_skill) + 1)
+    {
+        if (attacker == player)
+            snprintf(line, MSGLEN, "You miss the %s%s!", def_a, def_n);
+        else if (defender == player)
+            snprintf(line, MSGLEN, "The %s%s misses you!", att_a, att_n);
+        else
+            snprintf(line, MSGLEN, "The %s%s misses the %s%s!",
+                     att_a, att_n, def_a, def_n);
+
+        print_msg(line);
+        wait();
+        return;
+    }
+
+    /* It was a hit */
+    damage = attacker->attr[ATTR_MINDAM] +
+        (rand() % (attacker->attr[ATTR_MINDAM] + 1));
+    
+    defender->attr[ATTR_HP] -= damage;
 
     if (attacker == player)
-        snprintf(line, MSGLEN, "You hit the %s%s!", def_a, def_n);
+        snprintf(line, MSGLEN, "You hit the %s%s! [%d]",
+                 def_a, def_n, damage);
     else if (defender == player)
-        snprintf(line, MSGLEN, "The %s%s hits you!", att_a, att_n);
+        snprintf(line, MSGLEN, "The %s%s hits you! [%d]",
+                 att_a, att_n, damage);
     else
-        snprintf(line, MSGLEN, "The %s%s hits the %s%s!",
-                 att_a, att_n, def_a, def_n);
+        snprintf(line, MSGLEN, "The %s%s hits the %s%s! [%d]",
+                 att_a, att_n, def_a, def_n, damage);
 
     print_msg(line);
     wait();
     clear_msg();
 
-    if (defender->hp <= 0)
+    if (defender->attr[ATTR_HP] <= 0)
     {
         if (defender == player)
         {
             print_msg("You have been slain!!");
+            wait();
             return;
         }
         
-        sprintf(line, "The %s dies!", def_n);
+        mob_adjective(def_a, defender->type);
+        snprintf(line, MSGLEN, "The %s%s dies!", def_a, def_n);
         print_msg(line);
+        wait();
+        clear_msg();
         defender->type = mob_none;
     }
 
