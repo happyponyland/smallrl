@@ -32,13 +32,14 @@ int play()
             return 0;
         else if (turn == 2) {
             level_t * new_level = create_new_level(current_level);
+
+            memcpy(&new_level->mobs[0],
+                   player.mob,
+                   sizeof(mob_t));
+
             player.mob = &new_level->mobs[0];
 
             boring_level(new_level, &player.mob->x, &player.mob->y);
-
-            memcpy(player.mob,
-                   &current_level->mobs[0],
-                   sizeof(mob_t));
 
             free(current_level);
 

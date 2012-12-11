@@ -19,10 +19,10 @@ typedef struct level_s
 } level_t;
 
 /* List of all levels */
-level_t * levels;
+extern level_t * levels;
 
 /* Pointer to current level */
-level_t * current_level;
+extern level_t * current_level;
 
 /*--------*/
 

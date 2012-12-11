@@ -27,6 +27,7 @@ typedef struct mob_s
     int x;
     int attr[ATTRIBUTES];
     int turn_counter;
+    int mana;
 } mob_t;
 
 void mob_name(char *, mob_type_t);

@@ -21,7 +21,7 @@ void item_name(char * s, uint32_t item)
         break;
 
     default:
-        strcpy(s, "???");
+        strcpy(s, "a rift in time and space");
         break;
     }
 }

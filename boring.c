@@ -55,11 +55,12 @@ void boring_level(level_t * level, int * startx, int * starty)
     int c;
 
     c = 4;
+    b = rand() % rooms;
 
     for (i = 0; i < rooms; i++)
     {
         a = i;
-        b = (b + c) % (rooms + 1);
+        b = (b + c) % rooms;
 
         connect_rooms(level,
                       room_t[a] + rand() % (room_b[a] - room_t[a]),
@@ -77,8 +78,8 @@ void boring_level(level_t * level, int * startx, int * starty)
 
     /* Place player */
     random_room = rand() % rooms;
-    *starty = room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room]);
-    *startx = room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room]);
+    *starty = room_t[random_room] + rand() % (room_b[random_room] - room_t[random_room] + 1);
+    *startx = room_l[random_room] + rand() % (room_r[random_room] - room_l[random_room] + 1);
 
     /* Place monsters */
     for (i = 0; i < rooms; i++)

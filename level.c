@@ -4,6 +4,9 @@
 #include "player.h"
 #include "combat.h"
 
+level_t * levels;
+level_t * current_level;
+
 static void clear_level(level_t *);
 static void set_tile_flags_by_type(tile_t *, tile_type_t);
 
@@ -129,7 +132,7 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
 {
     int i;
 
-    for (i = 0; i < MAX_MOBS_PER_LEVEL; i++)
+    for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
     {
         if (level->mobs[i].type == mob_none)
         {

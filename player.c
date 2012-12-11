@@ -9,33 +9,7 @@
 
 player_info_t player;
 
-static long player_tnl[] =
-{
-    0,
-    100,
-    250,
-    500,
-    900,
-    1500,
-    2500,
-    3800,
-    7000,
-    12000,
-    15000,
-    25000,
-    60000,
-    90000,
-    200000,
-    350000,
-    600000,
-    1000000,
-    2000000,
-    3000000,
-    4000000,
-    5000000,
-    6000000,
-    7000000
-};
+static int experience_to_level(int);
 
 void get_speed(int key, int * x, int * y)
 {
@@ -116,7 +90,7 @@ int player_turn(void)
 
             print_msg("Drop which item?");
             input = list_items(&player.inventory[0], INVENTORY_SIZE);
-            
+
             draw_map(current_level);
 
             if (input != -1)
@@ -238,7 +212,7 @@ void give_exp(const int amount)
 
     player.exp += amount;
 
-    while (player.exp >= player_tnl[player.level])
+    while (player.exp >= experience_to_level(player.level))
     {
         player.level += 1;
 
@@ -253,7 +227,7 @@ void give_exp(const int amount)
         wait();
         clear_msg();
 
-        player.mob->attr[ATTR_HP] += 10;
+        player.mob->attr[ATTR_HP] += 10 + 2 * player.level;
         player.mob->attr[ATTR_MINDAM] += 1;
         player.mob->attr[ATTR_ATTACK] += 5;
         player.mob->attr[ATTR_DODGE] += 5;
@@ -264,10 +238,13 @@ void give_exp(const int amount)
 
 int get_player_tnl(void)
 {
-    return player_tnl[player.level] - player.exp;
+    return experience_to_level(player.level) - player.exp;
 }
 
-
+static int experience_to_level(int level)
+{
+    return 50 * (level * level) + 100 * level;
+}
 
 int list_items(uint32_t * start, size_t items)
 {
@@ -281,7 +258,7 @@ int list_items(uint32_t * start, size_t items)
 
     for (i = 0; i < items; i++)
     {
-        if (start[i] == 0)
+        if (start[i] == item_void)
             continue;
 
         row++;
@@ -293,14 +270,14 @@ int list_items(uint32_t * start, size_t items)
         printw("  %c) %s   ",
                'a' + i, item_n);
     }
-    
+
     refresh();
 
     do
     {
         input = getch();
         sel = input - 'a';
-        
+
         if (sel >= 0 &&
             sel < items &&
             player.inventory[sel])
@@ -352,4 +329,3 @@ void drop_item(const int index)
 
     return;
 }
-
