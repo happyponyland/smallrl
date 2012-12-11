@@ -7,6 +7,7 @@
 #include "player.h"
 #include "ui.h"
 #include "ai.h"
+#include "item.h"
 
 #include "boring.h"
 
@@ -73,6 +74,14 @@ void new_game()
     player.mob->attr[ATTR_DODGE] = 20;
     player.mob->attr[ATTR_MINDAM] = 1;
     player.mob->attr[ATTR_MAXDAM] = 5;
+
+    size_t i;
+    for (i = 0; i < INVENTORY_SIZE; i++)
+        player.inventory[i] = 0;
+
+    player.inventory[0] = item_dildo;
+    player.inventory[1] = item_leather_pants;
+    player.inventory[2] = item_med_prot;
 
     return;
 }

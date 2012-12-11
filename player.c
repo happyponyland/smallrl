@@ -5,6 +5,7 @@
 #include "combat.h"
 #include "level.h"
 #include "ui.h"
+#include "item.h"
 
 player_info_t player;
 
@@ -105,6 +106,29 @@ int player_turn(void)
             if (prompt_yn("Do you want to quit?"))
                 return 1;
             continue;
+
+        case 'd':
+            if (count_items() == 0)
+            {
+                print_msg("You have no items.");
+                continue;
+            }
+
+            print_msg("Drop which item?");
+            input = list_items(&player.inventory[0], INVENTORY_SIZE);
+            
+            draw_map(current_level);
+
+            if (input != -1)
+            {
+                drop_item(input);
+                return 0;
+            }
+            continue;
+
+        case '.':
+            /* Rest/wait/meditate */
+            return 0;
 
         case ' ':
             //clear_msg();
@@ -242,3 +266,90 @@ int get_player_tnl(void)
 {
     return player_tnl[player.level] - player.exp;
 }
+
+
+
+int list_items(uint32_t * start, size_t items)
+{
+    size_t i;
+    int row;
+    char item_n[100];
+    int input;
+    int sel;
+
+    row = 0;
+
+    for (i = 0; i < items; i++)
+    {
+        if (start[i] == 0)
+            continue;
+
+        row++;
+
+        move(1 + row, 0);
+
+        item_name(item_n, start[i]);
+
+        printw("  %c) %s   ",
+               'a' + i, item_n);
+    }
+    
+    refresh();
+
+    do
+    {
+        input = getch();
+        sel = input - 'a';
+        
+        if (sel >= 0 &&
+            sel < items &&
+            player.inventory[sel])
+        {
+            return sel;
+        }
+
+        print_msg("You don't have that!!");
+        refresh();
+    } while (input != ' ');
+
+    return -1;
+}
+
+
+
+int count_items()
+{
+    int c;
+    int i;
+
+    c = 0;
+
+    for (i = 0; i < INVENTORY_SIZE; i++)
+    {
+        if (player.inventory[i] != 0)
+            c++;
+    }
+
+    return c;
+}
+
+
+
+void drop_item(const int index)
+{
+    char item_n[100];
+    char msg[MSGLEN];
+
+    item_name(item_n, player.inventory[index]);
+
+    snprintf(msg, MSGLEN, "Okay, you drop %s.", item_n);
+    print_msg(msg);
+    wait();
+    clear_msg();
+
+    /* TODO: put item on floor */
+    player.inventory[index] = 0;
+
+    return;
+}
+

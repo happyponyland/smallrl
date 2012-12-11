@@ -123,7 +123,6 @@ void draw_stats()
            current_level->depth);
     clrtoeol();
 
-
     refresh();
 
     return;

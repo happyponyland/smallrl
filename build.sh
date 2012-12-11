@@ -6,6 +6,7 @@ FILES=(
     "smallrl.c"
     "ui.c"
     "game.c"
+    "item.c"
     "ai.c"
     "boring.c"
     "combat.c"
