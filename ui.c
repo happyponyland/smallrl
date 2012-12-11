@@ -112,14 +112,14 @@ void draw_stats()
 {
     move(22, 0);
     printw("HP: %d    Damage: %d-%d",
-           player->attr[ATTR_HP],
-           player->attr[ATTR_MINDAM],
-           player->attr[ATTR_MINDAM] + player->attr[ATTR_MAXDAM]);
+           player.mob->attr[ATTR_HP],
+           player.mob->attr[ATTR_MINDAM],
+           player.mob->attr[ATTR_MINDAM] + player.mob->attr[ATTR_MAXDAM]);
     clrtoeol();
 
     move(23, 0);
     printw("LVL: %d (%ld TNL)  DLVL: %d",
-           player_level, (player_tnl[player_level] - player_exp),
+           player.level, get_player_tnl(),
            current_level->depth);
     clrtoeol();
 

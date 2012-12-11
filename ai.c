@@ -38,17 +38,17 @@ static void zombie_turn(level_t * level, mob_t * mob)
 {
     if(mob->turn_counter < 2 + rand() % 3)
         return;
-    
+
     mob->turn_counter = 0;
-    
-    if (abs(mob->y - player->y) <= 1 &&
-        abs(mob->x - player->x) <= 1)
+
+    if (abs(mob->y - player.mob->y) <= 1 &&
+        abs(mob->x - player.mob->x) <= 1)
     {
-        attack(mob, player);
+        attack(mob, player.mob);
         return;
     }
 
-    try_move_mob(level, mob, player->y == mob->y ? 0 : player->y > mob->y ? 1 : -1, player->x == mob->x ? 0 : player->x > mob->x ? 1 : -1);
+    try_move_mob(level, mob, player.mob->y == mob->y ? 0 : player.mob->y > mob->y ? 1 : -1, player.mob->x == mob->x ? 0 : player.mob->x > mob->x ? 1 : -1);
 
     return;
 }

@@ -3,20 +3,25 @@
 
 #include "mob.h"
 
-extern int player_level;
-extern long player_exp;
-extern long player_tnl[];
+/* Do not change! Automatically synced by an external tool to World of Warcraft maxlevel */
+#define PLAYER_MAXLEVEL 90
 
-#define PLAYER_MAXLEVEL 20    
+typedef struct player_info_s
+{
+    mob_t * mob;
+    int level;
+    long exp;
+} player_info_t;
 
 /* player.c */
 void get_speed(int key, int * x, int * y);
 int player_move(int input);
 int player_turn(void);
 void explore(void);
+int get_player_tnl(void);
 void give_exp(const int amount);
 
-/* Pointer to player controlled mob */
-mob_t * player;
+/* Player controlled mob */
+extern player_info_t player;
 
 #endif

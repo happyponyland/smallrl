@@ -22,7 +22,7 @@ int play()
         draw_map(current_level);
         draw_stats();
 
-        if (player->attr[ATTR_HP] <= 0)
+        if (player.mob->attr[ATTR_HP] <= 0)
             return prompt_yn("You died. Play again?");
 
         turn = player_turn();
@@ -31,14 +31,13 @@ int play()
             return 0;
         else if (turn == 2) {
             level_t * new_level = create_new_level(current_level);
-            player = &new_level->mobs[0];
+            player.mob = &new_level->mobs[0];
 
-            boring_level(new_level, &player->x, &player->y);
+            boring_level(new_level, &player.mob->x, &player.mob->y);
 
-            memcpy(player,
+            memcpy(player.mob,
                    &current_level->mobs[0],
-                   sizeof(level_t));
-            //player->attr[ATTR_HP] = current_level->mobs[0].hp;
+                   sizeof(mob_t));
 
             free(current_level);
 
@@ -61,16 +60,19 @@ void new_game()
 {
     level_t * new_level = create_new_level(NULL);
 
-    player = &new_level->mobs[0];
+    player.mob = &new_level->mobs[0];
     current_level = new_level;
 
-    boring_level(new_level, &player->x, &player->y);
+    boring_level(new_level, &player.mob->x, &player.mob->y);
 
-    player->attr[ATTR_HP] = 20;
-    player->attr[ATTR_ATTACK] = 20;
-    player->attr[ATTR_DODGE] = 20;
-    player->attr[ATTR_MINDAM] = 1;
-    player->attr[ATTR_MAXDAM] = 5;
+    player.level = 1;
+    player.exp = 0;
+
+    player.mob->attr[ATTR_HP] = 20;
+    player.mob->attr[ATTR_ATTACK] = 20;
+    player.mob->attr[ATTR_DODGE] = 20;
+    player.mob->attr[ATTR_MINDAM] = 1;
+    player.mob->attr[ATTR_MAXDAM] = 5;
 
     return;
 }

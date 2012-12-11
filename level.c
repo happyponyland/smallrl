@@ -24,7 +24,7 @@ level_t * create_new_level(level_t * old_level)
     new_level->mobs[0].type = mob_player;
     new_level->up_level = old_level;
     new_level->depth = old_level != NULL ? old_level->depth + 1 : 1;
-    
+
     return new_level;
 }
 
@@ -101,9 +101,9 @@ int try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
     if (on_map(level, new_y, new_x) &&
         !(level->map[new_y][new_x].flags & tile_unpassable))
     {
-        if(new_y == player->y && new_x == player->x)
+        if(new_y == player.mob->y && new_x == player.mob->x)
         {
-            attack(mob_to_move, player);
+            attack(mob_to_move, player.mob);
             return 0;
         }
 

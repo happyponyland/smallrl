@@ -6,9 +6,9 @@
 #include "level.h"
 #include "ui.h"
 
-int player_level = 1;
-long player_exp = 0;
-long player_tnl[] =
+player_info_t player;
+
+static long player_tnl[] =
 {
     0,
     100,
@@ -64,17 +64,17 @@ int player_move(int input)
     int x_speed = 0, y_speed = 0;
     int mob_id;
     get_speed(input, &x_speed, &y_speed);
-    mob_id = get_mob(current_level, player->y + y_speed, player->x + x_speed);
+    mob_id = get_mob(current_level, player.mob->y + y_speed, player.mob->x + x_speed);
 
     if (mob_id != -1)
     {
-        attack(player, &current_level->mobs[mob_id]);
+        attack(player.mob, &current_level->mobs[mob_id]);
         return 0;
     }
-    else if (try_move_mob(current_level, player, y_speed, x_speed))
+    else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
     {
         explore();
-        if (current_level->map[player->y][player->x].type == tile_stair &&
+        if (current_level->map[player.mob->y][player.mob->x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
             return 2;
@@ -139,8 +139,8 @@ void explore(void)
     int y;
     int x;
 
-    p_y = player->y;
-    p_x = player->x;
+    p_y = player.mob->y;
+    p_x = player.mob->x;
 
     for (y = 0; y < MAP_H; y++)
         for (x = 0; x < MAP_W; x++)
@@ -209,31 +209,36 @@ void give_exp(const int amount)
 {
     char line[MSGLEN];
 
-    if (player_level >= PLAYER_MAXLEVEL)
+    if (player.level >= PLAYER_MAXLEVEL)
         return;
 
-    player_exp += amount;
+    player.exp += amount;
 
-    while (player_exp >= player_tnl[player_level])
+    while (player.exp >= player_tnl[player.level])
     {
-        player_level++;
-        
+        player.level += 1;
+
         attron(A_REVERSE | A_BLINK | A_BOLD | COLOR_PAIR(color_green));
         print_msg("You have gained a level!!");
         attrset(0);
         wait();
 
         snprintf(line, MSGLEN,
-                 "You are now level %d.", player_level);
+                 "You are now level %d.", player.level);
         print_msg(line);
         wait();
         clear_msg();
 
-        player->attr[ATTR_HP] += 10;
-        player->attr[ATTR_MINDAM] += 1;
-        player->attr[ATTR_ATTACK] += 5;
-        player->attr[ATTR_DODGE] += 5;
+        player.mob->attr[ATTR_HP] += 10;
+        player.mob->attr[ATTR_MINDAM] += 1;
+        player.mob->attr[ATTR_ATTACK] += 5;
+        player.mob->attr[ATTR_DODGE] += 5;
     }
 
     return;
+}
+
+int get_player_tnl(void)
+{
+    return player_tnl[player.level] - player.exp;
 }

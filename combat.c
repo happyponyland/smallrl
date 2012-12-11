@@ -28,7 +28,7 @@ static void melee(mob_t * attacker, mob_t * defender)
     mob_name(def_n, defender->type);
     mob_adjective(att_a, attacker->type);
     mob_adjective(def_a, defender->type);
-    
+
     if ((attacker->type == mob_newbie
          || attacker->type == mob_1337hax0r)
         && rand() % 5 == 0)
@@ -38,11 +38,11 @@ static void melee(mob_t * attacker, mob_t * defender)
                  att_a, att_n);
         print_msg(line);
         wait();
-        
-        if (player_exp > 50)
-            player_exp -= 50;
+
+        if (player.exp > 50)
+            player.exp -= 50;
         else
-            player_exp = 0;
+            player.exp = 0;
 
         draw_stats();
 
@@ -56,9 +56,9 @@ static void melee(mob_t * attacker, mob_t * defender)
 
     if ((rand() % 100) < (def_dodge - att_skill) + 1)
     {
-        if (attacker == player)
+        if (attacker == player.mob)
             snprintf(line, MSGLEN, "You miss the %s%s!", def_a, def_n);
-        else if (defender == player)
+        else if (defender == player.mob)
             snprintf(line, MSGLEN, "The %s%s misses you!", att_a, att_n);
         else
             snprintf(line, MSGLEN, "The %s%s misses the %s%s!",
@@ -73,13 +73,13 @@ static void melee(mob_t * attacker, mob_t * defender)
     /* It was a hit */
     damage = attacker->attr[ATTR_MINDAM] +
         (rand() % (attacker->attr[ATTR_MAXDAM] + 1));
-    
+
     defender->attr[ATTR_HP] -= damage;
 
-    if (attacker == player)
+    if (attacker == player.mob)
         snprintf(line, MSGLEN, "You hit the %s%s! [%d]",
                  def_a, def_n, damage);
-    else if (defender == player)
+    else if (defender == player.mob)
         snprintf(line, MSGLEN, "The %s%s hits you! [%d]",
                  att_a, att_n, damage);
     else
@@ -92,13 +92,13 @@ static void melee(mob_t * attacker, mob_t * defender)
 
     if (defender->attr[ATTR_HP] <= 0)
     {
-        if (defender == player)
+        if (defender == player.mob)
         {
             print_msg("You have been slain!!");
             wait();
             return;
         }
-        
+
         mob_adjective(def_a, defender->type);
         snprintf(line, MSGLEN, "The %s%s dies!", def_a, def_n);
 
@@ -110,7 +110,7 @@ static void melee(mob_t * attacker, mob_t * defender)
         wait();
         clear_msg();
 
-        if (attacker == player)
+        if (attacker == player.mob)
         {
             give_exp(defender->attr[ATTR_EXP]);
         }
