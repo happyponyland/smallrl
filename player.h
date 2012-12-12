@@ -27,6 +27,7 @@ int get_player_tnl(void);
 void give_exp(const int amount);
 int list_items(uint32_t * start, size_t items);
 void drop_item(const int index);
+void use_item(const int index);
 int count_items(void);
 
 /* Player controlled mob */

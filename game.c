@@ -28,9 +28,9 @@ int play()
 
         turn = player_turn();
 
-        if (turn == 1)
+        if (turn == TURN_QUIT)
             return 0;
-        else if (turn == 2) {
+        else if (turn == TURN_DESCEND) {
             level_t * new_level = create_new_level(current_level);
 
             memcpy(&new_level->mobs[0],
@@ -83,6 +83,8 @@ void new_game()
     player.inventory[0] = item_dildo;
     player.inventory[1] = item_leather_pants;
     player.inventory[2] = item_med_prot;
+    player.inventory[3] = item_healing_pot;
+    player.inventory[4] = item_healing_pot;
 
     return;
 }

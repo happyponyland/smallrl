@@ -3,6 +3,7 @@
 #include "player.h"
 
 #include "combat.h"
+#include "game.h"
 #include "level.h"
 #include "ui.h"
 #include "item.h"
@@ -52,21 +53,21 @@ int player_move(int input)
         if (current_level->map[player.mob->y][player.mob->x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
-            return 2;
+            return TURN_DESCEND;
         }
 
         draw_map(current_level);
-        return 0;
+        return TURN_COMPLETE;
     }
 
     print_msg("You cannot go there.");
-    return -1;
+    return TURN_ABORT;
 }
 
 
 int player_turn(void)
 {
-    int input, move;
+    int input, move, itemsel;
 
     while (1)
     {
@@ -78,31 +79,43 @@ int player_turn(void)
         {
         case 'Q':
             if (prompt_yn("Do you want to quit?"))
-                return 1;
+                return TURN_QUIT;
             continue;
 
         case 'd':
+        case 'u':
             if (count_items() == 0)
             {
                 print_msg("You have no items.");
                 continue;
             }
 
-            print_msg("Drop which item?");
-            input = list_items(&player.inventory[0], INVENTORY_SIZE);
+            if (input == 'd')
+                print_msg("Drop which item?");
+            else if (input == 'u')
+                print_msg("Use which item?");
 
+            itemsel = list_items(&player.inventory[0], INVENTORY_SIZE);
+
+            /* restore view */
+            clear_msg();
             draw_map(current_level);
 
-            if (input != -1)
+            if (itemsel != -1)
             {
-                drop_item(input);
-                return 0;
+                if (input == 'd')
+                    drop_item(itemsel);
+                else if (input == 'u')
+                    use_item(itemsel);
+
+                return TURN_COMPLETE;
             }
             continue;
 
         case '.':
             /* Rest/wait/meditate */
-            return 0;
+            return TURN_COMPLETE;
+
 
         case ' ':
             //clear_msg();
@@ -113,7 +126,7 @@ int player_turn(void)
         case KEY_UP:
         case KEY_DOWN:
             move = player_move(input);
-            if (move == -1)
+            if (move == TURN_ABORT)
                 continue;
             else
                 return move;
@@ -326,6 +339,43 @@ void drop_item(const int index)
 
     /* TODO: put item on floor */
     player.inventory[index] = 0;
+
+    return;
+}
+
+
+
+void use_item(const int index)
+{
+    char item_n[100];
+    char msg[MSGLEN];
+    int dispose;
+
+    item_name(item_n, player.inventory[index]);
+
+    dispose = 0;
+
+    switch (ITEM_TYPE(player.inventory[index]))
+    {
+    case item_healing_pot:
+        snprintf(msg, MSGLEN, "You drink %s. This stuff is great!", item_n);
+        player.mob->attr[ATTR_HP] += 20;
+        dispose = 1;
+        break;
+
+    default:
+        snprintf(msg, MSGLEN, "You do something with %s, but you're not sure what.", item_n);
+        break;
+    }
+
+    draw_stats();
+
+    print_msg(msg);
+    wait();
+    clear_msg();
+
+    if (dispose)
+        player.inventory[index] = 0;
 
     return;
 }

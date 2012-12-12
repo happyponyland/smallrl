@@ -6,7 +6,7 @@
 
 void item_name(char * s, uint32_t item)
 {
-    switch (item & 0xFF)
+    switch (ITEM_TYPE(item))
     {
     case item_dildo:
         strcpy(s, "a purple dildo");
@@ -18,6 +18,10 @@ void item_name(char * s, uint32_t item)
 
     case item_med_prot:
         strcpy(s, "a medallion of protection");
+        break;
+
+    case item_healing_pot:
+        strcpy(s, "a healing potion");
         break;
 
     default:
