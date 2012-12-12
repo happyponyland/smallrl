@@ -370,6 +370,7 @@ void use_item(const int index)
 
     draw_stats();
 
+
     print_msg(msg);
     wait();
     clear_msg();
