@@ -32,6 +32,10 @@ void mob_name(char * s, mob_type_t type)
         strcpy(s, "war-troll");
         break;
 
+    case mob_police:
+        strcpy(s, "police officer");
+        break;
+
     default:
         strcpy(s, "???");
         break;

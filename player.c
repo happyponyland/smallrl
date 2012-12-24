@@ -1,4 +1,7 @@
 #include <curses.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "player.h"
 
@@ -363,14 +366,18 @@ void use_item(const int index)
         dispose = 1;
         break;
 
+    case item_telephone:
+        use_telephone();
+        clear_msg();
+        return;
+
     default:
         snprintf(msg, MSGLEN, "You do something with %s, but you're not sure what.", item_n);
         break;
     }
 
     draw_stats();
-
-
+   
     print_msg(msg);
     wait();
     clear_msg();
@@ -378,5 +385,79 @@ void use_item(const int index)
     if (dispose)
         player.inventory[index] = 0;
 
+    return;
+}
+
+
+
+void use_telephone()
+{
+    if (rand() % 5 == 0)
+    {
+        print_msg("The line is busy.");
+        wait();
+        return;
+    }
+
+    if (player.phone_status == 0)
+    {
+        print_msg("\"Hello? Who is this?\"");
+        wait();
+    }
+    else if (player.phone_status == 1)
+    {
+        print_msg("\"You again? What do you want?\"");
+        wait();
+    }
+    else if (player.phone_status == 2)
+    {
+        print_msg("\"I want you to stop calling me.\"");
+        wait();
+    }
+    else if (player.phone_status == 3)
+    {
+        print_msg("\"Seriously, you need to stop this.\"");
+        wait();
+    }
+    else if (player.phone_status == 4)
+    {
+        print_msg("\"If you call me one more time, I will send the cops after you.\"");
+        wait();
+    }
+    else if (player.phone_status == 5)
+    {
+        print_msg("\"I've had enough of this.\"");
+        wait();
+        summon_cops();
+        return;
+    }
+
+    player.phone_status++;
+    
+    return;
+}
+
+
+void summon_cops()
+{
+    int how_many;
+    int y;
+    int x;
+
+    how_many = 2 + rand() % 4;
+
+    while (how_many--)
+    {
+        y = player.mob->y - 2 + rand() % 5;
+        x = player.mob->x - 2 + rand() % 5;
+
+        if (on_map(current_level, y, x) &&
+            get_mob(current_level, y, x) == -1 &&
+            !(current_level->map[y][x].flags & tile_unpassable))
+        {
+            try_make_mob(current_level, mob_police, y, x);
+        }
+    }
+    
     return;
 }

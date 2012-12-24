@@ -24,6 +24,10 @@ void item_name(char * s, uint32_t item)
         strcpy(s, "a healing potion");
         break;
 
+    case item_telephone:
+        strcpy(s, "a telephone");
+        break;
+
     default:
         strcpy(s, "a rift in time and space");
         break;

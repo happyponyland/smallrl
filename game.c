@@ -62,6 +62,7 @@ void new_game()
 {
     level_t * new_level = create_new_level(NULL);
 
+    player.phone_status = 0;
     player.mob = &new_level->mobs[0];
     current_level = new_level;
 
@@ -85,6 +86,7 @@ void new_game()
     player.inventory[2] = item_med_prot;
     player.inventory[3] = item_healing_pot;
     player.inventory[4] = item_healing_pot;
+    player.inventory[4] = item_telephone;
 
     return;
 }

@@ -16,6 +16,7 @@ typedef struct player_info_s
     int level;
     long exp;
     uint32_t inventory[INVENTORY_SIZE];
+    int phone_status;
 } player_info_t;
 
 /* player.c */
@@ -29,6 +30,8 @@ int list_items(uint32_t * start, size_t items);
 void drop_item(const int index);
 void use_item(const int index);
 int count_items(void);
+void use_telephone(void);
+void summon_cops(void);
 
 /* Player controlled mob */
 extern player_info_t player;

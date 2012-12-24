@@ -189,6 +189,15 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 level->mobs[i].attr[ATTR_EXP] = 90;
                 break;
 
+            case mob_police:
+                level->mobs[i].attr[ATTR_HP] = 10;
+                level->mobs[i].attr[ATTR_MINDAM] = 2;
+                level->mobs[i].attr[ATTR_MAXDAM] = 4;
+                level->mobs[i].attr[ATTR_ATTACK] = 10;
+                level->mobs[i].attr[ATTR_DODGE] = 10;
+                level->mobs[i].attr[ATTR_EXP] = 20;
+                break;
+
             default:
                 level->mobs[i].attr[ATTR_HP] = 5;
                 break;
