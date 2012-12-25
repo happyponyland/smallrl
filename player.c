@@ -372,7 +372,9 @@ void drop_item(const int index)
     wait();
     clear_msg();
 
-    /* TODO: put item on floor */
+    current_level->map[player.mob->y][player.mob->x].item =
+        player.inventory[index];
+
     player.inventory[index] = 0;
 
     return;
