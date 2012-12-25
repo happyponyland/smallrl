@@ -1,6 +1,8 @@
 #ifndef SMALLRL_TILE_H
 #define SMALLRL_TILE_H
 
+#include <stdint.h>
+
 typedef enum tile_type_e
 {
     tile_void,
@@ -31,6 +33,7 @@ typedef struct tile_s
     int is_explored;
     int is_lit;
     int is_path;
+    uint32_t item;
 } tile_t;
 
 #endif

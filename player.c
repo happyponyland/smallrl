@@ -53,10 +53,42 @@ int player_move(int input)
     else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
     {
         explore();
+
         if (current_level->map[player.mob->y][player.mob->x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
             return TURN_DESCEND;
+        }
+
+        uint32_t item = current_level->map[player.mob->y][player.mob->x].item;
+
+        if (item)
+        {
+            char item_n[100];
+            char line[MSGLEN];            
+    
+            item_name(item_n, item);
+
+            snprintf(line, MSGLEN, "Pick up %s?", item_n);
+
+            if (prompt_yn(line))
+            {
+                if (give_item(item) == 666)
+                {
+                    print_msg("You're carrying too much shit already.");
+                    wait();
+                }
+                else
+                {
+                    snprintf(line, MSGLEN,
+                             "Okay -- you now have %s.", item_n);
+                    print_msg(line);
+                    wait();
+                    current_level->map[player.mob->y][player.mob->x].item = 0;
+                }
+            }
+            
+            clear_msg();
         }
 
         draw_map(current_level);
@@ -460,4 +492,25 @@ void summon_cops()
     }
     
     return;
+}
+
+
+
+/*
+  Adds new_item to players inventory, returns 666 if it's full.
+*/
+int give_item(uint32_t new_item)
+{
+    size_t i;
+
+    for (i = 0; i < INVENTORY_SIZE; i++)
+    {
+        if (player.inventory[i] == 0)
+        {
+            player.inventory[i] = new_item;
+            return 0;
+        }
+    }
+
+    return 666;
 }

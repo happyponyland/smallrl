@@ -29,6 +29,7 @@ void give_exp(const int amount);
 int list_items(uint32_t * start, size_t items);
 void drop_item(const int index);
 void use_item(const int index);
+int give_item(uint32_t new_item);
 int count_items(void);
 void use_telephone(void);
 void summon_cops(void);

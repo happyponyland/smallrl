@@ -45,6 +45,7 @@ static void clear_level(level_t * level)
             set_tile(level, y, x, tile_void);
             level->map[y][x].is_explored = 0;
             level->map[y][x].is_lit = 0;
+            level->map[y][x].item = 0;
         }
 
     return;

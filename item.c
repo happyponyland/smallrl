@@ -33,3 +33,12 @@ void item_name(char * s, uint32_t item)
         break;
     }
 }
+
+
+
+uint32_t random_item()
+{
+    uint32_t ret;
+    ret = 1 + rand() % (item_max - 1);
+    return ret;
+}

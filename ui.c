@@ -25,6 +25,12 @@ void draw_map(level_t * level)
 
             attrset(A_NORMAL);
 
+            if (level->map[y][x].item)
+            {
+                addch('/');
+                continue;
+            }
+
             if (level->map[y][x].is_lit)
                 attrset(A_BOLD);
 

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 
+#include "item.h"
 #include "boring.h"
 
 static void build_room(level_t *, int, int, int, int, int);
@@ -98,6 +99,25 @@ void boring_level(level_t * level, int * startx, int * starty)
                 try_make_mob(level,
                              random_mob_type(level->depth),
                              y, x);
+            }
+        }
+    }
+
+    /* Place some items - OBVIOUSLY copy-pasted from above */
+    for (i = 0; i < rooms; i++)
+    {
+        int items;
+
+        items = 1 + rand() % 3;
+
+        while (items--)
+        {
+            y = room_t[i] + rand() % (room_b[i] - room_t[i]);
+            x = room_l[i] + rand() % (room_r[i] - room_l[i]);
+
+            if (level->map[y][x].item == 0)
+            {
+                level->map[y][x].item = random_item();
             }
         }
     }
