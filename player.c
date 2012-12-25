@@ -69,24 +69,10 @@ int player_move(int input)
     
             item_name(item_n, item);
 
-            snprintf(line, MSGLEN, "Pick up %s?", item_n);
+            snprintf(line, MSGLEN, "There is %s here.", item_n);
 
-            if (prompt_yn(line))
-            {
-                if (give_item(item) == 666)
-                {
-                    print_msg("You're carrying too much shit already.");
-                    wait();
-                }
-                else
-                {
-                    snprintf(line, MSGLEN,
-                             "Okay -- you now have %s.", item_n);
-                    print_msg(line);
-                    wait();
-                    current_level->map[player.mob->y][player.mob->x].item = 0;
-                }
-            }
+            print_msg(line);
+            wait();
             
             clear_msg();
         }
@@ -116,6 +102,41 @@ int player_turn(void)
             if (prompt_yn("Do you want to quit?"))
                 return TURN_QUIT;
             continue;
+
+        case 'g':
+        case ',':
+            ;
+            uint32_t item = current_level->map[player.mob->y][player.mob->x].item;
+
+            if (item == 0)
+            {
+                print_msg("Nothing here!");
+                continue;
+            }
+
+            char item_n[100];
+            char line[MSGLEN];            
+            
+            item_name(item_n, item);
+            
+            if (give_item(item) == 666)
+            {
+                print_msg("You're carrying too much shit already.");
+                wait();
+            }
+            else
+            {
+                snprintf(line, MSGLEN,
+                         "Okay -- you now have %s.", item_n);
+                print_msg(line);
+                wait();
+                current_level->map[player.mob->y][player.mob->x].item = 0;
+            }
+            
+            clear_msg();
+            
+            return TURN_COMPLETE;
+
 
         case 'd':
         case 'u':
