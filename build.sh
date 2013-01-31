@@ -8,7 +8,7 @@ FILES=(
     "game.c"
     "item.c"
     "ai.c"
-    "boring.c"
+    "standard_dungeon.c"
     "combat.c"
     "mob.c"
 )

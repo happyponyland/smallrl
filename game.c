@@ -9,7 +9,7 @@
 #include "ai.h"
 #include "item.h"
 
-#include "boring.h"
+#include "standard_dungeon.h"
 
 int play()
 {
@@ -39,7 +39,7 @@ int play()
 
             player.mob = &new_level->mobs[0];
 
-            boring_level(new_level, &player.mob->x, &player.mob->y);
+            create_standard_dungeon(new_level, &player.mob->x, &player.mob->y);
 
             free(current_level);
 
@@ -66,7 +66,7 @@ void new_game()
     player.mob = &new_level->mobs[0];
     current_level = new_level;
 
-    boring_level(new_level, &player.mob->x, &player.mob->y);
+    create_standard_dungeon(new_level, &player.mob->x, &player.mob->y);
 
     player.level = 1;
     player.exp = 0;
