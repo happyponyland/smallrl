@@ -75,6 +75,11 @@ static void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
         case tile_wall_lr:
         case tile_wall_ul:
         case tile_wall_ur:
+        case tile_wall_ttee:
+        case tile_wall_btee:
+        case tile_wall_rtee:
+        case tile_wall_ltee:
+        case tile_wall_plus:
         case tile_void:
             tile->flags |= tile_unpassable;
             break;

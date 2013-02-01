@@ -15,6 +15,11 @@ typedef enum tile_type_e
     tile_wall_lr,
     tile_wall_ul,
     tile_wall_ur,
+    tile_wall_ttee,
+    tile_wall_btee,
+    tile_wall_rtee,
+    tile_wall_ltee,
+    tile_wall_plus,
     tile_corridor,
     tile_stair
 } tile_type_t;

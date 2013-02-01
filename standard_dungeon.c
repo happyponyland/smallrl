@@ -25,6 +25,7 @@ static void place_monsters(bsp_head_t *);
 static mob_type_t random_mob_type(int);
 static void place_items(bsp_head_t *);
 static void place_stairs(bsp_head_t *);
+static void fix_tee_walls(level_t *);
 
 void create_standard_dungeon(level_t * level, int * player_start_x, int * player_start_y)
 {
@@ -70,7 +71,6 @@ void create_standard_dungeon(level_t * level, int * player_start_x, int * player
         }
     }
 
-    // Make floors
     paint_rooms(&bsp_head);
 
     connect_all_rooms(&bsp_head);
@@ -86,8 +86,63 @@ void create_standard_dungeon(level_t * level, int * player_start_x, int * player
 
     place_stairs(&bsp_head);
 
+    //REVIEW: Might be a good idea to keep the room tree available for map modification spells and teleportation purposes?
     release_nodes(bsp_head.root_node);
+
+    // Rooms that overlap need to have their walls fixed in tee-spots
+    fix_tee_walls(level);
 }
+
+static void fix_tee_walls(level_t * level)
+{
+    for(int y = 1; y < MAP_H - 1; y += 1)
+    {
+        for(int x = 1; x < MAP_W - 1; x += 1)
+        {
+            tile_type_t above = get_tile_type(level, y - 1, x);
+            tile_type_t below = get_tile_type(level, y + 1, x);
+            tile_type_t left = get_tile_type(level, y, x - 1);
+            tile_type_t right = get_tile_type(level, y, x + 1);
+
+            if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+               && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+               && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
+               && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            {
+                set_tile(level, y, x, tile_wall_plus);
+            }
+            else
+                if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                   && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
+                   && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+                {
+                    set_tile(level, y, x, tile_wall_btee);
+                }
+                else
+                if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                   && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
+                   && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+                {
+                    set_tile(level, y, x, tile_wall_ttee);
+                }
+                else
+                    if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                       && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                       && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll))
+                    {
+                        set_tile(level, y, x, tile_wall_rtee);
+                    }
+                    else
+                        if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                           && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                           && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+                        {
+                            set_tile(level, y, x, tile_wall_ltee);
+                        }
+        }
+    }
+}
+
 
 static void place_monsters(bsp_head_t * head)
 {
@@ -447,29 +502,24 @@ static void paint_corridor(level_t * level, point_t start, point_t end, tile_typ
                 current_tile_type == tile_wall_ur)
             new_tile_type = tile_floor;
 
-       level->map[y][x].type = new_tile_type;
+        set_tile(level, y, x, new_tile_type);
 
-       if(tile_type == tile_floor || tile_type == tile_corridor)
-       {
-           level->map[y][x].flags = tile_none;
-       }
+        if (x == end_x && y == end_y)
+            break;
 
-       if (x == end_x && y == end_y)
-           break;
+        int err2 = 2 * err;
 
-       int err2 = 2 * err;
+        if(err2 > -delta_y)
+        {
+            err -= delta_y;
+            x += step_x;
+        }
 
-       if(err2 > -delta_y)
-       {
-           err -= delta_y;
-           x += step_x;
-       }
-
-       if(err2 < delta_x)
-       {
+        if(err2 < delta_x)
+        {
            err += delta_x;
            y += step_y;
-       }
+        }
     }
 }
 
@@ -527,8 +577,7 @@ static void paint(level_t * level, rectangle_t * region, tile_type_t tile_type)
     {
         for(int x = region->left; x < region->right; x += 1)
         {
-            level->map[y][x].type = tile_type;
-            level->map[y][x].flags = tile_none;
+            set_tile(level, y, x, tile_type);
         }
     }
 }
@@ -537,26 +586,20 @@ static void paint_outline(level_t * level, rectangle_t * region)
 {
     for(int y = region->top; y < region->bottom; y += 1)
     {
-        level->map[y][region->left].type = tile_wall_l;
-        level->map[y][region->right].type = tile_wall_r;
-
-        level->map[y][region->left].flags |= tile_unpassable;
-        level->map[y][region->right].flags |= tile_unpassable;
+        set_tile(level, y, region->left, tile_wall_l);
+        set_tile(level, y, region->right, tile_wall_r);
     }
 
     for(int x = region->left; x < region->right; x += 1)
     {
-        level->map[region->top][x].type = tile_wall_t;
-        level->map[region->bottom][x].type = tile_wall_b;
-
-        level->map[region->top][x].flags |= tile_unpassable;
-        level->map[region->bottom][x].flags |= tile_unpassable;
+        set_tile(level, region->top, x, tile_wall_t);
+        set_tile(level, region->bottom, x, tile_wall_b);
     }
 
-    level->map[region->top][region->left].type = tile_wall_ul;
-    level->map[region->top][region->right].type = tile_wall_ur;
-    level->map[region->bottom][region->left].type = tile_wall_ll;
-    level->map[region->bottom][region->right].type = tile_wall_lr;
+    set_tile(level, region->top, region->left, tile_wall_ul);
+    set_tile(level, region->top, region->right, tile_wall_ur);
+    set_tile(level, region->bottom, region->left, tile_wall_ll);
+    set_tile(level, region->bottom, region->right, tile_wall_lr);
 }
 
 static split_region_t * create_split_region(int level, rectangle_t * region)

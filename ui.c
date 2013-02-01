@@ -81,6 +81,31 @@ void draw_map(level_t * level)
                 addch(ACS_URCORNER);
                 break;
 
+            case tile_wall_plus:
+                attron(COLOR_PAIR(color_yellow));
+                addch(ACS_PLUS);
+                break;
+
+            case tile_wall_ttee:
+                attron(COLOR_PAIR(color_yellow));
+                addch(ACS_TTEE);
+                break;
+
+            case tile_wall_btee:
+                attron(COLOR_PAIR(color_yellow));
+                addch(ACS_BTEE);
+                break;
+
+            case tile_wall_ltee:
+                attron(COLOR_PAIR(color_yellow));
+                addch(ACS_LTEE);
+                break;
+
+            case tile_wall_rtee:
+                attron(COLOR_PAIR(color_yellow));
+                addch(ACS_RTEE);
+                break;
+
             case tile_stair:
                 attron(A_NORMAL);
                 addch('>');
