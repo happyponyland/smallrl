@@ -54,26 +54,26 @@ int player_move(int input)
     {
         explore();
 
-        if (current_level->map[player.mob->y][player.mob->x].type == tile_stair &&
+        if (current_level->map[player.mob->y * current_level->width + player.mob->x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
             return TURN_DESCEND;
         }
 
-        uint32_t item = current_level->map[player.mob->y][player.mob->x].item;
+        uint32_t item = current_level->map[player.mob->y * current_level->width + player.mob->x].item;
 
         if (item)
         {
             char item_n[100];
-            char line[MSGLEN];            
-    
+            char line[MSGLEN];
+
             item_name(item_n, item);
 
             snprintf(line, MSGLEN, "There is %s here.", item_n);
 
             print_msg(line);
             wait();
-            
+
             clear_msg();
         }
 
@@ -106,7 +106,7 @@ int player_turn(void)
         case 'g':
         case ',':
             ;
-            uint32_t item = current_level->map[player.mob->y][player.mob->x].item;
+            uint32_t item = current_level->map[player.mob->y * current_level->width + player.mob->x].item;
 
             if (item == 0)
             {
@@ -115,10 +115,10 @@ int player_turn(void)
             }
 
             char item_n[100];
-            char line[MSGLEN];            
-            
+            char line[MSGLEN];
+
             item_name(item_n, item);
-            
+
             if (give_item(item) == 666)
             {
                 print_msg("You're carrying too much shit already.");
@@ -130,11 +130,11 @@ int player_turn(void)
                          "Okay -- you now have %s.", item_n);
                 print_msg(line);
                 wait();
-                current_level->map[player.mob->y][player.mob->x].item = 0;
+                current_level->map[player.mob->y * current_level->width + player.mob->x].item = 0;
             }
-            
+
             clear_msg();
-            
+
             return TURN_COMPLETE;
 
 
@@ -209,9 +209,9 @@ void explore(void)
     p_y = player.mob->y;
     p_x = player.mob->x;
 
-    for (y = 0; y < MAP_H; y++)
-        for (x = 0; x < MAP_W; x++)
-            current_level->map[y][x].is_lit = 0;
+    for (y = 0; y < current_level->height; y++)
+        for (x = 0; x < current_level->width; x++)
+            current_level->map[y * current_level->width + x].is_lit = 0;
 
     for (y = p_y - 1; y <= p_y + 1; y++)
     {
@@ -219,15 +219,15 @@ void explore(void)
         {
             if (on_map(current_level, y, x))
             {
-                current_level->map[y][x].is_explored = 1;
-                current_level->map[y][x].is_lit = 1;
+                current_level->map[y * current_level->width + x].is_explored = 1;
+                current_level->map[y * current_level->width + x].is_lit = 1;
             }
         }
     }
 
     /* Floodfill open permalit rooms */
 
-    if (current_level->map[p_y][p_x].flags & tile_permalit)
+    if (current_level->map[p_y * current_level->width + p_x].flags & tile_permalit)
     {
         int change;
 
@@ -235,28 +235,28 @@ void explore(void)
         {
             change = 0;
 
-            for (y = 1; y < MAP_H - 1; y++)
+            for (y = 1; y < current_level->height - 1; y++)
             {
-                for (x = 1; x < MAP_W - 1; x++)
+                for (x = 1; x < current_level->width - 1; x++)
                 {
-                    if (current_level->map[y][x].is_lit == 0 &&
-                        (current_level->map[y][x].flags & tile_permalit ||
-                         current_level->map[y - 1][x - 1].flags & tile_permalit ||
-                         current_level->map[y - 1][x + 1].flags & tile_permalit ||
-                         current_level->map[y + 1][x - 1].flags & tile_permalit ||
-                         current_level->map[y + 1][x + 1].flags & tile_permalit ||
-                         current_level->map[y - 1][x].flags & tile_permalit ||
-                         current_level->map[y][x - 1].flags & tile_permalit ||
-                         current_level->map[y + 1][x].flags & tile_permalit ||
-                         current_level->map[y][x + 1].flags & tile_permalit ))
+                    if (current_level->map[y * current_level->width + x].is_lit == 0 &&
+                        (current_level->map[y * current_level->width + x].flags & tile_permalit ||
+                         current_level->map[(y - 1) * current_level->width + (x - 1)].flags & tile_permalit ||
+                         current_level->map[(y - 1) * current_level->width + (x + 1)].flags & tile_permalit ||
+                         current_level->map[(y + 1) * current_level->width + (x - 1)].flags & tile_permalit ||
+                         current_level->map[(y + 1) * current_level->width + (x + 1)].flags & tile_permalit ||
+                         current_level->map[(y - 1) * current_level->width + x].flags & tile_permalit ||
+                         current_level->map[y * current_level->width + (x - 1)].flags & tile_permalit ||
+                         current_level->map[(y + 1) * current_level->width + x].flags & tile_permalit ||
+                         current_level->map[y * current_level->width + (x + 1)].flags & tile_permalit ))
                     {
-                        if (current_level->map[y - 1][x].is_lit ||
-                            current_level->map[y][x - 1].is_lit ||
-                            current_level->map[y + 1][x].is_lit ||
-                            current_level->map[y][x + 1].is_lit)
+                        if (current_level->map[(y - 1) * current_level->width + x].is_lit ||
+                            current_level->map[y * current_level->width + (x - 1)].is_lit ||
+                            current_level->map[(y + 1) * current_level->width + x].is_lit ||
+                            current_level->map[y * current_level->width + (x + 1)].is_lit)
                         {
-                            current_level->map[y][x].is_lit = 1;
-                            current_level->map[y][x].is_explored = 1;
+                            current_level->map[y * current_level->width + x].is_lit = 1;
+                            current_level->map[y * current_level->width + x].is_explored = 1;
 
                             change = 1;
                         }
@@ -393,7 +393,7 @@ void drop_item(const int index)
     wait();
     clear_msg();
 
-    current_level->map[player.mob->y][player.mob->x].item =
+    current_level->map[player.mob->y * current_level->width + player.mob->x].item =
         player.inventory[index];
 
     player.inventory[index] = 0;
@@ -432,7 +432,7 @@ void use_item(const int index)
     }
 
     draw_stats();
-   
+
     print_msg(msg);
     wait();
     clear_msg();
@@ -488,7 +488,7 @@ void use_telephone()
     }
 
     player.phone_status++;
-    
+
     return;
 }
 
@@ -508,12 +508,12 @@ void summon_cops()
 
         if (on_map(current_level, y, x) &&
             get_mob(current_level, y, x) == -1 &&
-            !(current_level->map[y][x].flags & tile_unpassable))
+            !(current_level->map[y * current_level->width + x].flags & tile_unpassable))
         {
             try_make_mob(current_level, mob_police, y, x);
         }
     }
-    
+
     return;
 }
 

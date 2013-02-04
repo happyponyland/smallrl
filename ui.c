@@ -11,13 +11,13 @@ void draw_map(level_t * level)
     int x;
     int i;
 
-    for (y = 0; y < MAP_H; y++)
+    for (y = 0; y < level->height; y++)
     {
         move(y + 1, 0);
 
-        for (x = 0; x < MAP_W; x++)
+        for (x = 0; x < level->width; x++)
         {
-            if (level->map[y][x].is_explored == 0)
+            if (level->map[y * level->width + x].is_explored == 0)
             {
                 addch(' ');
                 continue;
@@ -25,16 +25,16 @@ void draw_map(level_t * level)
 
             attrset(A_NORMAL);
 
-            if (level->map[y][x].item)
+            if (level->map[y * level->width + x].item)
             {
                 addch('/');
                 continue;
             }
 
-            if (level->map[y][x].is_lit)
+            if (level->map[y * level->width + x].is_lit)
                 attrset(A_BOLD);
 
-            switch (level->map[y][x].type)
+            switch (level->map[y * level->width + x].type)
             {
             case tile_void:
                 addch(' ');
@@ -123,7 +123,7 @@ void draw_map(level_t * level)
 
     for (i = 0; i < MAX_MOBS_PER_LEVEL; i++)
     {
-        if (level->mobs[i].type && level->map[level->mobs[i].y][level->mobs[i].x].is_lit)
+        if (level->mobs[i].type && level->map[level->mobs[i].y * level->width + level->mobs[i].x].is_lit)
         {
             move(level->mobs[i].y + 1, level->mobs[i].x);
             addch(level->mobs[i].type);

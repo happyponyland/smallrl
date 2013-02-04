@@ -31,7 +31,7 @@ int play()
         if (turn == TURN_QUIT)
             return 0;
         else if (turn == TURN_DESCEND) {
-            level_t * new_level = create_new_level(current_level);
+            level_t * new_level = create_new_level(current_level, 20, 80);
 
             memcpy(&new_level->mobs[0],
                    player.mob,
@@ -60,7 +60,7 @@ int play()
 
 void new_game()
 {
-    level_t * new_level = create_new_level(NULL);
+    level_t * new_level = create_new_level(NULL, 20, 80);
 
     player.phone_status = 0;
     player.mob = &new_level->mobs[0];

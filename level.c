@@ -12,15 +12,18 @@ static void set_tile_flags_by_type(tile_t *, tile_type_t);
 
 int on_map(level_t * level, int y, int x)
 {
-    if (y >= 0 && x >= 0 && y < MAP_H && x < MAP_W)
+    if (y >= 0 && x >= 0 && y < level->height && x < level->width)
         return 1;
 
     return 0;
 }
 
-level_t * create_new_level(level_t * old_level)
+level_t * create_new_level(level_t * old_level, int height, int width)
 {
     level_t * new_level = malloc(sizeof(level_t));
+    new_level->width = width;
+    new_level->height = height;
+    new_level->map = malloc(sizeof(tile_t) * width * height);
 
     clear_level(new_level);
 
@@ -40,12 +43,12 @@ static void clear_level(level_t * level)
     for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
         level->mobs[i].type = mob_none;
 
-    for (y = 0; y < MAP_H; y++)
-        for (x = 0; x < MAP_W; x++) {
+    for (y = 0; y < level->height; y++)
+        for (x = 0; x < level->width; x++) {
             set_tile(level, y, x, tile_void);
-            level->map[y][x].is_explored = 0;
-            level->map[y][x].is_lit = 0;
-            level->map[y][x].item = 0;
+            level->map[y * level->width + x].is_explored = 0;
+            level->map[y * level->width + x].is_lit = 0;
+            level->map[y * level->width + x].item = 0;
         }
 
     return;
@@ -55,8 +58,8 @@ static void clear_level(level_t * level)
 void set_tile(level_t * level, int y, int x, tile_type_t t)
 {
     if (on_map(level, y, x)) {
-        level->map[y][x].type = t;
-        set_tile_flags_by_type(&level->map[y][x], t);
+        level->map[y * level->width + x].type = t;
+        set_tile_flags_by_type(&level->map[y * level->width + x], t);
     }
 
     return;
@@ -97,7 +100,7 @@ static void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
 tile_type_t get_tile_type(level_t * level, int y, int x)
 {
     if (on_map(level, y, x))
-        return level->map[y][x].type;
+        return level->map[y * level->width + x].type;
 
     return tile_void;
 }
@@ -108,7 +111,7 @@ int try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
     int new_x = mob_to_move->x + x_speed;
 
     if (on_map(level, new_y, new_x) &&
-        !(level->map[new_y][new_x].flags & tile_unpassable))
+        !(level->map[new_y * level->width + new_x].flags & tile_unpassable))
     {
         if(new_y == player.mob->y && new_x == player.mob->x)
         {

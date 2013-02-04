@@ -35,7 +35,7 @@ void create_standard_dungeon(level_t * level, int * player_start_x, int * player
 
     stack_pointer = 0;
     bsp_head.level = level;
-    bsp_head.root_node = create_new_node(0, 0, MAP_H - 1, 0, MAP_W - 1);
+    bsp_head.root_node = create_new_node(0, 0, level->height - 1, 0, level->width - 1);
 
     stack[stack_pointer++] = bsp_head.root_node;
 
@@ -95,9 +95,9 @@ void create_standard_dungeon(level_t * level, int * player_start_x, int * player
 
 static void fix_tee_walls(level_t * level)
 {
-    for(int y = 1; y < MAP_H - 1; y += 1)
+    for(int y = 1; y < level->height - 1; y += 1)
     {
-        for(int x = 1; x < MAP_W - 1; x += 1)
+        for(int x = 1; x < level->width - 1; x += 1)
         {
             tile_type_t above = get_tile_type(level, y - 1, x);
             tile_type_t below = get_tile_type(level, y + 1, x);
@@ -122,7 +122,7 @@ static void fix_tee_walls(level_t * level)
                 if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
-                {
+                 {
                     set_tile(level, y, x, tile_wall_ttee);
                 }
                 else
@@ -212,9 +212,9 @@ static void place_items(bsp_head_t * head)
             int x = (current_node->room_region->left + 1) + (rand() % (current_node->room_region->right - current_node->room_region->left - 2));
             int y = (current_node->room_region->top + 1) + (rand() % (current_node->room_region->bottom - current_node->room_region->top - 2));
 
-            if (head->level->map[y][x].item == 0)
+            if (head->level->map[y * head->level->width + x].item == 0)
             {
-                head->level->map[y][x].item = random_item();
+                head->level->map[y * head->level->width + x].item = random_item();
             }
         }
 
@@ -487,7 +487,7 @@ static void paint_corridor(level_t * level, point_t start, point_t end, tile_typ
 
     for(;;)
     {
-        tile_type_t current_tile_type = level->map[y][x].type;
+        tile_type_t current_tile_type = level->map[y * level->width + x].type;
         tile_type_t new_tile_type = current_tile_type;
 
         if(current_tile_type == tile_void)
