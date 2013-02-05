@@ -20,6 +20,8 @@ int play()
     {
         explore();
 
+        center_view(current_level, player.mob->position);
+
         draw_map(current_level);
         draw_stats();
 
@@ -31,7 +33,7 @@ int play()
         if (turn == TURN_QUIT)
             return 0;
         else if (turn == TURN_DESCEND) {
-            level_t * new_level = create_new_level(current_level, 20, 80);
+            level_t * new_level = create_new_level(current_level, 80, 160);
 
             memcpy(&new_level->mobs[0],
                    player.mob,
@@ -39,7 +41,7 @@ int play()
 
             player.mob = &new_level->mobs[0];
 
-            create_standard_dungeon(new_level, &player.mob->x, &player.mob->y);
+            create_standard_dungeon(new_level, &player.mob->position);
 
             free(current_level);
 
@@ -60,13 +62,13 @@ int play()
 
 void new_game()
 {
-    level_t * new_level = create_new_level(NULL, 20, 80);
+    level_t * new_level = create_new_level(NULL, 80, 160);
 
     player.phone_status = 0;
     player.mob = &new_level->mobs[0];
     current_level = new_level;
 
-    create_standard_dungeon(new_level, &player.mob->x, &player.mob->y);
+    create_standard_dungeon(new_level, &player.mob->position);
 
     player.level = 1;
     player.exp = 0;

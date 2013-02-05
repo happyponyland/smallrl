@@ -27,7 +27,7 @@ static void place_items(bsp_head_t *);
 static void place_stairs(bsp_head_t *);
 static void fix_tee_walls(level_t *);
 
-void create_standard_dungeon(level_t * level, int * player_start_x, int * player_start_y)
+void create_standard_dungeon(level_t * level, point_t * player_start_position)
 {
     bsp_node_t * stack[1000];
     int stack_pointer;
@@ -77,8 +77,8 @@ void create_standard_dungeon(level_t * level, int * player_start_x, int * player
 
     bsp_node_t * start_room = find_best_node(bsp_head.root_node, true, true);
 
-    *player_start_x = start_room->room_region->left + 2;
-    *player_start_y = start_room->room_region->top + 2;
+    (*player_start_position).x = start_room->room_region->left + 2;
+    (*player_start_position).y = start_room->room_region->top + 2;
 
     place_monsters(&bsp_head);
 

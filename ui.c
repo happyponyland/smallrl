@@ -11,12 +11,17 @@ void draw_map(level_t * level)
     int x;
     int i;
 
-    for (y = 0; y < level->height; y++)
-    {
-        move(y + 1, 0);
+    int draw_y = 1;
 
-        for (x = 0; x < level->width; x++)
+    for (y = level->view.ul_position.y; y < level->view.ul_position.y + level->view.height; y += 1)
+    {
+        move(++draw_y, 0);
+
+        for (x = level->view.ul_position.x; x < level->view.ul_position.x + level->view.width; x += 1)
         {
+            if(!on_map(level, y, x))
+               continue;
+
             if (level->map[y * level->width + x].is_explored == 0)
             {
                 addch(' ');
@@ -123,10 +128,22 @@ void draw_map(level_t * level)
 
     for (i = 0; i < MAX_MOBS_PER_LEVEL; i++)
     {
-        if (level->mobs[i].type && level->map[level->mobs[i].y * level->width + level->mobs[i].x].is_lit)
+        if (level->mobs[i].type && level->map[level->mobs[i].position.y * level->width + level->mobs[i].position.x].is_lit)
         {
-            move(level->mobs[i].y + 1, level->mobs[i].x);
-            addch(level->mobs[i].type);
+            int left = level->view.ul_position.x;
+            int top = level->view.ul_position.y;
+
+            int right  = level->view.ul_position.x + level->view.width;
+            int bottom  = level->view.ul_position.y + level->view.height;
+
+            int mob_x = level->mobs[i].position.x;
+            int mob_y = level->mobs[i].position.y;
+
+            if(mob_x > left && mob_x < right && mob_y > top && mob_y < bottom)
+            {
+                move(level->mobs[i].position.y - top + 2, level->mobs[i].position.x - left);
+                addch(level->mobs[i].type);
+            }
         }
     }
 

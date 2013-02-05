@@ -10,12 +10,12 @@ level_t * current_level;
 static void clear_level(level_t *);
 static void set_tile_flags_by_type(tile_t *, tile_type_t);
 
-int on_map(level_t * level, int y, int x)
+bool on_map(level_t * level, int y, int x)
 {
     if (y >= 0 && x >= 0 && y < level->height && x < level->width)
-        return 1;
+        return true;
 
-    return 0;
+    return false;
 }
 
 level_t * create_new_level(level_t * old_level, int height, int width)
@@ -24,7 +24,7 @@ level_t * create_new_level(level_t * old_level, int height, int width)
     new_level->width = width;
     new_level->height = height;
     new_level->map = malloc(sizeof(tile_t) * width * height);
-
+    new_level->view = (window_t) {.ul_position = (point_t) { .x = 0, .y = 0 }, .width = 80, .height = 20 };
     clear_level(new_level);
 
     new_level->mobs[0].type = mob_player;
@@ -32,6 +32,34 @@ level_t * create_new_level(level_t * old_level, int height, int width)
     new_level->depth = old_level != NULL ? old_level->depth + 1 : 1;
 
     return new_level;
+}
+
+void center_view(level_t * level, point_t center_position)
+{
+    int x = center_position.x;
+    int y = center_position.y;
+
+    int half_window_width = level->view.width / 2;
+    int half_window_height = level->view.height / 2;
+
+    x -= half_window_width;
+    if(x < 0)
+        x = 0;
+
+    y -= half_window_height;
+    if(y < 0)
+        y = 0;
+
+    if(x > level->width - half_window_width * 2)
+        x = level->width - half_window_width * 2;
+
+    if(y > level->height - half_window_height * 2)
+        y = level->height - half_window_height * 2;
+
+    level->view.ul_position.x = x;
+    level->view.ul_position.y = y;
+
+    return;
 }
 
 static void clear_level(level_t * level)
@@ -105,15 +133,15 @@ tile_type_t get_tile_type(level_t * level, int y, int x)
     return tile_void;
 }
 
-int try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
+bool try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
 {
-    int new_y = mob_to_move->y + y_speed;
-    int new_x = mob_to_move->x + x_speed;
+    int new_y = mob_to_move->position.y + y_speed;
+    int new_x = mob_to_move->position.x + x_speed;
 
     if (on_map(level, new_y, new_x) &&
         !(level->map[new_y * level->width + new_x].flags & tile_unpassable))
     {
-        if(new_y == player.mob->y && new_x == player.mob->x)
+        if(new_y == player.mob->position.y && new_x == player.mob->position.x)
         {
             attack(mob_to_move, player.mob);
             return 0;
@@ -124,20 +152,20 @@ int try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
             if(level->mobs[i].type == mob_none)
                 continue;
 
-            if(new_y == level->mobs[i].y && new_x == level->mobs[i].x)
+            if(new_y == level->mobs[i].position.y && new_x == level->mobs[i].position.x)
                 return 0;
         }
 
-        mob_to_move->y = new_y;
-        mob_to_move->x = new_x;
+        mob_to_move->position.y = new_y;
+        mob_to_move->position.x = new_x;
 
-        return 1;
+        return true;
     }
 
-    return 0;
+    return false;
 }
 
-int try_make_mob(level_t * level, mob_type_t type, int y, int x)
+bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
 {
     int i;
 
@@ -145,8 +173,8 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
     {
         if (level->mobs[i].type == mob_none)
         {
-            level->mobs[i].y = y;
-            level->mobs[i].x = x;
+            level->mobs[i].position.y = y;
+            level->mobs[i].position.x = x;
 
             level->mobs[i].type = type;
             level->mobs[i].turn_counter = 0;
@@ -212,11 +240,11 @@ int try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 break;
             }
 
-            return 1;
+            return true;
         }
     }
 
-    return 0;
+    return false;
 }
 
 
@@ -226,7 +254,7 @@ int get_mob(level_t * level, int y, int x)
     int i;
 
     for (i = 0; i < MAX_MOBS_PER_LEVEL; i++)
-        if (level->mobs[i].type && level->mobs[i].y == y && level->mobs[i].x == x)
+        if (level->mobs[i].type && level->mobs[i].position.y == y && level->mobs[i].position.x == x)
             return i;
 
     return -1;

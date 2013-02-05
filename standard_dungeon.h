@@ -3,6 +3,6 @@
 
 #include "level.h"
 
-void create_standard_dungeon(level_t *, int *, int *);
+void create_standard_dungeon(level_t *, point_t *);
 
 #endif

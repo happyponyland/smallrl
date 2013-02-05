@@ -1,6 +1,8 @@
 #ifndef SMALLRL_MOB_H
 #define SMALLRL_MOB_H
 
+#include "types.h"
+
 #define ATTR_HP      0
 #define ATTR_MINDAM  1
 #define ATTR_MAXDAM  2
@@ -24,8 +26,9 @@ typedef enum mob_type_e
 typedef struct mob_s
 {
     mob_type_t type;
-    int y;
-    int x;
+
+    point_t position;
+
     int attr[ATTRIBUTES];
     int turn_counter;
     int mana;

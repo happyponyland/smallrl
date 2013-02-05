@@ -15,5 +15,5 @@ FILES=(
 
 gcc -lm -lcurses -Wshadow -Wall -Wstrict-prototypes \
     -Wmissing-prototypes -Wmissing-declarations -Wnested-externs \
-    -std=c99 -pedantic -Wredundant-decls -ggdb \
+    -std=c99 -pedantic -Wredundant-decls -ggdb -pg \
     -o smallrl ${FILES[*]}

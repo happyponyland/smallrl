@@ -5,12 +5,6 @@
 #include "level.h"
 #include "item.h"
 
-typedef struct point_s
-{
-    int x;
-    int y;
-} point_t;
-
 typedef struct range_segment_s
 {
     int initial;

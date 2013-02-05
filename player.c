@@ -43,7 +43,7 @@ int player_move(int input)
     int x_speed = 0, y_speed = 0;
     int mob_id;
     get_speed(input, &x_speed, &y_speed);
-    mob_id = get_mob(current_level, player.mob->y + y_speed, player.mob->x + x_speed);
+    mob_id = get_mob(current_level, player.mob->position.y + y_speed, player.mob->position.x + x_speed);
 
     if (mob_id != -1)
     {
@@ -54,13 +54,13 @@ int player_move(int input)
     {
         explore();
 
-        if (current_level->map[player.mob->y * current_level->width + player.mob->x].type == tile_stair &&
+        if (current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
             return TURN_DESCEND;
         }
 
-        uint32_t item = current_level->map[player.mob->y * current_level->width + player.mob->x].item;
+        uint32_t item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
 
         if (item)
         {
@@ -106,7 +106,7 @@ int player_turn(void)
         case 'g':
         case ',':
             ;
-            uint32_t item = current_level->map[player.mob->y * current_level->width + player.mob->x].item;
+            uint32_t item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
 
             if (item == 0)
             {
@@ -130,7 +130,7 @@ int player_turn(void)
                          "Okay -- you now have %s.", item_n);
                 print_msg(line);
                 wait();
-                current_level->map[player.mob->y * current_level->width + player.mob->x].item = 0;
+                current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item = 0;
             }
 
             clear_msg();
@@ -206,11 +206,22 @@ void explore(void)
     int y;
     int x;
 
-    p_y = player.mob->y;
-    p_x = player.mob->x;
+    int top;
+    int bottom;
+    int left;
+    int right;
 
-    for (y = 0; y < current_level->height; y++)
-        for (x = 0; x < current_level->width; x++)
+    top = current_level->view.ul_position.y;
+    bottom = current_level->view.ul_position.y + current_level->view.height;
+
+    left = current_level->view.ul_position.x;
+    right = current_level->view.ul_position.x + current_level->view.width;
+
+    p_y = player.mob->position.y;
+    p_x = player.mob->position.x;
+
+    for (y = top; y < bottom; y += 1)
+        for (x = left; x < right; x += 1)
             current_level->map[y * current_level->width + x].is_lit = 0;
 
     for (y = p_y - 1; y <= p_y + 1; y++)
@@ -235,10 +246,22 @@ void explore(void)
         {
             change = 0;
 
-            for (y = 1; y < current_level->height - 1; y++)
+            for (y = top; y < bottom; y += 1)
             {
-                for (x = 1; x < current_level->width - 1; x++)
+                if(y < 1)
+                    continue;
+
+                if(y > current_level->height - 1)
+                    break;
+
+                for (x = left; x < right; x += 1)
                 {
+                    if(x < 1)
+                        continue;
+
+                    if(x > current_level->width - 1)
+                        break;
+
                     if (current_level->map[y * current_level->width + x].is_lit == 0 &&
                         (current_level->map[y * current_level->width + x].flags & tile_permalit ||
                          current_level->map[(y - 1) * current_level->width + (x - 1)].flags & tile_permalit ||
@@ -393,7 +416,7 @@ void drop_item(const int index)
     wait();
     clear_msg();
 
-    current_level->map[player.mob->y * current_level->width + player.mob->x].item =
+    current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item =
         player.inventory[index];
 
     player.inventory[index] = 0;
@@ -503,8 +526,8 @@ void summon_cops()
 
     while (how_many--)
     {
-        y = player.mob->y - 2 + rand() % 5;
-        x = player.mob->x - 2 + rand() % 5;
+        y = player.mob->position.y - 2 + rand() % 5;
+        x = player.mob->position.x - 2 + rand() % 5;
 
         if (on_map(current_level, y, x) &&
             get_mob(current_level, y, x) == -1 &&
