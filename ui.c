@@ -46,6 +46,7 @@ void draw_map(level_t * level)
                 break;
 
             case tile_floor:
+            case tile_doorway:
                 attron(COLOR_PAIR(color_green));
                 addch('.');
                 break;

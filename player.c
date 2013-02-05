@@ -240,11 +240,11 @@ void explore(void)
 
     if (current_level->map[p_y * current_level->width + p_x].flags & tile_permalit)
     {
-        int change;
+        bool change;
 
         do
         {
-            change = 0;
+            change = false;
 
             for (y = top; y < bottom; y += 1)
             {
@@ -261,6 +261,9 @@ void explore(void)
 
                     if(x > current_level->width - 1)
                         break;
+
+                    if (current_level->map[y * current_level->width + x].flags & tile_noflood)
+                        continue;
 
                     if (current_level->map[y * current_level->width + x].is_lit == 0 &&
                         (current_level->map[y * current_level->width + x].flags & tile_permalit ||
@@ -281,7 +284,7 @@ void explore(void)
                             current_level->map[y * current_level->width + x].is_lit = 1;
                             current_level->map[y * current_level->width + x].is_explored = 1;
 
-                            change = 1;
+                            change = true;
                         }
 
                     }
