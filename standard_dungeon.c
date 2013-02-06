@@ -66,12 +66,15 @@ void create_standard_dungeon(level_t * level, point_t * player_start_position)
 
             free(split_region);
 
-            stack[stack_pointer++] = current_node->left;
             stack[stack_pointer++] = current_node->right;
+            stack[stack_pointer++] = current_node->left;
         }
     }
 
     paint_rooms(&bsp_head);
+
+    // Rooms that overlap need to have their walls fixed in tee-spots
+    fix_tee_walls(level);
 
     connect_all_rooms(&bsp_head);
 
@@ -88,9 +91,6 @@ void create_standard_dungeon(level_t * level, point_t * player_start_position)
 
     //REVIEW: Might be a good idea to keep the room tree available for map modification spells and teleportation purposes?
     release_nodes(bsp_head.root_node);
-
-    // Rooms that overlap need to have their walls fixed in tee-spots
-    fix_tee_walls(level);
 }
 
 static void fix_tee_walls(level_t * level)
@@ -316,14 +316,25 @@ static void connect_all_rooms(bsp_head_t * head)
         if(is_split_vertically) {
             bool is_top = top_stack[--top_stack_pointer];
             left = find_best_node(current_node->left, is_top, false);
+            if(left == NULL)
+                left = current_node;
+
             right = find_best_node(current_node->right, is_top, true);
+            if(right == NULL)
+                right = current_node;
         } else {
             bool is_left = left_stack[--left_stack_pointer];
             left = find_best_node(current_node->left, false, is_left);
+            if(left == NULL)
+                left = current_node;
+
             right = find_best_node(current_node->right, true, is_left);
+            if(right == NULL)
+                right = current_node;
         }
 
-        connect_room(level, left, right, is_split_vertically);
+        if(left != right)
+            connect_room(level, left, right, is_split_vertically);
 
         if(current_node->right != NULL)
         {
@@ -361,6 +372,9 @@ static bsp_node_t * find_best_node(bsp_node_t * node, bool want_top, bool want_l
     while(walk_stack_pointer > 0)
     {
         bsp_node_t * current_node = walk_stack[--walk_stack_pointer];
+
+        if(current_node == NULL)
+            return NULL;
 
         bool is_split_vertically = current_node->level % 2 == 0;
         bool is_leaf = current_node->left == NULL && current_node->right == NULL;
@@ -406,6 +420,23 @@ static void connect_room(level_t * level, bsp_node_t * first, bsp_node_t * secon
             first_point.y += extra_y;
             second_point.y += extra_y;
         }
+
+        if(first_point.y == second_point.y)
+        {
+            paint_corridor(level, first_point, second_point, tile_corridor);
+        }
+        else
+        {
+            point_t top_point = first_point.y < second_point.y ? first_point : second_point;
+            point_t bottom_point = first_point.y < second_point.y ? second_point : first_point;
+
+            point_t mid_point_1 = (point_t) { .x = top_point.x, .y = top_point.y + (abs(bottom_point.y - top_point.y) / 2) };
+            point_t mid_point_2 = (point_t) { .x = bottom_point.x, .y = top_point.y + (abs(bottom_point.y - top_point.y) / 2) };
+            paint_corridor(level, top_point, mid_point_1, tile_corridor);
+            paint_corridor(level, mid_point_1, mid_point_2, tile_corridor);
+            paint_corridor(level, mid_point_2, bottom_point, tile_corridor);
+        }
+
     } else {
         range_segment_t first_range = get_best_horizontal_overlap(first->room_region, second->room_region);
         range_segment_t second_range = get_best_horizontal_overlap(second->room_region, first->room_region);
@@ -419,9 +450,23 @@ static void connect_room(level_t * level, bsp_node_t * first, bsp_node_t * secon
             first_point.x += extra_x;
             second_point.x += extra_x;
         }
-    }
 
-    paint_corridor(level, first_point, second_point, tile_corridor);
+        if(first_point.x == second_point.x)
+        {
+            paint_corridor(level, first_point, second_point, tile_corridor);
+        }
+        else
+        {
+            point_t left_point = first_point.x < second_point.x ? first_point : second_point;
+            point_t right_point = first_point.x < second_point.x ? second_point : first_point;
+
+            point_t mid_point_1 = (point_t) { .x = left_point.x + (abs(right_point.x - left_point.x) / 2), .y = left_point.y };
+            point_t mid_point_2 = (point_t) { .x = left_point.x + (abs(right_point.x - left_point.x) / 2), .y = right_point.y };
+            paint_corridor(level, left_point, mid_point_1, tile_corridor);
+            paint_corridor(level, mid_point_1, mid_point_2, tile_corridor);
+            paint_corridor(level, mid_point_2, right_point, tile_corridor);
+        }
+    }
 }
 
 static range_segment_t get_best_horizontal_overlap(rectangle_t * first, rectangle_t * second)
@@ -690,7 +735,7 @@ static bsp_node_t * create_new_node(int level, int top, int bottom, int left, in
 static bool is_too_large(rectangle_t * region)
 {
     if(region == NULL)
-        return true;
+        return false;
 
     int height = region->bottom - region->top;
     int width = region->right - region->left;

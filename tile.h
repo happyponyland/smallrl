@@ -2,6 +2,7 @@
 #define SMALLRL_TILE_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef enum tile_type_e
 {
@@ -21,6 +22,8 @@ typedef enum tile_type_e
     tile_wall_ltee,
     tile_wall_plus,
     tile_corridor,
+    tile_door_h,
+    tile_door_v,
     tile_stair
 } tile_type_t;
 
@@ -35,9 +38,9 @@ typedef struct tile_s
 {
     tile_type_t type;
     tile_flag_t flags;
-    int is_explored;
-    int is_lit;
-    int is_path;
+    bool is_explored;
+    bool is_lit;
+    bool is_path;
     uint32_t item;
 } tile_t;
 
