@@ -113,6 +113,11 @@ static void set_tile_flags_by_type(tile_t * tile, tile_type_t tile_type)
         case tile_wall_plus:
         case tile_void:
             tile->flags |= tile_unpassable;
+            tile->flags |= tile_noflood;
+            break;
+
+        case tile_doorway:
+            tile->flags |= tile_noflood;
             break;
 
         case tile_floor:

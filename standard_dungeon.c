@@ -545,7 +545,7 @@ static void paint_corridor(level_t * level, point_t start, point_t end, tile_typ
                 current_tile_type == tile_wall_lr ||
                 current_tile_type == tile_wall_ul ||
                 current_tile_type == tile_wall_ur)
-            new_tile_type = tile_floor;
+            new_tile_type = tile_doorway;
 
         set_tile(level, y, x, new_tile_type);
 
