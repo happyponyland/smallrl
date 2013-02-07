@@ -9,7 +9,9 @@ static void shutdown(void);
 
 int main(int argc, char ** argv)
 {
-    srand(time(NULL));
+    time_t random_seed = time(NULL);
+    printf("Random game #%ld\n", random_seed);
+    srand(random_seed);
 
     initscr();
     cbreak();
