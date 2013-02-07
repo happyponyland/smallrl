@@ -10,6 +10,8 @@
 #include "item.h"
 
 #include "standard_dungeon.h"
+#include "los.h"
+
 
 int play()
 {
@@ -18,7 +20,7 @@ int play()
 
     while (1)
     {
-        explore();
+        explore_map(current_level, player.mob->position);
 
         center_view(current_level, player.mob->position);
 

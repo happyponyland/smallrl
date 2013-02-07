@@ -11,6 +11,8 @@
 #include "ui.h"
 #include "item.h"
 
+#include "los.h"
+
 player_info_t player;
 
 static int experience_to_level(int);
@@ -52,7 +54,7 @@ int player_move(int input)
     }
     else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
     {
-        explore();
+        explore_map(current_level, player.mob->position);
 
         if (current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
@@ -192,8 +194,6 @@ int player_turn(void)
         }
     }
 }
-
-
 
 /*
   Lights up the area near the player, marks it as explored.

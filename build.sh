@@ -11,6 +11,7 @@ FILES=(
     "standard_dungeon.c"
     "combat.c"
     "mob.c"
+    "los.c"
 )
 
 gcc -lm -lcurses -Wshadow -Wall -Wstrict-prototypes \
