@@ -10,6 +10,10 @@ static void shutdown(void);
 int main(int argc, char ** argv)
 {
     time_t random_seed = time(NULL);
+
+    if(argc == 2)
+        random_seed = strtoul(argv[1], NULL, 10);
+
     printf("Random game #%ld\n", random_seed);
     srand(random_seed);
 
