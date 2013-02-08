@@ -111,34 +111,30 @@ static void fix_tee_walls(level_t * level)
             {
                 set_tile(level, y, x, tile_wall_plus);
             }
-            else
-                if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                   && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
-                   && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
-                {
-                    set_tile(level, y, x, tile_wall_btee);
-                }
-                else
-                if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                   && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
-                   && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
-                 {
-                    set_tile(level, y, x, tile_wall_ttee);
-                }
-                else
-                    if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                       && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                       && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll))
-                    {
-                        set_tile(level, y, x, tile_wall_rtee);
-                    }
-                    else
-                        if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                           && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                           && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
-                        {
-                            set_tile(level, y, x, tile_wall_ltee);
-                        }
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            {
+                set_tile(level, y, x, tile_wall_btee);
+            }
+            else if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            {
+                set_tile(level, y, x, tile_wall_ttee);
+            }
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll))
+            {
+                set_tile(level, y, x, tile_wall_rtee);
+            }
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
+                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            {
+                set_tile(level, y, x, tile_wall_ltee);
+            }
         }
     }
 }
