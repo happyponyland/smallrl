@@ -104,34 +104,34 @@ static void fix_tee_walls(level_t * level)
             tile_type_t left = get_tile_type(level, y, x - 1);
             tile_type_t right = get_tile_type(level, y, x + 1);
 
-            if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-               && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-               && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
-               && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul || above == tile_wall_rtee || above == tile_wall_ltee || above == tile_wall_ttee)
+               && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll || below == tile_wall_rtee || below == tile_wall_ltee || below == tile_wall_ltee)
+               && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll || left == tile_wall_rtee || left == tile_wall_ttee || left == tile_wall_ltee)
+               && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr || right == tile_wall_ltee || right == tile_wall_ttee || right == tile_wall_ltee))
             {
                 set_tile(level, y, x, tile_wall_plus);
             }
-            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
-                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul || above == tile_wall_rtee || above == tile_wall_ltee || above == tile_wall_ttee)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll || left == tile_wall_rtee || left == tile_wall_ttee || left == tile_wall_ltee)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr || right == tile_wall_ltee || right == tile_wall_ttee || right == tile_wall_ltee))
             {
                 set_tile(level, y, x, tile_wall_btee);
             }
-            else if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll)
-                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            else if((below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll || below == tile_wall_rtee || below == tile_wall_ltee || below == tile_wall_ltee)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll || left == tile_wall_rtee || left == tile_wall_ttee || left == tile_wall_ltee)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr || right == tile_wall_ltee || right == tile_wall_ttee || right == tile_wall_ltee))
             {
                 set_tile(level, y, x, tile_wall_ttee);
             }
-            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll))
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul || above == tile_wall_rtee || above == tile_wall_ltee || above == tile_wall_ttee)
+                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll || below == tile_wall_rtee || below == tile_wall_ltee || below == tile_wall_ltee)
+                    && (left == tile_wall_t || left == tile_wall_b || left == tile_wall_ul || left == tile_wall_ll || left == tile_wall_rtee || left == tile_wall_ttee || left == tile_wall_ltee))
             {
                 set_tile(level, y, x, tile_wall_rtee);
             }
-            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul)
-                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll)
-                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr))
+            else if((above == tile_wall_l || above == tile_wall_r || above == tile_wall_ur || above == tile_wall_ul || above == tile_wall_rtee || above == tile_wall_ltee || above == tile_wall_ttee)
+                    && (below == tile_wall_l || below == tile_wall_r || below == tile_wall_lr || below == tile_wall_ll || below == tile_wall_rtee || below == tile_wall_ltee || below == tile_wall_ltee)
+                    && (right == tile_wall_t || right == tile_wall_b || right == tile_wall_ur || right == tile_wall_lr || right == tile_wall_ltee || right == tile_wall_ttee || right == tile_wall_ltee))
             {
                 set_tile(level, y, x, tile_wall_ltee);
             }
@@ -540,7 +540,11 @@ static void paint_corridor(level_t * level, point_t start, point_t end, tile_typ
                 current_tile_type == tile_wall_ll ||
                 current_tile_type == tile_wall_lr ||
                 current_tile_type == tile_wall_ul ||
-                current_tile_type == tile_wall_ur)
+                current_tile_type == tile_wall_ur ||
+                current_tile_type == tile_wall_rtee ||
+                current_tile_type == tile_wall_ltee ||
+                current_tile_type == tile_wall_ttee ||
+                current_tile_type == tile_wall_ltee)
             new_tile_type = tile_doorway;
 
         set_tile(level, y, x, new_tile_type);
