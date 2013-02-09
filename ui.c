@@ -36,8 +36,11 @@ void draw_map(level_t * level)
                 continue;
             }
 
-            if (level->map[y * level->width + x].is_lit)
+            if (level->map[y * level->width + x].is_lit ||
+                level->map[y * level->width + x].is_periphery)
+            {
                 attrset(A_BOLD);
+            }
 
             switch (level->map[y * level->width + x].type)
             {

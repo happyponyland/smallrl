@@ -40,6 +40,7 @@ typedef struct tile_s
     tile_flag_t flags;
     bool is_explored;
     bool is_lit;
+    bool is_periphery;
     bool is_path;
     uint32_t item;
 } tile_t;

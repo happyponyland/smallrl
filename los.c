@@ -13,11 +13,11 @@ void explore_map(level_t * level, point_t center_position)
     int left = current_level->view.ul_position.x;
     int right = current_level->view.ul_position.x + current_level->view.width;
 
-    for (int y = top; y < bottom; y += 1)
+/*    for (int y = top; y < bottom; y += 1)
         for (int x = left; x < right; x += 1)
-            level->map[y * current_level->width + x].is_lit = false;
+        level->map[y * current_level->width + x].is_lit = false;*/
 
-    los(level, center_position, 10);
+    los(level, center_position, 5);
 }
 
 static void los(level_t * level, point_t center_position, int radius)

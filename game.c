@@ -20,6 +20,7 @@ int play()
 
     while (1)
     {
+        explore();
         explore_map(current_level, player.mob->position);
 
         center_view(current_level, player.mob->position);

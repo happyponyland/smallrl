@@ -54,6 +54,7 @@ int player_move(int input)
     }
     else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
     {
+        explore();
         explore_map(current_level, player.mob->position);
 
         if (current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].type == tile_stair &&
@@ -230,8 +231,9 @@ void explore(void)
         {
             if (on_map(current_level, y, x))
             {
-                current_level->map[y * current_level->width + x].is_explored = 1;
-                current_level->map[y * current_level->width + x].is_lit = 1;
+                current_level->map[y * current_level->width + x].is_explored = true;
+                current_level->map[y * current_level->width + x].is_lit = true;
+                current_level->map[y * current_level->width + x].is_periphery = true;
             }
         }
     }
@@ -291,6 +293,58 @@ void explore(void)
                 }
             }
         } while (change);
+    }
+
+    bool match;
+
+    for (y = top; y < bottom; y += 1)
+    {
+        for (x = left; x < right; x += 1)
+        {
+            match = false;
+
+            if ((current_level->map[y * current_level->width + x].flags & tile_noflood) == 0)
+                continue;
+
+            if (y >= 1 && current_level->map[(y - 1) * current_level->width + x].is_lit)
+                match = true;
+
+            if (x >= 1 && current_level->map[y * current_level->width + (x - 1)].is_lit)
+                match = true;
+
+            if (y < current_level->height - 1 && current_level->map[(y + 1) * current_level->width + x].is_lit)
+                match = true;
+
+            if (x < current_level->width + 1 && current_level->map[y * current_level->width + (x + 1)].is_lit)
+                match = true;
+
+            if (y >= 1 &&
+                x >= 1 &&
+                current_level->map[(y - 1) * current_level->width + (x - 1)].is_lit)
+                match = true;
+
+            if (y >= 1 &&
+                x <= current_level->width &&
+                current_level->map[(y - 1) * current_level->width + (x + 1)].is_lit)
+                match = true;
+
+            if (y <= current_level->height &&
+                x >= 1 &&
+                current_level->map[(y + 1) * current_level->width + (x - 1)].is_lit)
+                match = true;
+
+            if (y <= current_level->height &&
+                x <= current_level->width && 
+                current_level->map[(y + 1) * current_level->width + (x + 1)].is_lit)
+                match = true;
+
+
+            if (match)
+            {
+                current_level->map[y * current_level->width + x].is_periphery = true;
+                current_level->map[y * current_level->width + x].is_explored = true;
+            }
+        }
     }
 
     return;
