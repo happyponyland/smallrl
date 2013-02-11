@@ -183,6 +183,7 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
 
             level->mobs[i].type = type;
             level->mobs[i].turn_counter = 0;
+            level->mobs[i].is_immortal = false;
 
             switch (type)
             {
@@ -193,6 +194,16 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 level->mobs[i].attr[ATTR_ATTACK] = 40;
                 level->mobs[i].attr[ATTR_DODGE] = 20;
                 level->mobs[i].attr[ATTR_EXP] = 30;
+                break;
+
+            case mob_magician:
+                level->mobs[i].is_immortal = true;
+                level->mobs[i].attr[ATTR_HP] = 1;
+                level->mobs[i].attr[ATTR_MINDAM] = 0;
+                level->mobs[i].attr[ATTR_MAXDAM] = 0;
+                level->mobs[i].attr[ATTR_ATTACK] = 0;
+                level->mobs[i].attr[ATTR_DODGE] = 0;
+                level->mobs[i].attr[ATTR_EXP] = -1;
                 break;
 
             case mob_zombie:

@@ -29,6 +29,28 @@ static void melee(mob_t * attacker, mob_t * defender)
     mob_adjective(att_a, attacker->type);
     mob_adjective(def_a, defender->type);
 
+    if(attacker->type == mob_magician)
+    {
+        snprintf(line, MSGLEN,
+                 "The %s%s challenges you to a duel.",
+                 att_a, att_n);
+        print_msg(line);
+        wait();
+        clear_msg();
+        return;
+    }
+
+    if(defender->is_immortal)
+    {
+        snprintf(line, MSGLEN,
+                 "The %s%s smiles at your feeble attack.",
+                 def_a, def_n);
+        print_msg(line);
+        wait();
+        clear_msg();
+        return;
+    }
+
     if ((attacker->type == mob_newbie
          || attacker->type == mob_1337hax0r)
         && rand() % 5 == 0)

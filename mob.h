@@ -1,6 +1,7 @@
 #ifndef SMALLRL_MOB_H
 #define SMALLRL_MOB_H
 
+#include <stdbool.h>
 #include "types.h"
 
 #define ATTR_HP      0
@@ -15,6 +16,7 @@ typedef enum mob_type_e
 {
     mob_none = 0,
     mob_player = '@',
+    mob_magician = 'M',
     mob_newbie = 'n',
     mob_zombie = 'z',
     mob_1337hax0r = '1',
@@ -30,6 +32,8 @@ typedef struct mob_s
     point_t position;
 
     int attr[ATTRIBUTES];
+    bool is_immortal;
+
     int turn_counter;
     int mana;
 } mob_t;

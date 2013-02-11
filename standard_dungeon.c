@@ -95,9 +95,9 @@ void create_standard_dungeon(level_t * level, point_t * player_start_position)
 
 static void fix_tee_walls(level_t * level)
 {
-    for(int y = 1; y < level->height - 1; y += 1)
+    for(int y = 0; y < level->height; y += 1)
     {
-        for(int x = 1; x < level->width - 1; x += 1)
+        for(int x = 0; x < level->width; x += 1)
         {
             tile_type_t above = get_tile_type(level, y - 1, x);
             tile_type_t below = get_tile_type(level, y + 1, x);
@@ -176,7 +176,8 @@ static mob_type_t random_mob_type(int depth)
     switch((depth / 2) + rand() % (depth + 2))
     {
     case 0:
-        return mob_newbie;
+        return mob_magician;
+        //return mob_newbie;
     case 1:
         return mob_zombie;
     case 2:
