@@ -14,7 +14,7 @@ FILES=(
     "los.c"
 )
 
-gcc -lm -lcurses -Wshadow -Wall -Wstrict-prototypes \
+gcc -lm -lcurses -Wshadow -Wall -Wextra -Wstrict-prototypes \
     -Wmissing-prototypes -Wmissing-declarations -Wnested-externs \
     -std=c99 -pedantic -Wredundant-decls -ggdb -pg \
     -o smallrl ${FILES[*]}
