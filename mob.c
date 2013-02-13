@@ -7,44 +7,44 @@
 static void mob_adjective_magician(char *);
 static void mob_adjective_default(char *);
 
-void mob_name(char * s, mob_type_t type)
+void mob_name(mob_type_t mob_type, char * out_string)
 {
-    switch (type)
+    switch (mob_type)
     {
         case mob_player:
-            strcpy(s, "player");
+            strcpy(out_string, "player");
             break;
 
         case mob_magician:
-            strcpy(s, "magician");
+            strcpy(out_string, "magician");
             break;
 
         case mob_newbie:
-            strcpy(s, "newbie");
+            strcpy(out_string, "newbie");
             break;
 
         case mob_zombie:
-            strcpy(s, "zombie");
+            strcpy(out_string, "zombie");
             break;
 
         case mob_1337hax0r:
-            strcpy(s, "1337-hax0r");
+            strcpy(out_string, "1337-hax0r");
             break;
 
         case mob_hobbyist:
-            strcpy(s, "hobbyist programmer");
+            strcpy(out_string, "hobbyist programmer");
             break;
 
         case mob_war_troll:
-            strcpy(s, "war-troll");
+            strcpy(out_string, "war-troll");
             break;
 
         case mob_police:
-            strcpy(s, "police officer");
+            strcpy(out_string, "police officer");
             break;
 
         default:
-            strcpy(s, "???");
+            strcpy(out_string, "placeholder");
             break;
     }
 
@@ -53,78 +53,78 @@ void mob_name(char * s, mob_type_t type)
 
 
 
-void mob_adjective(char * s, mob_type_t type)
+void mob_adjective(mob_type_t mob_type, char * out_string)
 {
-    switch(type)
+    switch(mob_type)
     {
         case mob_magician:
-            mob_adjective_magician(s);
+            mob_adjective_magician(out_string);
             break;
         default:
-            mob_adjective_default(s);
+            mob_adjective_default(out_string);
     }
 }
 
-static void mob_adjective_magician(char * s)
+static void mob_adjective_magician(char * out_string)
 {
     switch (rand() % 10)
     {
         case 0:
-            strcpy(s, "ancient ");
+            strcpy(out_string, "ancient ");
             break;
 
         case 1:
-            strcpy(s, "powerful ");
+            strcpy(out_string, "powerful ");
             break;
 
         case 2:
-            strcpy(s, "strange looking ");
+            strcpy(out_string, "strange looking ");
             break;
 
         case 3:
-            strcpy(s, "dark ");
+            strcpy(out_string, "dark ");
             break;
 
         default:
-            strcpy(s, "");
+            strcpy(out_string, "");
             break;
     }
 }
 
-static void mob_adjective_default(char * s)
+static void mob_adjective_default(char * out_string)
 {
     switch (rand() % 20)
     {
         case 0:
-            strcpy(s, "evil ");
+            strcpy(out_string, "evil ");
             break;
 
         case 1:
-            strcpy(s, "ugly ");
+            strcpy(out_string, "ugly ");
             break;
 
         case 2:
-            strcpy(s, "stupid ");
+            strcpy(out_string, "stupid ");
             break;
 
         case 3:
-            strcpy(s, "silly ");
+            strcpy(out_string, "silly ");
             break;
 
         case 4:
-            strcpy(s, "grisly ");
+            strcpy(out_string, "grisly ");
             break;
 
         case 5:
-            strcpy(s, "sweaty ");
+            strcpy(out_string, "sweaty ");
             break;
 
         case 6:
-            strcpy(s, "smelly ");
+            strcpy(out_string, "smelly ");
             break;
 
         default:
-            strcpy(s, "");
+            strcpy(out_string, "");
             break;
     }
 }

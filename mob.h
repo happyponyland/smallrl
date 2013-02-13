@@ -29,6 +29,9 @@ typedef struct mob_s
 {
     mob_type_t type;
 
+    char description_adjective[50];
+    char description_noun[50];
+
     point_t position;
 
     int attr[ATTRIBUTES];
@@ -38,7 +41,7 @@ typedef struct mob_s
     int mana;
 } mob_t;
 
-void mob_name(char *, mob_type_t);
-void mob_adjective(char *, mob_type_t);
+void mob_name(mob_type_t, char *);
+void mob_adjective(mob_type_t, char *);
 
 #endif

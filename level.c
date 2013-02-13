@@ -9,6 +9,7 @@ level_t * current_level;
 
 static void clear_level(level_t *);
 static void set_tile_flags_by_type(tile_t *, tile_type_t);
+static void describe_mob(mob_t *);
 
 bool on_map(level_t * level, int y, int x)
 {
@@ -170,91 +171,100 @@ bool try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed
     return false;
 }
 
+static void describe_mob(mob_t * mob)
+{
+    mob_name(mob->type, mob->description_noun);
+    mob_adjective(mob->type, mob->description_adjective);
+}
+
 bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
 {
     int i;
 
     for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
     {
-        if (level->mobs[i].type == mob_none)
+        mob_t * mob = &level->mobs[i];
+        if (mob->type == mob_none)
         {
-            level->mobs[i].position.y = y;
-            level->mobs[i].position.x = x;
+            mob->position.y = y;
+            mob->position.x = x;
 
-            level->mobs[i].type = type;
-            level->mobs[i].turn_counter = 0;
-            level->mobs[i].is_immortal = false;
+            mob->type = type;
+            mob->turn_counter = 0;
+            mob->is_immortal = false;
 
             switch (type)
             {
             case mob_newbie:
-                level->mobs[i].attr[ATTR_HP] = 5;
-                level->mobs[i].attr[ATTR_MINDAM] = 1;
-                level->mobs[i].attr[ATTR_MAXDAM] = 3;
-                level->mobs[i].attr[ATTR_ATTACK] = 40;
-                level->mobs[i].attr[ATTR_DODGE] = 20;
-                level->mobs[i].attr[ATTR_EXP] = 30;
+                mob->attr[ATTR_HP] = 5;
+                mob->attr[ATTR_MINDAM] = 1;
+                mob->attr[ATTR_MAXDAM] = 3;
+                mob->attr[ATTR_ATTACK] = 40;
+                mob->attr[ATTR_DODGE] = 20;
+                mob->attr[ATTR_EXP] = 30;
                 break;
 
             case mob_magician:
-                level->mobs[i].is_immortal = true;
-                level->mobs[i].attr[ATTR_HP] = 1;
-                level->mobs[i].attr[ATTR_MINDAM] = 0;
-                level->mobs[i].attr[ATTR_MAXDAM] = 0;
-                level->mobs[i].attr[ATTR_ATTACK] = 0;
-                level->mobs[i].attr[ATTR_DODGE] = 0;
-                level->mobs[i].attr[ATTR_EXP] = -1;
+                mob->is_immortal = true;
+                mob->attr[ATTR_HP] = 1;
+                mob->attr[ATTR_MINDAM] = 0;
+                mob->attr[ATTR_MAXDAM] = 0;
+                mob->attr[ATTR_ATTACK] = 0;
+                mob->attr[ATTR_DODGE] = 0;
+                mob->attr[ATTR_EXP] = -1;
                 break;
 
             case mob_zombie:
-                level->mobs[i].attr[ATTR_HP] = 12;
-                level->mobs[i].attr[ATTR_MINDAM] = 2;
-                level->mobs[i].attr[ATTR_MAXDAM] = 5;
-                level->mobs[i].attr[ATTR_ATTACK] = 30;
-                level->mobs[i].attr[ATTR_DODGE] = 10;
-                level->mobs[i].attr[ATTR_EXP] = 45;
+                mob->attr[ATTR_HP] = 12;
+                mob->attr[ATTR_MINDAM] = 2;
+                mob->attr[ATTR_MAXDAM] = 5;
+                mob->attr[ATTR_ATTACK] = 30;
+                mob->attr[ATTR_DODGE] = 10;
+                mob->attr[ATTR_EXP] = 45;
                 break;
 
             case mob_1337hax0r:
-                level->mobs[i].attr[ATTR_HP] = 1;
-                level->mobs[i].attr[ATTR_MINDAM] = 1;
-                level->mobs[i].attr[ATTR_MAXDAM] = 0;
-                level->mobs[i].attr[ATTR_ATTACK] = 1;
-                level->mobs[i].attr[ATTR_DODGE] = 60;
-                level->mobs[i].attr[ATTR_EXP] = 15;
+                mob->attr[ATTR_HP] = 1;
+                mob->attr[ATTR_MINDAM] = 1;
+                mob->attr[ATTR_MAXDAM] = 0;
+                mob->attr[ATTR_ATTACK] = 1;
+                mob->attr[ATTR_DODGE] = 60;
+                mob->attr[ATTR_EXP] = 15;
                 break;
 
             case mob_hobbyist:
-                level->mobs[i].attr[ATTR_HP] = 5;
-                level->mobs[i].attr[ATTR_MINDAM] = 1;
-                level->mobs[i].attr[ATTR_MAXDAM] = 3;
-                level->mobs[i].attr[ATTR_ATTACK] = 30;
-                level->mobs[i].attr[ATTR_DODGE] = 50;
-                level->mobs[i].attr[ATTR_EXP] = 40;
+                mob->attr[ATTR_HP] = 5;
+                mob->attr[ATTR_MINDAM] = 1;
+                mob->attr[ATTR_MAXDAM] = 3;
+                mob->attr[ATTR_ATTACK] = 30;
+                mob->attr[ATTR_DODGE] = 50;
+                mob->attr[ATTR_EXP] = 40;
                 break;
 
             case mob_war_troll:
-                level->mobs[i].attr[ATTR_HP] = 20;
-                level->mobs[i].attr[ATTR_MINDAM] = 2;
-                level->mobs[i].attr[ATTR_MAXDAM] = 6;
-                level->mobs[i].attr[ATTR_ATTACK] = 20;
-                level->mobs[i].attr[ATTR_DODGE] = 10;
-                level->mobs[i].attr[ATTR_EXP] = 90;
+                mob->attr[ATTR_HP] = 20;
+                mob->attr[ATTR_MINDAM] = 2;
+                mob->attr[ATTR_MAXDAM] = 6;
+                mob->attr[ATTR_ATTACK] = 20;
+                mob->attr[ATTR_DODGE] = 10;
+                mob->attr[ATTR_EXP] = 90;
                 break;
 
             case mob_police:
-                level->mobs[i].attr[ATTR_HP] = 10;
-                level->mobs[i].attr[ATTR_MINDAM] = 2;
-                level->mobs[i].attr[ATTR_MAXDAM] = 4;
-                level->mobs[i].attr[ATTR_ATTACK] = 10;
-                level->mobs[i].attr[ATTR_DODGE] = 10;
-                level->mobs[i].attr[ATTR_EXP] = 20;
+                mob->attr[ATTR_HP] = 10;
+                mob->attr[ATTR_MINDAM] = 2;
+                mob->attr[ATTR_MAXDAM] = 4;
+                mob->attr[ATTR_ATTACK] = 10;
+                mob->attr[ATTR_DODGE] = 10;
+                mob->attr[ATTR_EXP] = 20;
                 break;
 
             default:
-                level->mobs[i].attr[ATTR_HP] = 5;
+                mob->attr[ATTR_HP] = 5;
                 break;
             }
+
+            describe_mob(mob);
 
             return true;
         }

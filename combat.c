@@ -16,18 +16,16 @@ void attack(mob_t * attacker, mob_t * defender)
 static void melee(mob_t * attacker, mob_t * defender)
 {
     char line[MSGLEN];
-    char att_n[50];
-    char def_n[50];
-    char att_a[50];
-    char def_a[50];
     int def_dodge;
     int att_skill;
     int damage;
+    char * att_a,  * att_n, * def_a, * def_n;
 
-    mob_name(att_n, attacker->type);
-    mob_name(def_n, defender->type);
-    mob_adjective(att_a, attacker->type);
-    mob_adjective(def_a, defender->type);
+    att_a = attacker->description_adjective;
+    att_n = attacker->description_noun;
+
+    def_a = defender->description_adjective;
+    def_n = defender->description_noun;
 
     if(attacker->type == mob_magician)
     {
@@ -121,7 +119,6 @@ static void melee(mob_t * attacker, mob_t * defender)
             return;
         }
 
-        mob_adjective(def_a, defender->type);
         snprintf(line, MSGLEN, "The %s%s dies!", def_a, def_n);
 
         /* show that the mob is gone before printing message*/
