@@ -180,6 +180,10 @@ int player_turn(void)
             //clear_msg();
             continue;
 
+        case '+':
+            chaos_duel();
+            continue;
+
         case KEY_LEFT:
         case KEY_RIGHT:
         case KEY_UP:
@@ -334,7 +338,7 @@ void explore(void)
                 match = true;
 
             if (y <= current_level->height &&
-                x <= current_level->width && 
+                x <= current_level->width &&
                 current_level->map[(y + 1) * current_level->width + (x + 1)].is_lit)
                 match = true;
 

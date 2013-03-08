@@ -2,20 +2,10 @@
 #define SMALLRL_UI_H
 
 #include "level.h"
+#include "colors.h"
 
 /* Size of default message buffer */
 #define MSGLEN 200
-
-typedef enum color_e
-{
-    color_black,
-    color_yellow,
-    color_blue,
-    color_red,
-    color_green,
-    color_cyan,
-    color_magenta
-} color_t;
 
 /* ui.c */
 void draw_map(level_t *);

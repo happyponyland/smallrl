@@ -12,6 +12,8 @@ FILES=(
     "combat.c"
     "mob.c"
     "los.c"
+    "chaos.c"
+    "chaos_internal_ui.c"
 )
 
 gcc -lm -lcurses -Wshadow -Wall -Wextra -Wstrict-prototypes \
