@@ -1,6 +1,8 @@
 #ifndef SMALLRL_CHAOS_INTERNAL_H
 #define SMALLRL_CHAOS_INTERNAL_H
 
+#define CHAOS_MSGLEN (200)
+
 #define BOARD_WIDTH (15)
 #define BOARD_HEIGHT (10)
 
@@ -17,7 +19,8 @@ typedef enum cursor_action_e
     cursor_action_move_down,
     cursor_action_move_left,
     cursor_action_move_right,
-    cursor_action_fire
+    cursor_action_fire,
+    cursor_action_done
 } cursor_action_t;
 
 typedef enum spell_order_e
@@ -122,6 +125,7 @@ typedef struct spell_s
     bool is_stoppable;
     int subtype; // Enum
     int difficulty;
+    bool is_illusion;
 
     // collection
     bool is_free;
@@ -140,12 +144,28 @@ typedef struct point_s
     int y;
 } point_t;
 
+typedef enum move_type_s
+{
+    move_type_walking,
+    move_type_flying
+} move_type_t;
+
 typedef struct wizard_s
 {
     point_t position;
     color_t color;
     char gfx;
     char * name;
+    move_type_t move_type;
+    int moves_per_round;
+    int moves_left;
+    int stat_range;
+    int stat_ranged_combat;
+    int stat_combat;
+    int stat_defence;
+    int stat_magic_resistance;
+    int stat_manoeuvre_rating;
+
     spell_t spells[MAX_SPELLS_PER_WIZARD];
     spell_t * selected_spell;
     spell_transform_type_t active_transformations;
@@ -160,10 +180,9 @@ typedef struct wizard_s
 
 typedef enum monster_type_e
 {
-    monster_type_unknown = 0,
+    monster_type_normal = 0,
     monster_type_undead = 1,
-    monster_type_flying = 2,
-    monster_type_rideable = 4
+    monster_type_rideable = 2
 } monster_type_t;
 
 typedef enum ranged_type_e
@@ -175,11 +194,21 @@ typedef enum ranged_type_e
 
 typedef struct monster_s
 {
-    wizard_t * owner;
     point_t position;
     color_t color;
     char gfx;
     char * name;
+    move_type_t move_type;
+    int moves_per_round;
+    int moves_left;
+    int stat_range;
+    int stat_ranged_combat;
+    int stat_combat;
+    int stat_defence;
+    int stat_magic_resistance;
+    int stat_manoeuvre_rating;
+
+    wizard_t * owner;
     monster_type_t monster_type;
     bool is_illusion;
     ranged_type_t ranged_type;
@@ -195,5 +224,11 @@ typedef struct game_s
     monster_t monsters[MAX_MONSTERS_PER_GAME];
     point_t board_offset;
 } game_t;
+
+typedef enum attack_outcome_e
+{
+    attack_outcome_win,
+    attack_outcome_loss,
+} attack_outcome_t;
 
 #endif

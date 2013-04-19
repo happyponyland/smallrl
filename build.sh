@@ -14,6 +14,8 @@ FILES=(
     "los.c"
     "chaos.c"
     "chaos_internal_ui.c"
+    "chaos_internal_ai.c"
+    "chaos_internal_conjure.c"
 )
 
 gcc -lm -lcurses -Wshadow -Wall -Wextra -Wstrict-prototypes \

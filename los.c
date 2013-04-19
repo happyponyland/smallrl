@@ -7,12 +7,13 @@ static void trace(level_t *, point_t, point_t);
 
 void explore_map(level_t * level, point_t center_position)
 {
+    /*
     int top = current_level->view.ul_position.y;
     int bottom = current_level->view.ul_position.y + current_level->view.height;
 
     int left = current_level->view.ul_position.x;
     int right = current_level->view.ul_position.x + current_level->view.width;
-
+    */
 /*    for (int y = top; y < bottom; y += 1)
         for (int x = left; x < right; x += 1)
         level->map[y * current_level->width + x].is_lit = false;*/

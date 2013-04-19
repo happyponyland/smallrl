@@ -25,6 +25,7 @@ int main(int argc, char ** argv)
 
     start_color();
     init_pair(color_black,   COLOR_BLACK,   COLOR_BLACK);
+    init_pair(color_white,   COLOR_WHITE,   COLOR_BLACK);
     init_pair(color_yellow,  COLOR_YELLOW,  COLOR_BLACK);
     init_pair(color_blue,    COLOR_BLUE,    COLOR_BLACK);
     init_pair(color_red,     COLOR_RED,     COLOR_BLACK);

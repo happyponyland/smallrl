@@ -4,12 +4,14 @@
 #include "chaos_internal_ui.h"
 
 static char get_spell_order_char(spell_t *);
-static char get_gfx_at_position(game_t *, point_t);
+static gfx_t get_gfx_at_position(game_t *, point_t);
 static bool same_position(point_t, point_t);
 
 void chaos_ui_clear()
 {
     clear();
+
+    return;
 }
 
 void chaos_ui_messagebox(char * message)
@@ -41,15 +43,34 @@ void chaos_ui_messagebox(char * message)
     move(y + height, x);
     hline(ACS_HLINE, width);
 
+    for(int i = 1; i < height; i += 1) {
+        move(y + i, x + 1);
+        hline(' ', width - 1);
+    }
+
+    move(y, x);
+    addch(ACS_ULCORNER);
+
+    move(y, x + width);
+    addch(ACS_URCORNER);
+
+    move(y + height, x);
+    addch(ACS_LLCORNER);
+
+    move(y + height, x + width);
+    addch(ACS_LRCORNER);
+
     move(y + padding_y / 2 + border_height, x + padding_x / 2 + border_width);
     addstr(message);
 
     getch();
+
+    return;
 }
 
 void chaos_ui_select_spell_screen(wizard_t * wizard)
 {
-    char message[50];
+    char message[CHAOS_MSGLEN];
 
     int col, row;
 
@@ -64,11 +85,13 @@ void chaos_ui_select_spell_screen(wizard_t * wizard)
 
         move(row++, col);
 
-        sprintf(message, "%c. %c %s", '1' + spell_count, get_spell_order_char(&wizard->spells[i]), wizard->spells[i].name);
+        snprintf(message, CHAOS_MSGLEN, "%c. %c %s", '1' + spell_count, get_spell_order_char(&wizard->spells[i]), wizard->spells[i].name);
         addstr(message);
 
         spell_count += 1;
     }
+
+    return;
 }
 
 static char get_spell_order_char(spell_t * spell)
@@ -102,17 +125,22 @@ int chaos_ui_get_spell_index(wizard_t * wizard)
             if(input == spell_count)
                 return i;
 
-            spell_count -= 1;
+            spell_count += 1;
         }
     }
+
+    return -1;
 }
 
-void chaos_ui_draw_board(game_t * game, wizard_t * current_wizard, point_t * cursor_position)
+void chaos_ui_draw_board(game_t * game, wizard_t * current_wizard)
 {
     int x,y;
 
     int offset_x = game->board_offset.x;
     int offset_y = game->board_offset.y;
+
+    if(current_wizard != NULL)
+        attron(COLOR_PAIR(current_wizard->color));
 
     for(y = 0; y < BOARD_HEIGHT + 2; y += 1)
     {
@@ -134,10 +162,14 @@ void chaos_ui_draw_board(game_t * game, wizard_t * current_wizard, point_t * cur
     {
         for(x = 0; x < BOARD_WIDTH; x += 1)
         {
-            move(1 + offset_y + y, 1 + offset_x +x);
-            addch(get_gfx_at_position(game, (point_t) { .x = x, .y = y }));
+            move(1 + offset_y + y, 1 + offset_x + x);
+            gfx_t gfx = get_gfx_at_position(game, (point_t) { .x = x, .y = y });
+            attron(COLOR_PAIR(gfx.color));
+            addch(gfx.gfx);
         }
     }
+
+    return;
 }
 
 static bool same_position(point_t first, point_t second)
@@ -145,7 +177,7 @@ static bool same_position(point_t first, point_t second)
     return first.x == second.x && first.y == second.y;
 }
 
-static char get_gfx_at_position(game_t * game, point_t position)
+static gfx_t get_gfx_at_position(game_t * game, point_t position)
 {
     int i;
 
@@ -155,7 +187,7 @@ static char get_gfx_at_position(game_t * game, point_t position)
             continue;
 
         if(same_position(game->wizards[i].position, position))
-            return game->wizards[i].gfx;
+            return (gfx_t) { .gfx = game->wizards[i].gfx, .color = game->wizards[i].color };
     }
 
     for(i = 0; i < MAX_MONSTERS_PER_GAME; i += 1)
@@ -164,16 +196,98 @@ static char get_gfx_at_position(game_t * game, point_t position)
             continue;
 
         if(same_position(game->monsters[i].position, position))
-            return game->monsters[i].gfx;
+            return (gfx_t) { .gfx = game->monsters[i].gfx, .color = game->monsters[i].color };
     }
 
-    return ' ';
+    return (gfx_t) { .gfx = ' ', .color = color_black };
+}
+
+void chaos_ui_draw_status_selected_spell(game_t * game, wizard_t * wizard)
+{
+    char message[CHAOS_MSGLEN];
+
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    snprintf(message, CHAOS_MSGLEN, "%s casting %s.", wizard->name, wizard->selected_spell->name);
+
+    attron(COLOR_PAIR(wizard->color));
+    addstr(message);
+
+    return;
+}
+
+void chaos_ui_draw_status_active_wizard(game_t * game, wizard_t * wizard)
+{
+    char message[CHAOS_MSGLEN];
+
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    snprintf(message, CHAOS_MSGLEN, "%s moving.", wizard->name);
+
+    attron(COLOR_PAIR(wizard->color));
+    addstr(message);
+
+    return;
+}
+
+void chaos_ui_draw_status_active_monster(game_t * game, monster_t * monster)
+{
+    char message[CHAOS_MSGLEN];
+
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    snprintf(message, CHAOS_MSGLEN, "%s (%s) moving.", monster->name, monster->owner->name);
+
+    attron(COLOR_PAIR(monster->owner->color));
+    addstr(message);
+
+    return;
+}
+
+
+void chaos_ui_draw_status(game_t * game, color_t color, char * message)
+{
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    attron(COLOR_PAIR(color));
+    addstr(message);
+
+    return;
+}
+
+void chaos_ui_draw_status_with_delay(game_t * game, color_t color, char * message, int milliseconds_delay)
+{
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    attron(COLOR_PAIR(color));
+    addstr(message);
+
+    if(milliseconds_delay < 0) {
+        milliseconds_delay = 0;
+    }
+
+    timeout(milliseconds_delay);
+
+    getch();
+
+    timeout(-1);
+
+    return;
+}
+
+void chaos_ui_clear_status(game_t * game)
+{
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+    clrtoeol();
+
+    return;
 }
 
 cursor_action_t chaos_ui_get_cursor_action(game_t * game, point_t position)
 {
     int input;
-    char gfx_under_cursor = get_gfx_at_position(game, position);
+    cursor_action_t result;
+    gfx_t gfx_under_cursor = get_gfx_at_position(game, position);
     bool draw_cursor = false;
 
     timeout(500);
@@ -182,29 +296,52 @@ cursor_action_t chaos_ui_get_cursor_action(game_t * game, point_t position)
     {
         move(1 + game->board_offset.y + position.y, 1 + game->board_offset.x + position.x);
         if(draw_cursor ^= true)
+        {
+            attron(COLOR_PAIR(color_white));
             addch(ACS_CKBOARD);
+        }
         else
-            addch(gfx_under_cursor);
+        {
+            attron(COLOR_PAIR(gfx_under_cursor.color));
+            addch(gfx_under_cursor.gfx);
+        }
 
         input = getch();
         if(input != ERR)
         {
-            if(input == KEY_ENTER || input == ' ')
-                return cursor_action_fire;
+            if(input == KEY_ENTER || input == ' ') {
+                result = cursor_action_fire;
+                break;
+            }
 
-            if(input == KEY_UP)
-                return cursor_action_move_up;
+            if(input == 'd' || input == 'D') {
+                result = cursor_action_done;
+                break;
+            }
 
-            if(input == KEY_RIGHT)
-                return cursor_action_move_right;
+            if(input == KEY_UP) {
+                result = cursor_action_move_up;
+                break;
+            }
 
-            if(input == KEY_DOWN)
-                return cursor_action_move_down;
+            if(input == KEY_RIGHT) {
+                result = cursor_action_move_right;
+                break;
+            }
 
-            if(input == KEY_LEFT)
-                return cursor_action_move_left;
+            if(input == KEY_DOWN) {
+                result = cursor_action_move_down;
+                break;
+            }
+
+            if(input == KEY_LEFT) {
+                result = cursor_action_move_left;
+                break;
+            }
         }
     }
 
     timeout(-1);
+
+    return result;
 }

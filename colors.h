@@ -4,6 +4,7 @@
 typedef enum color_e
 {
     color_black,
+    color_white,
     color_yellow,
     color_blue,
     color_red,
