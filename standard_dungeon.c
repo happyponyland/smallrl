@@ -176,8 +176,7 @@ static mob_type_t random_mob_type(int depth)
     switch((depth / 2) + rand() % (depth + 2))
     {
     case 0:
-        return mob_magician;
-        //return mob_newbie;
+        return mob_newbie;
     case 1:
         return mob_zombie;
     case 2:
@@ -186,6 +185,8 @@ static mob_type_t random_mob_type(int depth)
         return mob_hobbyist;
     case 4:
         return mob_war_troll;
+    case 5:
+        return mob_magician;
     default:
         return mob_zombie;
     }

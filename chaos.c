@@ -20,7 +20,7 @@ static void move_phase(game_t *, wizard_t *);
 static void setup_wizard(wizard_t *);
 static void place_wizards(game_t *, int);
 static bool perform_spell(game_t *, wizard_t *, point_t);
-static point_t get_position_from_start_position(game_t *, start_position_t);
+static point_t get_position_from_start_position(start_position_t);
 static wizard_t * get_wizard_at_position(game_t *, point_t);
 static monster_t * get_monster_at_position(game_t *, point_t);
 static void setup_wizard_round(wizard_t *);
@@ -32,6 +32,11 @@ static int max(int, int);
 static void monster_kill_monster(game_t *, monster_t *, monster_t *);
 static void monster_kill_wizard(game_t *, monster_t *, wizard_t *);
 static void kill_monster(monster_t *);
+static void kill_wizard(wizard_t *);
+static attack_outcome_t monster_shoot_monster(game_t *, monster_t *, monster_t *);
+static attack_outcome_t monster_shoot_wizard(game_t *, monster_t *, wizard_t *);
+static attack_outcome_t perform_attack(int, int);
+static int count_wizards_alive(game_t *);
 
 chaos_outcome_t chaos_duel()
 {
@@ -161,13 +166,13 @@ static void place_wizards(game_t * game, int number_of_wizards)
 
     for(int i = 0; i < number_of_wizards; i += 1)
     {
-        game->wizards[i].position = get_position_from_start_position(game, positions[i]);
+        game->wizards[i].position = get_position_from_start_position(positions[i]);
     }
 
     return;
 }
 
-static point_t get_position_from_start_position(game_t * game, start_position_t start_position)
+static point_t get_position_from_start_position(start_position_t start_position)
 {
     switch(start_position)
     {
@@ -230,6 +235,23 @@ static void setup_wizard(wizard_t * wizard)
     return;
 }
 
+static int count_wizards_alive(game_t * game)
+{
+    int i;
+    int count;
+    wizard_t * wizard;
+
+    count = 0;
+    for(i = 0, wizard = &game->wizards[0]; i < MAX_WIZARDS_PER_GAME; i += 1, wizard += 1) {
+        if(!wizard->is_free && wizard->is_alive)
+        {
+            count += 1;
+        }
+    }
+
+    return count;
+}
+
 static chaos_outcome_t chaos_game(game_t * game)
 {
     for(;;)
@@ -237,6 +259,19 @@ static chaos_outcome_t chaos_game(game_t * game)
         int i;
         wizard_t * wizard;
         monster_t * monster;
+        int count;
+
+        count = count_wizards_alive(game);
+        if(count == 0)
+        {
+            return chaos_outcome_draw;
+        } else if( count == 1) {
+            if(game->wizards[0].is_alive) {
+                return chaos_outcome_win;
+            } else {
+                return chaos_outcome_loss;
+            }
+        }
 
         for(i = 0, wizard = &game->wizards[0]; i < MAX_WIZARDS_PER_GAME; i += 1, wizard += 1) {
             if(!wizard->is_free && wizard->is_alive)
@@ -385,6 +420,7 @@ static bool perform_spell(game_t * game, wizard_t * wizard, point_t target)
     return true;
 }
 
+//...kiiiilllllll meeee---.....
 static void move_phase(game_t * game, wizard_t * wizard)
 {
     point_t cursor_position = wizard->position;
@@ -400,12 +436,23 @@ static void move_phase(game_t * game, wizard_t * wizard)
     for(;;) {
         chaos_ui_draw_board(game, wizard);
         chaos_ui_clear_status(game);
-        if(active_wizard != NULL)
-            chaos_ui_draw_status_active_wizard(game, active_wizard);
+        if(active_wizard != NULL) {
+            if(is_ranged_phase) {
+                chaos_ui_draw_status_active_wizard_ranged(game, active_wizard);
+            } else {
+                chaos_ui_draw_status_active_wizard(game, active_wizard);
+            }
+        }
         else if(active_monster != NULL)
-            chaos_ui_draw_status_active_monster(game, active_monster);
+            if(is_ranged_phase) {
+                chaos_ui_draw_status_active_monster_ranged(game, active_monster);
+            } else {
+                chaos_ui_draw_status_active_monster(game, active_monster);
+            }
         else
+        {
             chaos_ui_draw_status(game, wizard->color, "Move phase");
+        }
 
         cursor_action = chaos_ui_get_cursor_action(game, cursor_position);
 
@@ -488,6 +535,36 @@ static void move_phase(game_t * game, wizard_t * wizard)
             }
             else if(active_monster != NULL && active_wizard == NULL)
             {
+                if(is_ranged_phase)
+                {
+                    int length = max(abs(active_monster->position.x - cursor_position.x), abs(active_monster->position.y - cursor_position.y));
+
+                    if(length > active_monster->stat_range)
+                    {
+                        continue;
+                    }
+
+                    // Attack?
+                    monster_t * monster_defender = get_monster_at_position(game, cursor_position);
+                    wizard_t * wizard_defender = get_wizard_at_position(game, cursor_position);
+
+                    if(monster_defender != NULL) {
+                        if(monster_shoot_monster(game, active_monster, monster_defender) == attack_outcome_win)
+                        {
+                            kill_monster(monster_defender);
+                        }
+                    } else if(wizard_defender != NULL) {
+                        if(monster_shoot_wizard(game, active_monster, wizard_defender) == attack_outcome_win)
+                        {
+                            kill_wizard(wizard_defender);
+                        }
+                    }
+
+                    is_ranged_phase = false;
+                    active_monster = NULL;
+                    continue;
+                }
+
                 if(!is_ranged_phase)
                 {
                     if(active_monster->moves_left == 0)
@@ -545,6 +622,11 @@ static void move_phase(game_t * game, wizard_t * wizard)
 
                                 if(active_monster->moves_left == 0)
                                 {
+                                    if(active_monster->ranged_type != ranged_type_none) {
+                                        is_ranged_phase = true;
+                                        continue;
+                                    }
+
                                     active_monster = NULL;
                                 }
 
@@ -609,11 +691,22 @@ static void move_phase(game_t * game, wizard_t * wizard)
 
                         active_monster->position = cursor_position;
                         active_monster->moves_left = 0;
+
+                        if(active_monster->ranged_type != ranged_type_none) {
+                            is_ranged_phase = true;
+                            continue;
+                        }
+
                     }
                 }
 
                 if(active_monster->moves_left == 0)
                 {
+                    if(active_monster->ranged_type != ranged_type_none) {
+                        is_ranged_phase = true;
+                        continue;
+                    }
+
                     active_monster = NULL;
                     continue;
                 }
@@ -653,44 +746,24 @@ static inline int max(int first, int second)
 
 static attack_outcome_t attack_monster(game_t * game, monster_t * attacker, monster_t * defender)
 {
-    int attack = attacker->stat_combat;
-    int defence = defender->stat_defence;
+    attack_outcome_t outcome = perform_attack(attacker->stat_combat, defender->stat_defence);
 
-    int random_attack = rand() % 11;
-    int random_defence = rand() % 11;
-
-    attack += random_attack;
-    defence += random_defence;
-
-    if(attack < defence)
-    {
-        return attack_outcome_loss;
+    if(outcome == attack_outcome_win) {
+        monster_kill_monster(game, attacker, defender);
     }
 
-    monster_kill_monster(game, attacker, defender);
-
-    return attack_outcome_win;
+    return outcome;
 }
 
 static attack_outcome_t attack_wizard(game_t * game, monster_t * attacker, wizard_t * defender)
 {
-    int attack = attacker->stat_combat;
-    int defence = defender->stat_defence;
+    attack_outcome_t outcome = perform_attack(attacker->stat_combat, defender->stat_defence);
 
-    int random_attack = rand() % 11;
-    int random_defence = rand() % 11;
-
-    attack += random_attack;
-    defence += random_defence;
-
-    if(attack < defence)
-    {
-        return attack_outcome_loss;
+    if(outcome == attack_outcome_win) {
+        monster_kill_wizard(game, attacker, defender);
     }
 
-    monster_kill_wizard(game, attacker, defender);
-
-    return attack_outcome_win;
+    return outcome;
 }
 
 static void monster_kill_monster(game_t * game, monster_t * attacker, monster_t * monster)
@@ -717,6 +790,13 @@ static void kill_monster(monster_t * monster)
     monster->is_dead = true;
 }
 
+static void kill_wizard(wizard_t * wizard)
+{
+    wizard->is_free = true;
+    wizard->is_alive = false;
+}
+
+
 static void monster_kill_wizard(game_t * game, monster_t * attacker, wizard_t * wizard)
 {
     char message[CHAOS_MSGLEN];
@@ -728,7 +808,7 @@ static void monster_kill_wizard(game_t * game, monster_t * attacker, wizard_t * 
     chaos_ui_clear_status(game);
     chaos_ui_draw_status_with_delay(game, attacker->owner->color, message, 500);
 
-    wizard->is_free = true;
+    kill_wizard(wizard);
 }
 
 static wizard_t * get_wizard_at_position(game_t * game, point_t point)
@@ -769,4 +849,44 @@ static monster_t * get_monster_at_position(game_t * game, point_t point)
     }
 
     return NULL;
+}
+
+static attack_outcome_t perform_attack(int attack, int defence)
+{
+    int random_attack = rand() % 11;
+    int random_defence = rand() % 11;
+
+    attack += random_attack;
+    defence += random_defence;
+
+    if(attack < defence)
+    {
+        return attack_outcome_loss;
+    }
+
+    return attack_outcome_win;
+}
+
+static attack_outcome_t monster_shoot_monster(game_t * game, monster_t * attacker, monster_t * defender)
+{
+    //TODO: Draw animation
+
+    attack_outcome_t outcome = perform_attack(attacker->stat_ranged_combat, defender->stat_defence);
+
+    if(outcome == attack_outcome_win) {
+        monster_kill_monster(game, attacker, defender);
+    }
+
+    return outcome;
+}
+
+static attack_outcome_t monster_shoot_wizard(game_t * game, monster_t * attacker, wizard_t * defender)
+{
+    attack_outcome_t outcome = perform_attack(attacker->stat_ranged_combat, defender->stat_defence);
+
+    if(outcome == attack_outcome_win) {
+        monster_kill_wizard(game, attacker, defender);
+    }
+
+    return outcome;
 }

@@ -244,6 +244,33 @@ void chaos_ui_draw_status_active_monster(game_t * game, monster_t * monster)
     return;
 }
 
+void chaos_ui_draw_status_active_wizard_ranged(game_t * game, wizard_t * wizard)
+{
+    char message[CHAOS_MSGLEN];
+
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    snprintf(message, CHAOS_MSGLEN, "%s shoot!", wizard->name);
+
+    attron(COLOR_PAIR(wizard->color));
+    addstr(message);
+
+    return;
+}
+
+void chaos_ui_draw_status_active_monster_ranged(game_t * game, monster_t * monster)
+{
+    char message[CHAOS_MSGLEN];
+
+    move(game->board_offset.y + BOARD_HEIGHT + 2, 0);
+
+    snprintf(message, CHAOS_MSGLEN, "%s (%s) shoot!", monster->name, monster->owner->name);
+
+    attron(COLOR_PAIR(monster->owner->color));
+    addstr(message);
+
+    return;
+}
 
 void chaos_ui_draw_status(game_t * game, color_t color, char * message)
 {

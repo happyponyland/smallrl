@@ -211,7 +211,7 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 mob->attr[ATTR_MAXDAM] = 0;
                 mob->attr[ATTR_ATTACK] = 0;
                 mob->attr[ATTR_DODGE] = 0;
-                mob->attr[ATTR_EXP] = -1;
+                mob->attr[ATTR_EXP] = 200;
                 break;
 
             case mob_zombie:

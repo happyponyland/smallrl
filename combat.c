@@ -5,6 +5,7 @@
 #include "player.h"
 #include "mob.h"
 #include "ui.h"
+#include "chaos.h"
 
 static void melee(mob_t *, mob_t *);
 
@@ -27,7 +28,7 @@ static void melee(mob_t * attacker, mob_t * defender)
     def_a = defender->description_adjective;
     def_n = defender->description_noun;
 
-    if(attacker->type == mob_magician)
+    if(attacker->type == mob_magician && defender->type == mob_player)
     {
         snprintf(line, MSGLEN,
                  "The %s%s challenges you to a duel.",
@@ -35,6 +36,29 @@ static void melee(mob_t * attacker, mob_t * defender)
         print_msg(line);
         wait();
         clear_msg();
+
+        chaos_outcome_t duel_outcome = chaos_duel();
+
+        if(duel_outcome == chaos_outcome_win) {
+            snprintf(line, MSGLEN, "The %s%s holds his hands against his head and screams \"NOOOOoooOOOoooooo!!\" before vanishing in a puff of smoke.", att_a, att_n);
+
+            /* show that the mob is gone before printing message*/
+            attacker->type = mob_none;
+            draw_map(current_level);
+
+            print_msg(line);
+            wait();
+            clear_msg();
+
+            //TODO: Use multiplier from number of chaos opponents?
+            give_exp(defender->attr[ATTR_EXP]);
+        } else if(duel_outcome == chaos_outcome_loss) {
+            defender->attr[ATTR_HP] = 0;
+            print_msg("You did not survive the duel!!");
+            wait();
+            return;
+        }
+
         return;
     }
 

@@ -20,6 +20,8 @@ void chaos_ui_draw_status_selected_spell(game_t *, wizard_t *);
 cursor_action_t chaos_ui_get_cursor_action(game_t *, point_t);
 void chaos_ui_draw_status_active_wizard(game_t *, wizard_t *);
 void chaos_ui_draw_status_active_monster(game_t *, monster_t *);
+void chaos_ui_draw_status_active_wizard_ranged(game_t *, wizard_t *);
+void chaos_ui_draw_status_active_monster_ranged(game_t *, monster_t *);
 void chaos_ui_clear_status(game_t *);
 void chaos_ui_draw_status(game_t *, color_t, char *);
 void chaos_ui_draw_status_with_delay(game_t *, color_t, char *, int);

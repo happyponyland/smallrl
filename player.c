@@ -10,6 +10,7 @@
 #include "level.h"
 #include "ui.h"
 #include "item.h"
+#include "chaos.h"
 
 #include "los.h"
 
@@ -405,7 +406,7 @@ int list_items(uint32_t * start, size_t items)
     int row;
     char item_n[100];
     int input;
-    int sel;
+    size_t sel;
 
     row = 0;
 
@@ -429,10 +430,10 @@ int list_items(uint32_t * start, size_t items)
     do
     {
         input = getch();
+
         sel = input - 'a';
 
-        if (sel >= 0 &&
-            sel < items &&
+        if (sel < items &&
             player.inventory[sel])
         {
             return sel;
