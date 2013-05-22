@@ -12,7 +12,9 @@ void enemy_turn(level_t * level, mob_t * mob)
 {
     switch(mob->type) {
         case mob_zombie:
-        case mob_newbie:
+        case mob_rat:
+        case mob_giant_rat:
+        case mob_boreworm:
             zombie_turn(level, mob);
             break;
         default:

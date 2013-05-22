@@ -12,7 +12,7 @@ typedef enum
     item_leather_pants,
     item_med_prot,
     item_healing_pot,
-    item_telephone,
+    item_magic_lamp,
     item_max /* index of last item + 1 */
 } item_number_t;
 

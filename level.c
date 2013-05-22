@@ -195,13 +195,31 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
 
             switch (type)
             {
-            case mob_newbie:
+            case mob_rat:
                 mob->attr[ATTR_HP] = 5;
                 mob->attr[ATTR_MINDAM] = 1;
                 mob->attr[ATTR_MAXDAM] = 3;
                 mob->attr[ATTR_ATTACK] = 40;
                 mob->attr[ATTR_DODGE] = 20;
                 mob->attr[ATTR_EXP] = 30;
+                break;
+
+            case mob_giant_rat:
+                mob->attr[ATTR_HP] = 10;
+                mob->attr[ATTR_MINDAM] = 2;
+                mob->attr[ATTR_MAXDAM] = 5;
+                mob->attr[ATTR_ATTACK] = 40;
+                mob->attr[ATTR_DODGE] = 10;
+                mob->attr[ATTR_EXP] = 60;
+                break;
+
+            case mob_boreworm:
+                mob->attr[ATTR_HP] = 6;
+                mob->attr[ATTR_MINDAM] = 1;
+                mob->attr[ATTR_MAXDAM] = 4;
+                mob->attr[ATTR_ATTACK] = 30;
+                mob->attr[ATTR_DODGE] = 30;
+                mob->attr[ATTR_EXP] = 45;
                 break;
 
             case mob_magician:
@@ -211,19 +229,19 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 mob->attr[ATTR_MAXDAM] = 0;
                 mob->attr[ATTR_ATTACK] = 0;
                 mob->attr[ATTR_DODGE] = 0;
-                mob->attr[ATTR_EXP] = 200;
+                mob->attr[ATTR_EXP] = 2000;
                 break;
 
             case mob_zombie:
-                mob->attr[ATTR_HP] = 12;
+                mob->attr[ATTR_HP] = 6;
                 mob->attr[ATTR_MINDAM] = 2;
                 mob->attr[ATTR_MAXDAM] = 5;
-                mob->attr[ATTR_ATTACK] = 30;
-                mob->attr[ATTR_DODGE] = 10;
+                mob->attr[ATTR_ATTACK] = 15;
+                mob->attr[ATTR_DODGE] = 0;
                 mob->attr[ATTR_EXP] = 45;
                 break;
 
-            case mob_1337hax0r:
+            case mob_green_bobling:
                 mob->attr[ATTR_HP] = 1;
                 mob->attr[ATTR_MINDAM] = 1;
                 mob->attr[ATTR_MAXDAM] = 0;
@@ -232,7 +250,7 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 mob->attr[ATTR_EXP] = 15;
                 break;
 
-            case mob_hobbyist:
+            case mob_grey_bobling:
                 mob->attr[ATTR_HP] = 5;
                 mob->attr[ATTR_MINDAM] = 1;
                 mob->attr[ATTR_MAXDAM] = 3;
@@ -250,13 +268,13 @@ bool try_make_mob(level_t * level, mob_type_t type, int y, int x)
                 mob->attr[ATTR_EXP] = 90;
                 break;
 
-            case mob_police:
-                mob->attr[ATTR_HP] = 10;
-                mob->attr[ATTR_MINDAM] = 2;
-                mob->attr[ATTR_MAXDAM] = 4;
-                mob->attr[ATTR_ATTACK] = 10;
-                mob->attr[ATTR_DODGE] = 10;
-                mob->attr[ATTR_EXP] = 20;
+            case mob_demon:
+                mob->attr[ATTR_HP] = 20;
+                mob->attr[ATTR_MINDAM] = 4;
+                mob->attr[ATTR_MAXDAM] = 10;
+                mob->attr[ATTR_ATTACK] = 40;
+                mob->attr[ATTR_DODGE] = 40;
+                mob->attr[ATTR_EXP] = 200;
                 break;
 
             default:

@@ -73,12 +73,12 @@ static void melee(mob_t * attacker, mob_t * defender)
         return;
     }
 
-    if ((attacker->type == mob_newbie
-         || attacker->type == mob_1337hax0r)
+    if ((attacker->type == mob_rat
+         || attacker->type == mob_giant_rat)
         && rand() % 5 == 0)
     {
         snprintf(line, MSGLEN,
-                 "The %s%s drains you of your time and patience!",
+                 "The %s%s nibbles on your toes.!",
                  att_a, att_n);
         print_msg(line);
         wait();

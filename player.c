@@ -506,8 +506,8 @@ void use_item(const int index)
         dispose = 1;
         break;
 
-    case item_telephone:
-        use_telephone();
+    case item_magic_lamp:
+        use_magic_lamp();
         clear_msg();
         return;
 
@@ -530,55 +530,55 @@ void use_item(const int index)
 
 
 
-void use_telephone()
+void use_magic_lamp()
 {
     if (rand() % 5 == 0)
     {
-        print_msg("The line is busy.");
+        print_msg("Nothing happens.");
         wait();
         return;
     }
 
-    if (player.phone_status == 0)
+    if (player.magic_lamp_status == 0)
     {
-        print_msg("\"Hello? Who is this?\"");
+        print_msg("Smoke begins to emerge from the magic lamp.");
         wait();
     }
-    else if (player.phone_status == 1)
+    else if (player.magic_lamp_status == 1)
     {
-        print_msg("\"You again? What do you want?\"");
+        print_msg("The smoke is getting thicker..");
         wait();
     }
-    else if (player.phone_status == 2)
+    else if (player.magic_lamp_status == 2)
     {
-        print_msg("\"I want you to stop calling me.\"");
+        print_msg("The magic lamp starts to glow faintly.");
         wait();
     }
-    else if (player.phone_status == 3)
+    else if (player.magic_lamp_status == 3)
     {
-        print_msg("\"Seriously, you need to stop this.\"");
+        print_msg("The glow is getting more intense..");
         wait();
     }
-    else if (player.phone_status == 4)
+    else if (player.magic_lamp_status == 4)
     {
-        print_msg("\"If you call me one more time, I will send the cops after you.\"");
+        print_msg("You hear a humming noise from the magic lamp.");
         wait();
     }
-    else if (player.phone_status == 5)
+    else if (player.magic_lamp_status == 5)
     {
-        print_msg("\"I've had enough of this.\"");
+        print_msg("The magic lamp explodes!");
         wait();
-        summon_cops();
+        summon_demons();
         return;
     }
 
-    player.phone_status++;
+    player.magic_lamp_status++;
 
     return;
 }
 
 
-void summon_cops()
+void summon_demons()
 {
     int how_many;
     int y;
@@ -595,14 +595,12 @@ void summon_cops()
             get_mob(current_level, y, x) == -1 &&
             !(current_level->map[y * current_level->width + x].flags & tile_unpassable))
         {
-            try_make_mob(current_level, mob_police, y, x);
+            try_make_mob(current_level, mob_demon, y, x);
         }
     }
 
     return;
 }
-
-
 
 /*
   Adds new_item to players inventory, returns 666 if it's full.

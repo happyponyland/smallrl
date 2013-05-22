@@ -175,20 +175,24 @@ static mob_type_t random_mob_type(int depth)
 {
     switch((depth / 2) + rand() % (depth + 2))
     {
-    case 0:
-        return mob_newbie;
-    case 1:
-        return mob_zombie;
-    case 2:
-        return mob_1337hax0r;
-    case 3:
-        return mob_hobbyist;
-    case 4:
-        return mob_war_troll;
-    case 5:
-        return mob_magician;
-    default:
-        return mob_zombie;
+        case 0:
+            return mob_rat;
+        case 1:
+            return mob_giant_rat;
+        case 2:
+            return mob_boreworm;
+        case 3:
+            return mob_zombie;
+        case 4:
+            return mob_green_bobling;
+        case 5:
+            return mob_grey_bobling;
+        case 6:
+            return mob_war_troll;
+        case 7:
+            return mob_magician;
+        default:
+            return mob_zombie;
     }
 }
 

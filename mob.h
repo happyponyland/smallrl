@@ -17,12 +17,14 @@ typedef enum mob_type_e
     mob_none = 0,
     mob_player = '@',
     mob_magician = 'M',
-    mob_newbie = 'n',
+    mob_rat = 'r',
+    mob_giant_rat = 'R',
+    mob_boreworm = 'b',
     mob_zombie = 'z',
-    mob_1337hax0r = '1',
-    mob_hobbyist = 'h',
+    mob_green_bobling = 'g',
+    mob_grey_bobling = 'G',
     mob_war_troll = 'T',
-    mob_police = 'p'
+    mob_demon = 'd'
 } mob_type_t;
 
 typedef struct mob_s
