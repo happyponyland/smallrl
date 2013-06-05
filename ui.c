@@ -5,17 +5,70 @@
 #include "level.h"
 #include "player.h"
 
+#define LOG_SIZE (1000)
+
+static char * message_log[LOG_SIZE];
+static size_t message_log_index;
+
+static void draw_log_border(level_t *);
+static void draw_stats_border(void);
+static void draw_map_border(level_t *);
+static void draw_box(int, int, int, int);
+
+static void draw_box(int x, int y, int width, int height)
+{
+    move(y, x);
+    hline(ACS_HLINE, width);
+    move(y, x + width);
+    vline(ACS_VLINE, height);
+    move(y, x);
+    vline(ACS_VLINE, height);
+    move(y + height, x);
+    hline(ACS_HLINE, width);
+
+    move(y, x);
+    addch(ACS_ULCORNER);
+
+    move(y, x + width);
+    addch(ACS_URCORNER);
+
+    move(y + height, x);
+    addch(ACS_LLCORNER);
+
+    move(y + height, x + width);
+    addch(ACS_LRCORNER);
+}
+
+static void draw_map_border(level_t * level)
+{
+    draw_box(0, 1, level->view.width + 1, level->view.height + 1);
+}
+
+static void draw_stats_border()
+{
+}
+
+static void draw_log_border(level_t * level)
+{
+    draw_box(level->view.width + 1, 1, 40, 23);
+}
+
 void draw_map(level_t * level)
 {
     int y;
     int x;
     int i;
 
-    int draw_y = 1;
+    int offset_y = 1;
+    int offset_x = 1;
+
+    int draw_y = offset_y;
+
+    draw_map_border(level);
 
     for (y = level->view.ul_position.y; y < level->view.ul_position.y + level->view.height; y += 1)
     {
-        move(++draw_y, 0);
+        move(++draw_y, offset_x);
 
         for (x = level->view.ul_position.x; x < level->view.ul_position.x + level->view.width; x += 1)
         {
@@ -149,7 +202,7 @@ void draw_map(level_t * level)
 
             if(mob_x > left && mob_x < right && mob_y > top && mob_y < bottom)
             {
-                move(level->mobs[i].position.y - top + 2, level->mobs[i].position.x - left);
+                move(level->mobs[i].position.y - top + offset_y + 1, level->mobs[i].position.x - left + offset_x);
                 addch(level->mobs[i].type);
             }
         }
@@ -164,16 +217,18 @@ void draw_map(level_t * level)
 
 
 
-void draw_stats()
+void draw_stats(level_t * level)
 {
-    move(22, 0);
+    int offset = 3;
+
+    move(level->view.height + offset++, 0);
     printw("HP: %d    Damage: %d-%d",
            player.mob->attr[ATTR_HP],
            player.mob->attr[ATTR_MINDAM],
            player.mob->attr[ATTR_MINDAM] + player.mob->attr[ATTR_MAXDAM]);
     clrtoeol();
 
-    move(23, 0);
+    move(level->view.height + offset++, 0);
     printw("LVL: %d (%ld TNL)  DLVL: %d",
            player.level, get_player_tnl(),
            current_level->depth);
@@ -184,7 +239,17 @@ void draw_stats()
     return;
 }
 
+void reset_log()
+{
+    message_log_index = 0;
+}
 
+void draw_log(level_t * level)
+{
+    draw_log_border(level);
+
+    return;
+}
 
 int prompt_yn(char * m)
 {

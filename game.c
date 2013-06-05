@@ -26,7 +26,8 @@ int play()
         center_view(current_level, player.mob->position);
 
         draw_map(current_level);
-        draw_stats();
+        draw_stats(current_level);
+        draw_log(current_level);
 
         if (player.mob->attr[ATTR_HP] <= 0)
             return prompt_yn("You died. Play again?");
@@ -69,6 +70,8 @@ void new_game()
 
     player.mob = &new_level->mobs[0];
     current_level = new_level;
+
+    reset_log();
 
     create_standard_dungeon(new_level, &player.mob->position);
 

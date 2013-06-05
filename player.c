@@ -173,7 +173,7 @@ int player_turn(void)
                 if (input == 'd')
                     drop_item(itemsel);
                 else if (input == 'u')
-                    use_item(itemsel);
+                    use_item(current_level, itemsel);
 
                 return TURN_COMPLETE;
             }
@@ -495,7 +495,7 @@ void drop_item(item_t ** item)
 
 
 
-void use_item(item_t ** item)
+void use_item(level_t * level, item_t ** item)
 {
     char item_n[100];
     char msg[MSGLEN];
@@ -541,7 +541,7 @@ void use_item(item_t ** item)
         break;
     }
 
-    draw_stats();
+    draw_stats(level);
 
     print_msg(msg);
     wait();

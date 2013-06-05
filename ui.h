@@ -9,10 +9,13 @@
 
 /* ui.c */
 void draw_map(level_t *);
-void draw_stats(void);
+void draw_stats(level_t *);
 int prompt_yn(char *);
 void print_msg(char *);
 void clear_msg(void);
 void wait(void);
+
+void reset_log(void);
+void draw_log(level_t *);
 
 #endif

@@ -5,6 +5,7 @@
 
 #include "item.h"
 #include "mob.h"
+#include "level.h"
 
 /* Do not change! Automatically synced by an external tool to World of Warcraft maxlevel */
 #define PLAYER_MAXLEVEL 90
@@ -28,7 +29,7 @@ int get_player_tnl(void);
 void give_exp(const int amount);
 item_t ** list_and_select_items(item_t ** start);
 void drop_item(item_t ** item);
-void use_item(item_t ** item);
+void use_item(level_t *, item_t ** item);
 bool try_give_item(item_t * new_item);
 int count_items(void);
 void use_magic_lamp(item_t *);

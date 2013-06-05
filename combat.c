@@ -88,7 +88,7 @@ static void melee(mob_t * attacker, mob_t * defender)
         else
             player.exp = 0;
 
-        draw_stats();
+        draw_stats(current_level);
 
         clear_msg();
         return;

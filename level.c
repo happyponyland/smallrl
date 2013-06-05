@@ -25,7 +25,7 @@ level_t * create_new_level(level_t * old_level, int height, int width)
     new_level->width = width;
     new_level->height = height;
     new_level->map = malloc(sizeof(tile_t) * width * height);
-    new_level->view = (window_t) {.ul_position = (point_t) { .x = 0, .y = 0 }, .width = 80, .height = 20 };
+    new_level->view = (window_t) {.ul_position = (point_t) { .x = 0, .y = 0 }, .width = 40, .height = 20 };
     clear_level(new_level);
 
     new_level->mobs[0].type = mob_player;
