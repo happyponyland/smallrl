@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 
+#include "item.h"
 #include "mob.h"
 
 /* Do not change! Automatically synced by an external tool to World of Warcraft maxlevel */
@@ -15,8 +16,7 @@ typedef struct player_info_s
     mob_t * mob;
     int level;
     long exp;
-    uint32_t inventory[INVENTORY_SIZE];
-    int magic_lamp_status;
+    item_t * inventory[INVENTORY_SIZE];
 } player_info_t;
 
 /* player.c */
@@ -26,12 +26,12 @@ int player_turn(void);
 void explore(void);
 int get_player_tnl(void);
 void give_exp(const int amount);
-int list_items(uint32_t * start, size_t items);
-void drop_item(const int index);
-void use_item(const int index);
-int give_item(uint32_t new_item);
+item_t ** list_and_select_items(item_t ** start);
+void drop_item(item_t ** item);
+void use_item(item_t ** item);
+bool try_give_item(item_t * new_item);
 int count_items(void);
-void use_magic_lamp(void);
+void use_magic_lamp(item_t *);
 void summon_demons(void);
 
 /* Player controlled mob */

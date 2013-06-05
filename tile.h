@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#include "item.h"
+
 typedef enum tile_type_e
 {
     tile_void,
@@ -42,7 +44,7 @@ typedef struct tile_s
     bool is_lit;
     bool is_periphery;
     bool is_path;
-    uint32_t item;
+    item_t * item;
 } tile_t;
 
 #endif

@@ -67,7 +67,6 @@ void new_game()
 {
     level_t * new_level = create_new_level(NULL, 80, 160);
 
-    player.magic_lamp_status = 0;
     player.mob = &new_level->mobs[0];
     current_level = new_level;
 
@@ -75,6 +74,8 @@ void new_game()
 
     player.level = 1;
     player.exp = 0;
+
+    memset(&player.inventory, 0, sizeof(item_t *) * INVENTORY_SIZE);
 
     player.mob->attr[ATTR_HP] = 20;
     player.mob->attr[ATTR_ATTACK] = 20;
@@ -84,14 +85,12 @@ void new_game()
 
     size_t i;
     for (i = 0; i < INVENTORY_SIZE; i++)
-        player.inventory[i] = 0;
-
-    player.inventory[0] = item_dildo;
-    player.inventory[1] = item_leather_pants;
-    player.inventory[2] = item_med_prot;
-    player.inventory[3] = item_healing_pot;
-    player.inventory[4] = item_healing_pot;
-    player.inventory[4] = item_magic_lamp;
+    {
+        if(player.inventory[i] != NULL) {
+            free(player.inventory[i]);
+            player.inventory[i] = NULL;
+        }
+    }
 
     return;
 }

@@ -4,41 +4,32 @@
 
 #include "item.h"
 
-void item_name(char * s, uint32_t item)
+void item_name(char * s, item_t * item)
 {
-    switch (ITEM_TYPE(item))
+    switch (item->type)
     {
-    case item_dildo:
-        strcpy(s, "a purple dildo");
+    case item_type_armor:
+        strcpy(s, "a piece of armour");
         break;
 
-    case item_leather_pants:
-        strcpy(s, "a pair of leather pants");
+    case item_type_potion:
+        strcpy(s, "a potion");
         break;
 
-    case item_med_prot:
-        strcpy(s, "a medallion of protection");
+    case item_type_garnish:
+        strcpy(s, "a garnish");
         break;
 
-    case item_healing_pot:
-        strcpy(s, "a healing potion");
+    case item_type_bibelot:
+        strcpy(s, "a bibelot");
         break;
 
-    case item_magic_lamp:
-        strcpy(s, "a magical lamp");
+    case item_type_key:
+        strcpy(s, "a key");
         break;
 
     default:
         strcpy(s, "a rift in time and space");
         break;
     }
-}
-
-
-
-uint32_t random_item()
-{
-    uint32_t ret;
-    ret = 1 + rand() % (item_max - 1);
-    return ret;
 }

@@ -9,6 +9,7 @@ FILES=(
     "item.c"
     "ai.c"
     "standard_dungeon.c"
+    "standard_dungeon_internal_item_tables.c"
     "combat.c"
     "mob.c"
     "los.c"

@@ -14,7 +14,13 @@
 
 #include "los.h"
 
-player_info_t player;
+player_info_t player =  {
+    .mob = NULL,
+    .level = 1,
+    .exp = 0,
+    .inventory = {
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}};
 
 static int experience_to_level(int);
 
@@ -64,9 +70,9 @@ int player_move(int input)
             return TURN_DESCEND;
         }
 
-        uint32_t item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
+        item_t * item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
 
-        if (item)
+        if (item != NULL)
         {
             char item_n[100];
             char line[MSGLEN];
@@ -92,7 +98,8 @@ int player_move(int input)
 
 int player_turn(void)
 {
-    int input, move, itemsel;
+    int input, move;
+    item_t ** itemsel;
 
     while (1)
     {
@@ -110,7 +117,7 @@ int player_turn(void)
         case 'g':
         case ',':
             ;
-            uint32_t item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
+            item_t * item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
 
             if (item == 0)
             {
@@ -123,7 +130,7 @@ int player_turn(void)
 
             item_name(item_n, item);
 
-            if (give_item(item) == 666)
+            if (!try_give_item(item))
             {
                 print_msg("You're carrying too much shit already.");
                 wait();
@@ -155,13 +162,13 @@ int player_turn(void)
             else if (input == 'u')
                 print_msg("Use which item?");
 
-            itemsel = list_items(&player.inventory[0], INVENTORY_SIZE);
+            itemsel = list_and_select_items(player.inventory);
 
             /* restore view */
             clear_msg();
             draw_map(current_level);
 
-            if (itemsel != -1)
+            if (itemsel != NULL)
             {
                 if (input == 'd')
                     drop_item(itemsel);
@@ -400,7 +407,7 @@ static int experience_to_level(int level)
     return 50 * (level * level) + 100 * level;
 }
 
-int list_items(uint32_t * start, size_t items)
+item_t ** list_and_select_items(item_t ** start)
 {
     size_t i;
     int row;
@@ -408,18 +415,17 @@ int list_items(uint32_t * start, size_t items)
     int input;
     size_t sel;
 
+    item_t * current_item;
+
     row = 0;
 
-    for (i = 0; i < items; i++)
+    for (i = 0, current_item = *start; current_item != NULL && i < INVENTORY_SIZE; i += 1, current_item = *(start + i))
     {
-        if (start[i] == item_void)
-            continue;
-
         row++;
 
         move(1 + row, 0);
 
-        item_name(item_n, start[i]);
+        item_name(item_n, current_item);
 
         printw("  %c) %s   ",
                'a' + i, item_n);
@@ -433,17 +439,17 @@ int list_items(uint32_t * start, size_t items)
 
         sel = input - 'a';
 
-        if (sel < items &&
-            player.inventory[sel])
+        if (sel < INVENTORY_SIZE &&
+            player.inventory[sel] != NULL)
         {
-            return sel;
+            return &player.inventory[sel];
         }
 
         print_msg("You don't have that!!");
         refresh();
     } while (input != ' ');
 
-    return -1;
+    return NULL;
 }
 
 
@@ -457,21 +463,22 @@ int count_items()
 
     for (i = 0; i < INVENTORY_SIZE; i++)
     {
-        if (player.inventory[i] != 0)
-            c++;
+        if (player.inventory[i] != NULL) {
+            c += 1;
+        }
     }
 
     return c;
 }
 
-
-
-void drop_item(const int index)
+void drop_item(item_t ** item)
 {
     char item_n[100];
     char msg[MSGLEN];
 
-    item_name(item_n, player.inventory[index]);
+    //TODO: Make sure this item is acutally in the inventory..
+
+    item_name(item_n, *item);
 
     snprintf(msg, MSGLEN, "Okay, you drop %s.", item_n);
     print_msg(msg);
@@ -479,37 +486,55 @@ void drop_item(const int index)
     clear_msg();
 
     current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item =
-        player.inventory[index];
+        *item;
 
-    player.inventory[index] = 0;
+    *item = NULL;
 
     return;
 }
 
 
 
-void use_item(const int index)
+void use_item(item_t ** item)
 {
     char item_n[100];
     char msg[MSGLEN];
-    int dispose;
+    bool should_dispose;
 
-    item_name(item_n, player.inventory[index]);
+    //TODO: Make sure this item is actually in the inventory..
 
-    dispose = 0;
+    item_name(item_n, *item);
 
-    switch (ITEM_TYPE(player.inventory[index]))
+    should_dispose = false;
+
+    switch ((*item)->type)
     {
-    case item_healing_pot:
-        snprintf(msg, MSGLEN, "You drink %s. This stuff is great!", item_n);
-        player.mob->attr[ATTR_HP] += 20;
-        dispose = 1;
+    case item_type_potion:
+        switch((item_subtype_potion_t)(*item)->subtype)
+        {
+            case item_subtype_potion_heal:
+                snprintf(msg, MSGLEN, "You drink %s. This stuff is great!", item_n);
+                player.mob->attr[ATTR_HP] += 20;
+                should_dispose = true;
+                break;
+
+            default:
+                break;
+        }
         break;
 
-    case item_magic_lamp:
-        use_magic_lamp();
-        clear_msg();
-        return;
+        case item_type_bibelot:
+            switch((*item)->subtype)
+            {
+                case item_subtype_bibelot_magic_lamp:
+                    use_magic_lamp(*item);
+                    clear_msg();
+                    return;
+
+                default:
+                    break;
+            }
+            break;
 
     default:
         snprintf(msg, MSGLEN, "You do something with %s, but you're not sure what.", item_n);
@@ -522,15 +547,27 @@ void use_item(const int index)
     wait();
     clear_msg();
 
-    if (dispose)
-        player.inventory[index] = 0;
+    if (should_dispose) {
+        *item = NULL;
+        if(*(item + 1) != NULL)
+        {
+            for(int i = 1; ; i += 1) {
+                item_t * next_item = *(item + i);
+
+                if(next_item == NULL) {
+                    break;
+                }
+
+                *(item + i - 1) = next_item;
+                *(item + i) = NULL;
+            }
+        }
+    }
 
     return;
 }
 
-
-
-void use_magic_lamp()
+void use_magic_lamp(item_t * item)
 {
     if (rand() % 5 == 0)
     {
@@ -539,32 +576,32 @@ void use_magic_lamp()
         return;
     }
 
-    if (player.magic_lamp_status == 0)
+    if (item->state == 0)
     {
         print_msg("Smoke begins to emerge from the magic lamp.");
         wait();
     }
-    else if (player.magic_lamp_status == 1)
+    else if (item->state == 1)
     {
         print_msg("The smoke is getting thicker..");
         wait();
     }
-    else if (player.magic_lamp_status == 2)
+    else if (item->state == 2)
     {
         print_msg("The magic lamp starts to glow faintly.");
         wait();
     }
-    else if (player.magic_lamp_status == 3)
+    else if (item->state == 3)
     {
         print_msg("The glow is getting more intense..");
         wait();
     }
-    else if (player.magic_lamp_status == 4)
+    else if (item->state == 4)
     {
         print_msg("You hear a humming noise from the magic lamp.");
         wait();
     }
-    else if (player.magic_lamp_status == 5)
+    else if (item->state == 5)
     {
         print_msg("The magic lamp explodes!");
         wait();
@@ -572,7 +609,7 @@ void use_magic_lamp()
         return;
     }
 
-    player.magic_lamp_status++;
+    item->state += 1;
 
     return;
 }
@@ -603,20 +640,20 @@ void summon_demons()
 }
 
 /*
-  Adds new_item to players inventory, returns 666 if it's full.
+  Adds new_item to players inventory, returns false if it's full.
 */
-int give_item(uint32_t new_item)
+bool try_give_item(item_t * new_item)
 {
     size_t i;
 
-    for (i = 0; i < INVENTORY_SIZE; i++)
+    for (i = 0; i < INVENTORY_SIZE; i += 1)
     {
-        if (player.inventory[i] == 0)
+        if (player.inventory[i] == NULL)
         {
             player.inventory[i] = new_item;
-            return 0;
+            return true;
         }
     }
 
-    return 666;
+    return false;
 }

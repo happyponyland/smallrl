@@ -4,6 +4,7 @@
 
 #include "standard_dungeon.h"
 #include "standard_dungeon_internal.h"
+#include "standard_dungeon_internal_item_tables.h"
 
 static bool is_too_large(rectangle_t *);
 static bsp_node_t * create_new_node(int, int, int, int, int);
@@ -214,9 +215,9 @@ static void place_items(bsp_head_t * head)
             int x = (current_node->room_region->left + 1) + (rand() % (current_node->room_region->right - current_node->room_region->left - 2));
             int y = (current_node->room_region->top + 1) + (rand() % (current_node->room_region->bottom - current_node->room_region->top - 2));
 
-            if (head->level->map[y * head->level->width + x].item == 0)
+            if (head->level->map[y * head->level->width + x].item == NULL)
             {
-                head->level->map[y * head->level->width + x].item = random_item();
+                head->level->map[y * head->level->width + x].item = create_random_item(head->level->depth);
             }
         }
 
