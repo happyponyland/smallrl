@@ -7,6 +7,14 @@
 /* Size of default message buffer */
 #define MSGLEN 200
 
+typedef enum ui_input_type_e
+{
+    ui_input_type_map,
+    ui_input_type_log,
+} ui_input_type_t;
+
+extern ui_input_type_t current_ui_input_type;
+
 /* ui.c */
 void draw_map(level_t *);
 void draw_stats(level_t *);

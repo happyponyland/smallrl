@@ -34,9 +34,9 @@ int play()
 
         turn = player_turn();
 
-        if (turn == TURN_QUIT)
+        if (turn == turn_command_quit)
             return 0;
-        else if (turn == TURN_DESCEND) {
+        else if (turn == turn_command_descend) {
             level_t * new_level = create_new_level(current_level, 80, 160);
 
             memcpy(&new_level->mobs[0],
@@ -70,6 +70,7 @@ void new_game()
 
     player.mob = &new_level->mobs[0];
     current_level = new_level;
+    current_ui_input_type = ui_input_type_map;
 
     reset_log();
 

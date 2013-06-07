@@ -24,6 +24,10 @@ player_info_t player =  {
 
 static int experience_to_level(int);
 
+static turn_command_t player_move(int);
+static turn_command_t process_input_log(int);
+static turn_command_t process_input_map(int);
+
 void get_speed(int key, int * x, int * y)
 {
     switch (key)
@@ -47,7 +51,7 @@ void get_speed(int key, int * x, int * y)
 }
 
 
-int player_move(int input)
+turn_command_t player_move(int input)
 {
     int x_speed = 0, y_speed = 0;
     int mob_id;
@@ -57,7 +61,7 @@ int player_move(int input)
     if (mob_id != -1)
     {
         attack(player.mob, &current_level->mobs[mob_id]);
-        return 0;
+        return turn_command_complete;
     }
     else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
     {
@@ -67,7 +71,7 @@ int player_move(int input)
         if (current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
-            return TURN_DESCEND;
+            return turn_command_descend;
         }
 
         item_t * item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
@@ -88,18 +92,17 @@ int player_move(int input)
         }
 
         draw_map(current_level);
-        return TURN_COMPLETE;
+        return turn_command_complete;
     }
 
     print_msg("You cannot go there.");
-    return TURN_ABORT;
+    return turn_command_void;
 }
 
 
-int player_turn(void)
+turn_command_t player_turn(void)
 {
-    int input, move;
-    item_t ** itemsel;
+    int input;
 
     while (1)
     {
@@ -107,12 +110,46 @@ int player_turn(void)
 
         clear_msg();
 
-        switch (input)
+        if(input == '\t')
         {
+            if(current_ui_input_type == ui_input_type_log) {
+                current_ui_input_type = ui_input_type_map;
+            } else {
+                current_ui_input_type = ui_input_type_log;
+            }
+            continue;
+        }
+
+        turn_command_t command;
+
+        if(current_ui_input_type == ui_input_type_map) {
+            command = process_input_map(input);
+        } else {
+            command = process_input_log(input);
+        }
+
+        if(command == turn_command_void) {
+            continue;
+        }
+
+        return command;
+    }
+}
+
+static turn_command_t process_input_log(int input) {
+    return turn_command_void;
+}
+
+static turn_command_t process_input_map(int input) {
+    int move;
+    item_t ** itemsel;
+
+    switch (input)
+    {
         case 'Q':
             if (prompt_yn("Do you want to quit?"))
-                return TURN_QUIT;
-            continue;
+                return turn_command_quit;
+            return turn_command_void;
 
         case 'g':
         case ',':
@@ -122,7 +159,7 @@ int player_turn(void)
             if (item == 0)
             {
                 print_msg("Nothing here!");
-                continue;
+                return turn_command_void;
             }
 
             char item_n[100];
@@ -145,16 +182,14 @@ int player_turn(void)
             }
 
             clear_msg();
-
-            return TURN_COMPLETE;
-
+            return turn_command_complete;
 
         case 'd':
         case 'u':
             if (count_items() == 0)
             {
                 print_msg("You have no items.");
-                continue;
+                return turn_command_void;
             }
 
             if (input == 'd')
@@ -175,36 +210,32 @@ int player_turn(void)
                 else if (input == 'u')
                     use_item(current_level, itemsel);
 
-                return TURN_COMPLETE;
+                return turn_command_complete;
             }
-            continue;
+            return turn_command_void;
 
         case '.':
             /* Rest/wait/meditate */
-            return TURN_COMPLETE;
+            return turn_command_complete;
 
 
         case ' ':
             //clear_msg();
-            continue;
+            return turn_command_void;
 
         case '+':
             chaos_duel();
-            continue;
+            return turn_command_void;
 
         case KEY_LEFT:
         case KEY_RIGHT:
         case KEY_UP:
         case KEY_DOWN:
             move = player_move(input);
-            if (move == TURN_ABORT)
-                continue;
-            else
-                return move;
+            return move;
 
         default:
-            continue;
-        }
+            return turn_command_void;
     }
 }
 

@@ -7,6 +7,8 @@
 
 #define LOG_SIZE (1000)
 
+ui_input_type_t current_ui_input_type;
+
 static char * message_log[LOG_SIZE];
 static size_t message_log_index;
 
@@ -41,6 +43,15 @@ static void draw_box(int x, int y, int width, int height)
 
 static void draw_map_border(level_t * level)
 {
+    if(current_ui_input_type == ui_input_type_map)
+    {
+        attrset(A_BOLD);
+    }
+    else
+    {
+        attrset(A_NORMAL);
+    }
+
     draw_box(0, 1, level->view.width + 1, level->view.height + 1);
 }
 
@@ -50,6 +61,15 @@ static void draw_stats_border()
 
 static void draw_log_border(level_t * level)
 {
+    if(current_ui_input_type == ui_input_type_log)
+    {
+        attrset(A_BOLD);
+    }
+    else
+    {
+        attrset(A_NORMAL);
+    }
+
     draw_box(level->view.width + 1, 1, 40, 23);
 }
 

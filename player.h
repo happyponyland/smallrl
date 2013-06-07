@@ -7,6 +7,14 @@
 #include "mob.h"
 #include "level.h"
 
+typedef enum turn_command_e
+{
+    turn_command_void,
+    turn_command_complete,
+    turn_command_quit,
+    turn_command_descend,
+} turn_command_t;
+
 /* Do not change! Automatically synced by an external tool to World of Warcraft maxlevel */
 #define PLAYER_MAXLEVEL 90
 
@@ -21,9 +29,9 @@ typedef struct player_info_s
 } player_info_t;
 
 /* player.c */
+turn_command_t player_turn(void);
+
 void get_speed(int key, int * x, int * y);
-int player_move(int input);
-int player_turn(void);
 void explore(void);
 int get_player_tnl(void);
 void give_exp(const int amount);
