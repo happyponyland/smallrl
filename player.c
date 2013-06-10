@@ -14,7 +14,7 @@
 
 #include "los.h"
 
-player_info_t player =  {
+player_info_t player = {
     .mob = NULL,
     .level = 1,
     .exp = 0,
@@ -32,24 +32,24 @@ void get_speed(int key, int * x, int * y)
 {
     switch (key)
     {
-    case KEY_LEFT:
-        *x = -1;
-        break;
-    case KEY_RIGHT:
-        *x = 1;
-        break;
-    case KEY_UP:
-        *y = -1;
-        break;
-    case KEY_DOWN:
-        *y = 1;
-        break;
-    default:
-        break;
+        case KEY_LEFT:
+            *x = -1;
+            break;
+        case KEY_RIGHT:
+            *x = 1;
+            break;
+        case KEY_UP:
+            *y = -1;
+            break;
+        case KEY_DOWN:
+            *y = 1;
+            break;
+        default:
+            break;
     }
+
     return;
 }
-
 
 turn_command_t player_move(int input)
 {
@@ -99,7 +99,6 @@ turn_command_t player_move(int input)
     return turn_command_void;
 }
 
-
 turn_command_t player_turn(void)
 {
     int input;
@@ -108,15 +107,27 @@ turn_command_t player_turn(void)
     {
         input = getch();
 
+        if(input == ERR) {
+            draw_log(current_level);
+            continue;
+        }
+
         clear_msg();
 
         if(input == '\t')
         {
             if(current_ui_input_type == ui_input_type_log) {
+                timeout(-1);
                 current_ui_input_type = ui_input_type_map;
             } else {
+                timeout(500);
                 current_ui_input_type = ui_input_type_log;
             }
+
+            draw_map(current_level);
+            draw_stats(current_level);
+            draw_log(current_level);
+
             continue;
         }
 
@@ -126,6 +137,7 @@ turn_command_t player_turn(void)
             command = process_input_map(input);
         } else {
             command = process_input_log(input);
+            draw_log(current_level);
         }
 
         if(command == turn_command_void) {
@@ -136,11 +148,28 @@ turn_command_t player_turn(void)
     }
 }
 
-static turn_command_t process_input_log(int input) {
+static turn_command_t process_input_log(int input)
+{
+    int log_input_index = strlen(log_input) - 1;
+
+    if(input == KEY_BACKSPACE) {
+        if(log_input_index < 0) {
+            return turn_command_void;
+        }
+
+        log_input[log_input_index] = '\0';
+    }
+
+    if((input > 'a' && input < 'z') || (input > 'A' && input < 'Z')) {
+        log_input[log_input_index + 1] = input;
+        log_input[log_input_index + 2] = '\0';
+    }
+
     return turn_command_void;
 }
 
-static turn_command_t process_input_map(int input) {
+static turn_command_t process_input_map(int input)
+{
     int move;
     item_t ** itemsel;
 
@@ -393,8 +422,6 @@ void explore(void)
     return;
 }
 
-
-
 void give_exp(const int amount)
 {
     char line[MSGLEN];
@@ -483,8 +510,6 @@ item_t ** list_and_select_items(item_t ** start)
     return NULL;
 }
 
-
-
 int count_items()
 {
     int c;
@@ -523,8 +548,6 @@ void drop_item(item_t ** item)
 
     return;
 }
-
-
 
 void use_item(level_t * level, item_t ** item)
 {
@@ -644,7 +667,6 @@ void use_magic_lamp(item_t * item)
 
     return;
 }
-
 
 void summon_demons()
 {

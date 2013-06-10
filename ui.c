@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <string.h>
 
 #include "ui.h"
 
@@ -11,6 +12,9 @@ ui_input_type_t current_ui_input_type;
 
 static char * message_log[LOG_SIZE];
 static size_t message_log_index;
+
+static bool cursor_blinker = true;
+char log_input[MAX_INPUT_LENGTH];
 
 static void draw_log_border(level_t *);
 static void draw_stats_border(void);
@@ -70,7 +74,7 @@ static void draw_log_border(level_t * level)
         attrset(A_NORMAL);
     }
 
-    draw_box(level->view.width + 1, 1, 40, 23);
+    draw_box(level->view.width + 2, 1, 40, 23);
 }
 
 void draw_map(level_t * level)
@@ -235,8 +239,6 @@ void draw_map(level_t * level)
     return;
 }
 
-
-
 void draw_stats(level_t * level)
 {
     int offset = 3;
@@ -267,6 +269,24 @@ void reset_log()
 void draw_log(level_t * level)
 {
     draw_log_border(level);
+
+    move(23, level->view.width + 4);
+    addch('>');
+    addch(' ');
+
+    addstr(log_input);
+
+    //    move(23, level->view.width + 4 + 2 + strlen(log_input));
+
+    if(current_ui_input_type == ui_input_type_log) {
+        if(cursor_blinker ^= true) {
+            addch(ACS_CKBOARD);
+        } else {
+            addch(' ');
+        }
+    }
+
+    draw_box(level->view.width + 2, 1, 40, 23);
 
     return;
 }

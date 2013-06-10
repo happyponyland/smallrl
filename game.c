@@ -79,8 +79,6 @@ void new_game()
     player.level = 1;
     player.exp = 0;
 
-    memset(&player.inventory, 0, sizeof(item_t *) * INVENTORY_SIZE);
-
     player.mob->attr[ATTR_HP] = 20;
     player.mob->attr[ATTR_ATTACK] = 20;
     player.mob->attr[ATTR_DODGE] = 20;
@@ -95,6 +93,8 @@ void new_game()
             player.inventory[i] = NULL;
         }
     }
+
+    *log_input = '\0';
 
     return;
 }
