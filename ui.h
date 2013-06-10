@@ -7,8 +7,6 @@
 /* Size of default message buffer */
 #define MSGLEN 200
 
-#define MAX_INPUT_LENGTH (1000)
-
 typedef enum ui_input_type_e
 {
     ui_input_type_map,
@@ -16,9 +14,6 @@ typedef enum ui_input_type_e
 } ui_input_type_t;
 
 extern ui_input_type_t current_ui_input_type;
-
-
-extern char log_input[MAX_INPUT_LENGTH];
 
 /* ui.c */
 void draw_map(level_t *);
@@ -28,7 +23,7 @@ void print_msg(char *);
 void clear_msg(void);
 void wait(void);
 
-void reset_log(void);
 void draw_log(level_t *);
+
 
 #endif

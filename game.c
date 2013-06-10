@@ -11,7 +11,7 @@
 
 #include "standard_dungeon.h"
 #include "los.h"
-
+#include "log.h"
 
 int play()
 {

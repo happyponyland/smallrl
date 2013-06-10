@@ -13,6 +13,7 @@ FILES=(
     "combat.c"
     "mob.c"
     "los.c"
+    "log.c"
     "chaos.c"
     "chaos_internal_ui.c"
     "chaos_internal_ai.c"

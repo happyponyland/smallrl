@@ -13,6 +13,7 @@
 #include "chaos.h"
 
 #include "los.h"
+#include "log.h"
 
 player_info_t player = {
     .mob = NULL,
@@ -160,9 +161,16 @@ static turn_command_t process_input_log(int input)
         log_input[log_input_index] = '\0';
     }
 
-    if((input > 'a' && input < 'z') || (input > 'A' && input < 'Z')) {
+    if((input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z') || input == ' ') {
         log_input[log_input_index + 1] = input;
         log_input[log_input_index + 2] = '\0';
+    }
+
+    if((input == '\n' || input == KEY_ENTER) && strlen(log_input) > 0) {
+        add_log(log_input);
+        log_input[0] = '\0';
+        log_input_index = 0;
+        return turn_command_complete;
     }
 
     return turn_command_void;

@@ -6,15 +6,11 @@
 #include "level.h"
 #include "player.h"
 
-#define LOG_SIZE (1000)
+#include "log.h"
 
 ui_input_type_t current_ui_input_type;
 
-static char * message_log[LOG_SIZE];
-static size_t message_log_index;
-
 static bool cursor_blinker = true;
-char log_input[MAX_INPUT_LENGTH];
 
 static void draw_log_border(level_t *);
 static void draw_stats_border(void);
@@ -243,6 +239,8 @@ void draw_stats(level_t * level)
 {
     int offset = 3;
 
+    draw_stats_border();
+
     move(level->view.height + offset++, 0);
     printw("HP: %d    Damage: %d-%d",
            player.mob->attr[ATTR_HP],
@@ -261,22 +259,31 @@ void draw_stats(level_t * level)
     return;
 }
 
-void reset_log()
-{
-    message_log_index = 0;
-}
-
 void draw_log(level_t * level)
 {
+    int y;
+
     draw_log_border(level);
 
-    move(23, level->view.width + 4);
+    for(y = 2; y < 23; y += 1)
+    {
+        move(y, level->view.width + 3);
+        for(int x = 0; x < 39; x += 1)
+            addch(' ');
+    }
+
+    move(23, level->view.width + 3);
+    addch(' ');
     addch('>');
     addch(' ');
 
     addstr(log_input);
 
-    //    move(23, level->view.width + 4 + 2 + strlen(log_input));
+    for(int i = level->view.width + 4 + 2 + strlen(log_input); i < level->view.width + 42; i += 1) {
+        addch(' ');
+    }
+
+    move(23, level->view.width + 4 + 2 + strlen(log_input));
 
     if(current_ui_input_type == ui_input_type_log) {
         if(cursor_blinker ^= true) {
@@ -287,6 +294,17 @@ void draw_log(level_t * level)
     }
 
     draw_box(level->view.width + 2, 1, 40, 23);
+
+    y = 21;
+    int temp_index = message_log_index;
+    while(y >= 2 && temp_index >= 0)
+    {
+        move(y, level->view.width + 4);
+        addstr(message_log[temp_index]);
+
+        y -= 1;
+        temp_index -= 1;
+    }
 
     return;
 }
