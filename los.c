@@ -81,10 +81,10 @@ static void trace(level_t * level, point_t start, point_t end)
     for(;;)
     {
         if(on_map(level, y, x)) {
-            level->map[y * current_level->width + x].is_explored = true;
-            level->map[y * current_level->width + x].is_lit = true;
+            level->map[y * level->width + x].is_explored = true;
+            level->map[y * level->width + x].is_lit = true;
 
-            if((level->map[y * current_level->width + x].flags & tile_unpassable) == tile_unpassable)
+            if((level->map[y * level->width + x].flags & tile_unpassable) == tile_unpassable)
                 break;
         }
 

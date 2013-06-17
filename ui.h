@@ -4,26 +4,21 @@
 #include "level.h"
 #include "colors.h"
 
+#include "input_type.h"
+#include "player.h"
+#include "log.h"
+
 /* Size of default message buffer */
 #define MSGLEN 200
 
-typedef enum ui_input_type_e
-{
-    ui_input_type_map,
-    ui_input_type_log,
-} ui_input_type_t;
-
-extern ui_input_type_t current_ui_input_type;
-
 /* ui.c */
-void draw_map(level_t *);
-void draw_stats(level_t *);
+void draw_map(input_type_t, level_t *);
+void draw_stats(player_info_t *, level_t *);
 int prompt_yn(char *);
 void print_msg(char *);
 void clear_msg(void);
 void wait(void);
 
-void draw_log(level_t *);
-
+void draw_log(input_type_t, log_t *, level_t *);
 
 #endif

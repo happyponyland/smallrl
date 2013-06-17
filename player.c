@@ -15,19 +15,10 @@
 #include "los.h"
 #include "log.h"
 
-player_info_t player = {
-    .mob = NULL,
-    .level = 1,
-    .exp = 0,
-    .inventory = {
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-        NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}};
-
 static int experience_to_level(int);
-
-static turn_command_t player_move(int);
-static turn_command_t process_input_log(int);
-static turn_command_t process_input_map(int);
+static turn_command_t player_move(game_t *, int);
+static turn_command_t process_input_log(game_t *, int);
+static turn_command_t process_input_map(game_t *, int);
 
 void get_speed(int key, int * x, int * y)
 {
@@ -52,30 +43,30 @@ void get_speed(int key, int * x, int * y)
     return;
 }
 
-turn_command_t player_move(int input)
+static turn_command_t player_move(game_t * game, int input)
 {
     int x_speed = 0, y_speed = 0;
     int mob_id;
     get_speed(input, &x_speed, &y_speed);
-    mob_id = get_mob(current_level, player.mob->position.y + y_speed, player.mob->position.x + x_speed);
+    mob_id = get_mob(game->level, game->player.mob->position.y + y_speed, game->player.mob->position.x + x_speed);
 
     if (mob_id != -1)
     {
-        attack(player.mob, &current_level->mobs[mob_id]);
+        attack(game, game->player.mob, &(game->level->mobs[mob_id]));
         return turn_command_complete;
     }
-    else if (try_move_mob(current_level, player.mob, y_speed, x_speed))
+    else if (try_move_mob(game, game->level, game->player.mob, y_speed, x_speed))
     {
-        explore();
-        explore_map(current_level, player.mob->position);
+        explore(game->level, game->player.mob);
+        explore_map(game->level, game->player.mob->position);
 
-        if (current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].type == tile_stair &&
+        if (game->level->map[game->player.mob->position.y * game->level->width + game->player.mob->position.x].type == tile_stair &&
             prompt_yn("Go down the stairs?"))
         {
             return turn_command_descend;
         }
 
-        item_t * item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
+        item_t * item = game->level->map[game->player.mob->position.y * game->level->width + game->player.mob->position.x].item;
 
         if (item != NULL)
         {
@@ -92,7 +83,7 @@ turn_command_t player_move(int input)
             clear_msg();
         }
 
-        draw_map(current_level);
+        draw_map(game->input_type, game->level);
         return turn_command_complete;
     }
 
@@ -100,7 +91,7 @@ turn_command_t player_move(int input)
     return turn_command_void;
 }
 
-turn_command_t player_turn(void)
+turn_command_t player_turn(game_t * game)
 {
     int input;
 
@@ -109,7 +100,7 @@ turn_command_t player_turn(void)
         input = getch();
 
         if(input == ERR) {
-            draw_log(current_level);
+            draw_log(game->input_type, &(game->log), game->level);
             continue;
         }
 
@@ -117,28 +108,28 @@ turn_command_t player_turn(void)
 
         if(input == '\t')
         {
-            if(current_ui_input_type == ui_input_type_log) {
+            if(game->input_type == input_type_log) {
                 timeout(-1);
-                current_ui_input_type = ui_input_type_map;
+                game->input_type = input_type_map;
             } else {
                 timeout(500);
-                current_ui_input_type = ui_input_type_log;
+                game->input_type = input_type_log;
             }
 
-            draw_map(current_level);
-            draw_stats(current_level);
-            draw_log(current_level);
+            draw_map(game->input_type, game->level);
+            draw_stats(&(game->player), game->level);
+            draw_log(game->input_type, &(game->log), game->level);
 
             continue;
         }
 
         turn_command_t command;
 
-        if(current_ui_input_type == ui_input_type_map) {
-            command = process_input_map(input);
+        if(game->input_type == input_type_map) {
+            command = process_input_map(game, input);
         } else {
-            command = process_input_log(input);
-            draw_log(current_level);
+            command = process_input_log(game, input);
+            draw_log(game->input_type, &(game->log), game->level);
         }
 
         if(command == turn_command_void) {
@@ -149,34 +140,39 @@ turn_command_t player_turn(void)
     }
 }
 
-static turn_command_t process_input_log(int input)
+static turn_command_t process_input_log(game_t * game, int input)
 {
-    int log_input_index = strlen(log_input) - 1;
+    int log_input_index = strlen(game->log.log_input) - 1;
 
     if(input == KEY_BACKSPACE) {
         if(log_input_index < 0) {
             return turn_command_void;
         }
 
-        log_input[log_input_index] = '\0';
+        game->log.log_input[log_input_index] = '\0';
     }
 
     if((input >= 'a' && input <= 'z') || (input >= 'A' && input <= 'Z') || input == ' ') {
-        log_input[log_input_index + 1] = input;
-        log_input[log_input_index + 2] = '\0';
+        game->log.log_input[log_input_index + 1] = input;
+        game->log.log_input[log_input_index + 2] = '\0';
     }
 
-    if((input == '\n' || input == KEY_ENTER) && strlen(log_input) > 0) {
-        add_log(log_input);
-        log_input[0] = '\0';
+    if((input == '\n' || input == KEY_ENTER) && strlen(game->log.log_input) > 0) {
+        turn_command_t command;
+
+        command = execute_command(game, game->log.log_input);
+
+        add_log(&(game->log), game->log.log_input);
+
+        game->log.log_input[0] = '\0';
         log_input_index = 0;
-        return turn_command_complete;
+        return command;
     }
 
     return turn_command_void;
 }
 
-static turn_command_t process_input_map(int input)
+static turn_command_t process_input_map(game_t * game, int input)
 {
     int move;
     item_t ** itemsel;
@@ -191,7 +187,7 @@ static turn_command_t process_input_map(int input)
         case 'g':
         case ',':
             ;
-            item_t * item = current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item;
+            item_t * item = game->level->map[game->player.mob->position.y * game->level->width + game->player.mob->position.x].item;
 
             if (item == 0)
             {
@@ -204,7 +200,7 @@ static turn_command_t process_input_map(int input)
 
             item_name(item_n, item);
 
-            if (!try_give_item(item))
+            if (!try_give_item(&(game->player), item))
             {
                 print_msg("You're carrying too much shit already.");
                 wait();
@@ -215,7 +211,7 @@ static turn_command_t process_input_map(int input)
                          "Okay -- you now have %s.", item_n);
                 print_msg(line);
                 wait();
-                current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item = 0;
+                game->level->map[game->player.mob->position.y * game->level->width + game->player.mob->position.x].item = 0;
             }
 
             clear_msg();
@@ -223,7 +219,7 @@ static turn_command_t process_input_map(int input)
 
         case 'd':
         case 'u':
-            if (count_items() == 0)
+            if (count_items(&(game->player)) == 0)
             {
                 print_msg("You have no items.");
                 return turn_command_void;
@@ -234,18 +230,18 @@ static turn_command_t process_input_map(int input)
             else if (input == 'u')
                 print_msg("Use which item?");
 
-            itemsel = list_and_select_items(player.inventory);
+            itemsel = list_and_select_items(&(game->player), game->player.inventory);
 
             /* restore view */
             clear_msg();
-            draw_map(current_level);
+            draw_map(game->input_type, game->level);
 
             if (itemsel != NULL)
             {
                 if (input == 'd')
-                    drop_item(itemsel);
+                    drop_item(&(game->player), game->level, itemsel);
                 else if (input == 'u')
-                    use_item(current_level, itemsel);
+                    use_item(game, itemsel);
 
                 return turn_command_complete;
             }
@@ -268,7 +264,7 @@ static turn_command_t process_input_map(int input)
         case KEY_RIGHT:
         case KEY_UP:
         case KEY_DOWN:
-            move = player_move(input);
+            move = player_move(game, input);
             return move;
 
         default:
@@ -277,9 +273,9 @@ static turn_command_t process_input_map(int input)
 }
 
 /*
-  Lights up the area near the player, marks it as explored.
+  Lights up the area near a mob, marks it as explored.
 */
-void explore(void)
+void explore(level_t * level, mob_t * mob)
 {
     int p_y;
     int p_x;
@@ -292,35 +288,35 @@ void explore(void)
     int left;
     int right;
 
-    top = current_level->view.ul_position.y;
-    bottom = current_level->view.ul_position.y + current_level->view.height;
+    top = level->view.ul_position.y;
+    bottom = level->view.ul_position.y + level->view.height;
 
-    left = current_level->view.ul_position.x;
-    right = current_level->view.ul_position.x + current_level->view.width;
+    left = level->view.ul_position.x;
+    right = level->view.ul_position.x + level->view.width;
 
-    p_y = player.mob->position.y;
-    p_x = player.mob->position.x;
+    p_y = mob->position.y;
+    p_x = mob->position.x;
 
     for (y = top; y < bottom; y += 1)
         for (x = left; x < right; x += 1)
-            current_level->map[y * current_level->width + x].is_lit = 0;
+            level->map[y * level->width + x].is_lit = 0;
 
     for (y = p_y - 1; y <= p_y + 1; y++)
     {
         for (x = p_x - 1; x <= p_x + 1; x++)
         {
-            if (on_map(current_level, y, x))
+            if (on_map(level, y, x))
             {
-                current_level->map[y * current_level->width + x].is_explored = true;
-                current_level->map[y * current_level->width + x].is_lit = true;
-                current_level->map[y * current_level->width + x].is_periphery = true;
+                level->map[y * level->width + x].is_explored = true;
+                level->map[y * level->width + x].is_lit = true;
+                level->map[y * level->width + x].is_periphery = true;
             }
         }
     }
 
     /* Floodfill open permalit rooms */
 
-    if (current_level->map[p_y * current_level->width + p_x].flags & tile_permalit)
+    if (level->map[p_y * level->width + p_x].flags & tile_permalit)
     {
         bool change;
 
@@ -333,7 +329,7 @@ void explore(void)
                 if(y < 1)
                     continue;
 
-                if(y > current_level->height - 1)
+                if(y > level->height - 1)
                     break;
 
                 for (x = left; x < right; x += 1)
@@ -341,30 +337,30 @@ void explore(void)
                     if(x < 1)
                         continue;
 
-                    if(x > current_level->width - 1)
+                    if(x > level->width - 1)
                         break;
 
-                    if (current_level->map[y * current_level->width + x].flags & tile_noflood)
+                    if (level->map[y * level->width + x].flags & tile_noflood)
                         continue;
 
-                    if (current_level->map[y * current_level->width + x].is_lit == 0 &&
-                        (current_level->map[y * current_level->width + x].flags & tile_permalit ||
-                         current_level->map[(y - 1) * current_level->width + (x - 1)].flags & tile_permalit ||
-                         current_level->map[(y - 1) * current_level->width + (x + 1)].flags & tile_permalit ||
-                         current_level->map[(y + 1) * current_level->width + (x - 1)].flags & tile_permalit ||
-                         current_level->map[(y + 1) * current_level->width + (x + 1)].flags & tile_permalit ||
-                         current_level->map[(y - 1) * current_level->width + x].flags & tile_permalit ||
-                         current_level->map[y * current_level->width + (x - 1)].flags & tile_permalit ||
-                         current_level->map[(y + 1) * current_level->width + x].flags & tile_permalit ||
-                         current_level->map[y * current_level->width + (x + 1)].flags & tile_permalit ))
+                    if (level->map[y * level->width + x].is_lit == 0 &&
+                        (level->map[y * level->width + x].flags & tile_permalit ||
+                         level->map[(y - 1) * level->width + (x - 1)].flags & tile_permalit ||
+                         level->map[(y - 1) * level->width + (x + 1)].flags & tile_permalit ||
+                         level->map[(y + 1) * level->width + (x - 1)].flags & tile_permalit ||
+                         level->map[(y + 1) * level->width + (x + 1)].flags & tile_permalit ||
+                         level->map[(y - 1) * level->width + x].flags & tile_permalit ||
+                         level->map[y * level->width + (x - 1)].flags & tile_permalit ||
+                         level->map[(y + 1) * level->width + x].flags & tile_permalit ||
+                         level->map[y * level->width + (x + 1)].flags & tile_permalit ))
                     {
-                        if (current_level->map[(y - 1) * current_level->width + x].is_lit ||
-                            current_level->map[y * current_level->width + (x - 1)].is_lit ||
-                            current_level->map[(y + 1) * current_level->width + x].is_lit ||
-                            current_level->map[y * current_level->width + (x + 1)].is_lit)
+                        if (level->map[(y - 1) * level->width + x].is_lit ||
+                            level->map[y * level->width + (x - 1)].is_lit ||
+                            level->map[(y + 1) * level->width + x].is_lit ||
+                            level->map[y * level->width + (x + 1)].is_lit)
                         {
-                            current_level->map[y * current_level->width + x].is_lit = 1;
-                            current_level->map[y * current_level->width + x].is_explored = 1;
+                            level->map[y * level->width + x].is_lit = 1;
+                            level->map[y * level->width + x].is_explored = 1;
 
                             change = true;
                         }
@@ -383,46 +379,46 @@ void explore(void)
         {
             match = false;
 
-            if ((current_level->map[y * current_level->width + x].flags & tile_noflood) == 0)
+            if ((level->map[y * level->width + x].flags & tile_noflood) == 0)
                 continue;
 
-            if (y >= 1 && current_level->map[(y - 1) * current_level->width + x].is_lit)
+            if (y >= 1 && level->map[(y - 1) * level->width + x].is_lit)
                 match = true;
 
-            if (x >= 1 && current_level->map[y * current_level->width + (x - 1)].is_lit)
+            if (x >= 1 && level->map[y * level->width + (x - 1)].is_lit)
                 match = true;
 
-            if (y < current_level->height - 1 && current_level->map[(y + 1) * current_level->width + x].is_lit)
+            if (y < level->height - 1 && level->map[(y + 1) * level->width + x].is_lit)
                 match = true;
 
-            if (x < current_level->width + 1 && current_level->map[y * current_level->width + (x + 1)].is_lit)
+            if (x < level->width + 1 && level->map[y * level->width + (x + 1)].is_lit)
                 match = true;
 
             if (y >= 1 &&
                 x >= 1 &&
-                current_level->map[(y - 1) * current_level->width + (x - 1)].is_lit)
+                level->map[(y - 1) * level->width + (x - 1)].is_lit)
                 match = true;
 
             if (y >= 1 &&
-                x <= current_level->width &&
-                current_level->map[(y - 1) * current_level->width + (x + 1)].is_lit)
+                x <= level->width &&
+                level->map[(y - 1) * level->width + (x + 1)].is_lit)
                 match = true;
 
-            if (y <= current_level->height &&
+            if (y <= level->height &&
                 x >= 1 &&
-                current_level->map[(y + 1) * current_level->width + (x - 1)].is_lit)
+                level->map[(y + 1) * level->width + (x - 1)].is_lit)
                 match = true;
 
-            if (y <= current_level->height &&
-                x <= current_level->width &&
-                current_level->map[(y + 1) * current_level->width + (x + 1)].is_lit)
+            if (y <= level->height &&
+                x <= level->width &&
+                level->map[(y + 1) * level->width + (x + 1)].is_lit)
                 match = true;
 
 
             if (match)
             {
-                current_level->map[y * current_level->width + x].is_periphery = true;
-                current_level->map[y * current_level->width + x].is_explored = true;
+                level->map[y * level->width + x].is_periphery = true;
+                level->map[y * level->width + x].is_explored = true;
             }
         }
     }
@@ -430,18 +426,18 @@ void explore(void)
     return;
 }
 
-void give_exp(const int amount)
+void give_exp(player_info_t * player, const int amount)
 {
     char line[MSGLEN];
 
-    if (player.level >= PLAYER_MAXLEVEL)
+    if (player->level >= PLAYER_MAXLEVEL)
         return;
 
-    player.exp += amount;
+    player->exp += amount;
 
-    while (player.exp >= experience_to_level(player.level))
+    while (player->exp >= experience_to_level(player->level))
     {
-        player.level += 1;
+        player->level += 1;
 
         attron(A_REVERSE | A_BLINK | A_BOLD | COLOR_PAIR(color_green));
         print_msg("You have gained a level!!");
@@ -449,23 +445,23 @@ void give_exp(const int amount)
         wait();
 
         snprintf(line, MSGLEN,
-                 "You are now level %d.", player.level);
+                 "You are now level %d.", player->level);
         print_msg(line);
         wait();
         clear_msg();
 
-        player.mob->attr[ATTR_HP] += 10 + 2 * player.level;
-        player.mob->attr[ATTR_MINDAM] += 1;
-        player.mob->attr[ATTR_ATTACK] += 5;
-        player.mob->attr[ATTR_DODGE] += 5;
+        player->mob->attr[ATTR_HP] += 10 + 2 * player->level;
+        player->mob->attr[ATTR_MINDAM] += 1;
+        player->mob->attr[ATTR_ATTACK] += 5;
+        player->mob->attr[ATTR_DODGE] += 5;
     }
 
     return;
 }
 
-int get_player_tnl(void)
+int get_player_tnl(player_info_t * player)
 {
-    return experience_to_level(player.level) - player.exp;
+    return experience_to_level(player->level) - player->exp;
 }
 
 static int experience_to_level(int level)
@@ -473,7 +469,7 @@ static int experience_to_level(int level)
     return 50 * (level * level) + 100 * level;
 }
 
-item_t ** list_and_select_items(item_t ** start)
+item_t ** list_and_select_items(player_info_t * player, item_t ** start)
 {
     size_t i;
     int row;
@@ -506,9 +502,9 @@ item_t ** list_and_select_items(item_t ** start)
         sel = input - 'a';
 
         if (sel < INVENTORY_SIZE &&
-            player.inventory[sel] != NULL)
+            player->inventory[sel] != NULL)
         {
-            return &player.inventory[sel];
+            return &player->inventory[sel];
         }
 
         print_msg("You don't have that!!");
@@ -518,7 +514,7 @@ item_t ** list_and_select_items(item_t ** start)
     return NULL;
 }
 
-int count_items()
+int count_items(player_info_t * player)
 {
     int c;
     int i;
@@ -527,7 +523,7 @@ int count_items()
 
     for (i = 0; i < INVENTORY_SIZE; i++)
     {
-        if (player.inventory[i] != NULL) {
+        if (player->inventory[i] != NULL) {
             c += 1;
         }
     }
@@ -535,7 +531,7 @@ int count_items()
     return c;
 }
 
-void drop_item(item_t ** item)
+void drop_item(player_info_t * player, level_t * level, item_t ** item)
 {
     char item_n[100];
     char msg[MSGLEN];
@@ -549,7 +545,7 @@ void drop_item(item_t ** item)
     wait();
     clear_msg();
 
-    current_level->map[player.mob->position.y * current_level->width + player.mob->position.x].item =
+    level->map[player->mob->position.y * level->width + player->mob->position.x].item =
         *item;
 
     *item = NULL;
@@ -557,7 +553,7 @@ void drop_item(item_t ** item)
     return;
 }
 
-void use_item(level_t * level, item_t ** item)
+void use_item(game_t * game, item_t ** item)
 {
     char item_n[100];
     char msg[MSGLEN];
@@ -576,7 +572,7 @@ void use_item(level_t * level, item_t ** item)
         {
             case item_subtype_potion_heal:
                 snprintf(msg, MSGLEN, "You drink %s. This stuff is great!", item_n);
-                player.mob->attr[ATTR_HP] += 20;
+                game->player.mob->attr[ATTR_HP] += 20;
                 should_dispose = true;
                 break;
 
@@ -589,7 +585,7 @@ void use_item(level_t * level, item_t ** item)
             switch((*item)->subtype)
             {
                 case item_subtype_bibelot_magic_lamp:
-                    use_magic_lamp(*item);
+                    use_magic_lamp(game, *item);
                     clear_msg();
                     return;
 
@@ -603,7 +599,7 @@ void use_item(level_t * level, item_t ** item)
         break;
     }
 
-    draw_stats(level);
+    draw_stats(&(game->player), game->level);
 
     print_msg(msg);
     wait();
@@ -629,7 +625,7 @@ void use_item(level_t * level, item_t ** item)
     return;
 }
 
-void use_magic_lamp(item_t * item)
+void use_magic_lamp(game_t * game, item_t * item)
 {
     if (rand() % 5 == 0)
     {
@@ -667,7 +663,7 @@ void use_magic_lamp(item_t * item)
     {
         print_msg("The magic lamp explodes!");
         wait();
-        summon_demons();
+        summon_demons(&(game->player), game->level);
         return;
     }
 
@@ -676,7 +672,7 @@ void use_magic_lamp(item_t * item)
     return;
 }
 
-void summon_demons()
+void summon_demons(player_info_t * player, level_t * level)
 {
     int how_many;
     int y;
@@ -686,14 +682,14 @@ void summon_demons()
 
     while (how_many--)
     {
-        y = player.mob->position.y - 2 + rand() % 5;
-        x = player.mob->position.x - 2 + rand() % 5;
+        y = player->mob->position.y - 2 + rand() % 5;
+        x = player->mob->position.x - 2 + rand() % 5;
 
-        if (on_map(current_level, y, x) &&
-            get_mob(current_level, y, x) == -1 &&
-            !(current_level->map[y * current_level->width + x].flags & tile_unpassable))
+        if (on_map(level, y, x) &&
+            get_mob(level, y, x) == -1 &&
+            !(level->map[y * level->width + x].flags & tile_unpassable))
         {
-            try_make_mob(current_level, mob_demon, y, x);
+            try_make_mob(level, mob_demon, y, x);
         }
     }
 
@@ -703,15 +699,15 @@ void summon_demons()
 /*
   Adds new_item to players inventory, returns false if it's full.
 */
-bool try_give_item(item_t * new_item)
+bool try_give_item(player_info_t * player, item_t * new_item)
 {
     size_t i;
 
     for (i = 0; i < INVENTORY_SIZE; i += 1)
     {
-        if (player.inventory[i] == NULL)
+        if (player->inventory[i] == NULL)
         {
-            player.inventory[i] = new_item;
+            player->inventory[i] = new_item;
             return true;
         }
     }

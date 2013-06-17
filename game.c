@@ -2,99 +2,166 @@
 #include <string.h>
 
 #include "game.h"
+
+#include "ui.h"
+#include "player.h"
+#include "level.h"
+#include "log.h"
+#include "mob.h"
+
 #include "level.h"
 
 #include "player.h"
 #include "ui.h"
 #include "ai.h"
 #include "item.h"
+#include "combat.h"
 
 #include "standard_dungeon.h"
 #include "los.h"
 #include "log.h"
 
-int play()
+int play(game_t * game)
 {
     int i;
     int turn;
 
     while (1)
     {
-        explore();
-        explore_map(current_level, player.mob->position);
+        explore(game->level, game->player.mob);
+        explore_map(game->level, game->player.mob->position);
 
-        center_view(current_level, player.mob->position);
+        center_view(game->level, game->player.mob->position);
 
-        draw_map(current_level);
-        draw_stats(current_level);
-        draw_log(current_level);
+        draw_map(game->input_type, game->level);
+        draw_stats(&(game->player), game->level);
+        draw_log(game->input_type, &(game->log), game->level);
 
-        if (player.mob->attr[ATTR_HP] <= 0)
+        if (game->player.mob->attr[ATTR_HP] <= 0)
             return prompt_yn("You died. Play again?");
 
-        turn = player_turn();
+        turn = player_turn(game);
 
         if (turn == turn_command_quit)
             return 0;
         else if (turn == turn_command_descend) {
-            level_t * new_level = create_new_level(current_level, 80, 160);
+            level_t * new_level = create_new_level(game->level, 80, 160);
 
             memcpy(&new_level->mobs[0],
-                   player.mob,
+                   game->player.mob,
                    sizeof(mob_t));
 
-            player.mob = &new_level->mobs[0];
+            game->player.mob = &new_level->mobs[0];
 
-            create_standard_dungeon(new_level, &player.mob->position);
+            create_standard_dungeon(new_level, &(game->player.mob->position));
 
-            free(current_level);
-
-            current_level = new_level;
+            game->level = new_level;
 
             continue; // give player the first turn on a new level
         }
 
         for (i = 1; i < MAX_MOBS_PER_LEVEL; i++)
         {
-            enemy_turn(current_level, &current_level->mobs[i]);
+            enemy_turn(game, game->level, &game->level->mobs[i]);
         }
     }
 
     return 0;
 }
 
-
-void new_game()
+void free_game(game_t * game)
 {
+    free(game->level);
+    free(game);
+
+    return;
+}
+
+game_t * new_game()
+{
+    game_t * game = malloc(sizeof(game_t));
+
+    game->player.mob = NULL,
+    game->player.level = 1,
+    game->player.exp = 0,
+
+    memset(game->player.inventory, 0, INVENTORY_SIZE * sizeof(item_t *));
+
     level_t * new_level = create_new_level(NULL, 80, 160);
 
-    player.mob = &new_level->mobs[0];
-    current_level = new_level;
-    current_ui_input_type = ui_input_type_map;
+    game->player.mob = &new_level->mobs[0];
 
-    reset_log();
+    game->level = new_level;
 
-    create_standard_dungeon(new_level, &player.mob->position);
+    game->input_type = input_type_map;
 
-    player.level = 1;
-    player.exp = 0;
+    init_log(&game->log);
 
-    player.mob->attr[ATTR_HP] = 20;
-    player.mob->attr[ATTR_ATTACK] = 20;
-    player.mob->attr[ATTR_DODGE] = 20;
-    player.mob->attr[ATTR_MINDAM] = 1;
-    player.mob->attr[ATTR_MAXDAM] = 5;
+    create_standard_dungeon(new_level, &game->player.mob->position);
+
+    game->player.level = 1;
+    game->player.exp = 0;
+
+    game->player.mob->attr[ATTR_HP] = 20;
+    game->player.mob->attr[ATTR_ATTACK] = 20;
+    game->player.mob->attr[ATTR_DODGE] = 20;
+    game->player.mob->attr[ATTR_MINDAM] = 1;
+    game->player.mob->attr[ATTR_MAXDAM] = 5;
 
     size_t i;
     for (i = 0; i < INVENTORY_SIZE; i++)
     {
-        if(player.inventory[i] != NULL) {
-            free(player.inventory[i]);
-            player.inventory[i] = NULL;
+        if(game->player.inventory[i] != NULL) {
+            free(game->player.inventory[i]);
+            game->player.inventory[i] = NULL;
         }
     }
 
-    *log_input = '\0';
+    *(game->log.log_input) = '\0';
 
-    return;
+    return game;
+}
+
+bool try_move_mob(game_t * game, level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
+{
+    int new_y = mob_to_move->position.y + y_speed;
+    int new_x = mob_to_move->position.x + x_speed;
+
+    if (on_map(level, new_y, new_x) &&
+        !(level->map[new_y * level->width + new_x].flags & tile_unpassable))
+    {
+        if(new_y == game->player.mob->position.y && new_x == game->player.mob->position.x)
+        {
+            attack(game, mob_to_move, game->player.mob);
+            return 0;
+        }
+
+        for(int i = 1; i < MAX_MOBS_PER_LEVEL; ++i)
+        {
+            if(level->mobs[i].type == mob_none)
+                continue;
+
+            if(new_y == level->mobs[i].position.y && new_x == level->mobs[i].position.x)
+                return 0;
+        }
+
+        mob_to_move->position.y = new_y;
+        mob_to_move->position.x = new_x;
+
+        return true;
+    }
+
+    return false;
+}
+
+turn_command_t execute_command(game_t * game, char * command)
+{
+    game_t * new_game = game;
+    game = new_game;
+
+    if(strcmp("quit", command) == 0) {
+        return turn_command_quit;
+    }
+
+    return turn_command_complete;
 }

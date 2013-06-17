@@ -2,7 +2,8 @@
 #define SMALLRL_COMBAT_H
 
 #include "mob.h"
+#include "game.h"
 
-void attack(mob_t *, mob_t *);
+void attack(game_t *, mob_t *, mob_t *);
 
 #endif

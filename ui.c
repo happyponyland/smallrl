@@ -8,13 +8,11 @@
 
 #include "log.h"
 
-ui_input_type_t current_ui_input_type;
-
 static bool cursor_blinker = true;
 
-static void draw_log_border(level_t *);
+static void draw_log_border(input_type_t, level_t *);
 static void draw_stats_border(void);
-static void draw_map_border(level_t *);
+static void draw_map_border(input_type_t, level_t *);
 static void draw_box(int, int, int, int);
 
 static void draw_box(int x, int y, int width, int height)
@@ -41,9 +39,9 @@ static void draw_box(int x, int y, int width, int height)
     addch(ACS_LRCORNER);
 }
 
-static void draw_map_border(level_t * level)
+static void draw_map_border(input_type_t input_type, level_t * level)
 {
-    if(current_ui_input_type == ui_input_type_map)
+    if(input_type == input_type_map)
     {
         attrset(A_BOLD);
     }
@@ -59,9 +57,9 @@ static void draw_stats_border()
 {
 }
 
-static void draw_log_border(level_t * level)
+static void draw_log_border(input_type_t input_type, level_t * level)
 {
-    if(current_ui_input_type == ui_input_type_log)
+    if(input_type == input_type_log)
     {
         attrset(A_BOLD);
     }
@@ -73,7 +71,7 @@ static void draw_log_border(level_t * level)
     draw_box(level->view.width + 2, 1, 40, 23);
 }
 
-void draw_map(level_t * level)
+void draw_map(input_type_t input_type, level_t * level)
 {
     int y;
     int x;
@@ -84,7 +82,7 @@ void draw_map(level_t * level)
 
     int draw_y = offset_y;
 
-    draw_map_border(level);
+    draw_map_border(input_type, level);
 
     for (y = level->view.ul_position.y; y < level->view.ul_position.y + level->view.height; y += 1)
     {
@@ -235,7 +233,7 @@ void draw_map(level_t * level)
     return;
 }
 
-void draw_stats(level_t * level)
+void draw_stats(player_info_t * player, level_t * level)
 {
     int offset = 3;
 
@@ -243,15 +241,15 @@ void draw_stats(level_t * level)
 
     move(level->view.height + offset++, 0);
     printw("HP: %d    Damage: %d-%d",
-           player.mob->attr[ATTR_HP],
-           player.mob->attr[ATTR_MINDAM],
-           player.mob->attr[ATTR_MINDAM] + player.mob->attr[ATTR_MAXDAM]);
+           player->mob->attr[ATTR_HP],
+           player->mob->attr[ATTR_MINDAM],
+           player->mob->attr[ATTR_MINDAM] + player->mob->attr[ATTR_MAXDAM]);
     clrtoeol();
 
     move(level->view.height + offset++, 0);
     printw("LVL: %d (%ld TNL)  DLVL: %d",
-           player.level, get_player_tnl(),
-           current_level->depth);
+           player->level, get_player_tnl(player),
+           level->depth);
     clrtoeol();
 
     refresh();
@@ -259,11 +257,11 @@ void draw_stats(level_t * level)
     return;
 }
 
-void draw_log(level_t * level)
+void draw_log(input_type_t input_type, log_t * log, level_t * level)
 {
     int y;
 
-    draw_log_border(level);
+    draw_log_border(input_type, level);
 
     for(y = 2; y < 23; y += 1)
     {
@@ -277,15 +275,15 @@ void draw_log(level_t * level)
     addch('>');
     addch(' ');
 
-    addstr(log_input);
+    addstr(log->log_input);
 
-    for(int i = level->view.width + 4 + 2 + strlen(log_input); i < level->view.width + 42; i += 1) {
+    for(int i = level->view.width + 4 + 2 + strlen(log->log_input); i < level->view.width + 42; i += 1) {
         addch(' ');
     }
 
-    move(23, level->view.width + 4 + 2 + strlen(log_input));
+    move(23, level->view.width + 4 + 2 + strlen(log->log_input));
 
-    if(current_ui_input_type == ui_input_type_log) {
+    if(input_type == input_type_log) {
         if(cursor_blinker ^= true) {
             addch(ACS_CKBOARD);
         } else {
@@ -296,11 +294,11 @@ void draw_log(level_t * level)
     draw_box(level->view.width + 2, 1, 40, 23);
 
     y = 21;
-    int temp_index = message_log_index;
+    int temp_index = log->message_log_index;
     while(y >= 2 && temp_index >= 0)
     {
         move(y, level->view.width + 4);
-        addstr(message_log[temp_index]);
+        addstr(log->message_log[temp_index]);
 
         y -= 1;
         temp_index -= 1;

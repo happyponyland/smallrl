@@ -3,23 +3,24 @@
 
 #include "log.h"
 
-char log_input[MAX_INPUT_LENGTH];
-char * message_log[LOG_SIZE];
-int message_log_index = -1;
-
-void reset_log()
+void init_log(log_t * log)
 {
-    while(message_log_index >= 0)
+    log->message_log_index = -1;
+}
+
+void reset_log(log_t * log)
+{
+    while(log->message_log_index >= 0)
     {
-        free(message_log[message_log_index]);
-        message_log_index -= 1;
+        free(log->message_log[log->message_log_index]);
+        log->message_log_index -= 1;
     }
 }
 
-void add_log(char * message)
+void add_log(log_t * log, char * message)
 {
     char * log_message = malloc(sizeof(char) * strlen(message) + 1);
     memcpy(log_message, message, strlen(message) + 1);
 
-    message_log[++message_log_index] = log_message;
+    log->message_log[++log->message_log_index] = log_message;
 }

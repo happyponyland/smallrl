@@ -7,14 +7,14 @@
 #include "ui.h"
 #include "chaos.h"
 
-static void melee(mob_t *, mob_t *);
+static void melee(game_t *, mob_t *, mob_t *);
 
-void attack(mob_t * attacker, mob_t * defender)
+void attack(game_t * game, mob_t * attacker, mob_t * defender)
 {
-    melee(attacker, defender);
+    melee(game, attacker, defender);
 }
 
-static void melee(mob_t * attacker, mob_t * defender)
+static void melee(game_t * game, mob_t * attacker, mob_t * defender)
 {
     char line[MSGLEN];
     int def_dodge;
@@ -44,14 +44,14 @@ static void melee(mob_t * attacker, mob_t * defender)
 
             /* show that the mob is gone before printing message*/
             attacker->type = mob_none;
-            draw_map(current_level);
+            draw_map(game->input_type, game->level);
 
             print_msg(line);
             wait();
             clear_msg();
 
             //TODO: Use multiplier from number of chaos opponents?
-            give_exp(defender->attr[ATTR_EXP]);
+            give_exp(&(game->player), defender->attr[ATTR_EXP]);
         } else if(duel_outcome == chaos_outcome_loss) {
             defender->attr[ATTR_HP] = 0;
             print_msg("You did not survive the duel!!");
@@ -83,12 +83,12 @@ static void melee(mob_t * attacker, mob_t * defender)
         print_msg(line);
         wait();
 
-        if (player.exp > 50)
-            player.exp -= 50;
+        if (game->player.exp > 50)
+            game->player.exp -= 50;
         else
-            player.exp = 0;
+            game->player.exp = 0;
 
-        draw_stats(current_level);
+        draw_stats(&(game->player), game->level);
 
         clear_msg();
         return;
@@ -100,9 +100,9 @@ static void melee(mob_t * attacker, mob_t * defender)
 
     if ((rand() % 100) < (def_dodge - att_skill) + 1)
     {
-        if (attacker == player.mob)
+        if (attacker == game->player.mob)
             snprintf(line, MSGLEN, "You miss the %s%s!", def_a, def_n);
-        else if (defender == player.mob)
+        else if (defender == game->player.mob)
             snprintf(line, MSGLEN, "The %s%s misses you!", att_a, att_n);
         else
             snprintf(line, MSGLEN, "The %s%s misses the %s%s!",
@@ -120,10 +120,10 @@ static void melee(mob_t * attacker, mob_t * defender)
 
     defender->attr[ATTR_HP] -= damage;
 
-    if (attacker == player.mob)
+    if (attacker == game->player.mob)
         snprintf(line, MSGLEN, "You hit the %s%s! [%d]",
                  def_a, def_n, damage);
-    else if (defender == player.mob)
+    else if (defender == game->player.mob)
         snprintf(line, MSGLEN, "The %s%s hits you! [%d]",
                  att_a, att_n, damage);
     else
@@ -136,7 +136,7 @@ static void melee(mob_t * attacker, mob_t * defender)
 
     if (defender->attr[ATTR_HP] <= 0)
     {
-        if (defender == player.mob)
+        if (defender == game->player.mob)
         {
             print_msg("You have been slain!!");
             wait();
@@ -147,15 +147,15 @@ static void melee(mob_t * attacker, mob_t * defender)
 
         /* show that the mob is gone before printing message*/
         defender->type = mob_none;
-        draw_map(current_level);
+        draw_map(game->input_type, game->level);
 
         print_msg(line);
         wait();
         clear_msg();
 
-        if (attacker == player.mob)
+        if (attacker == game->player.mob)
         {
-            give_exp(defender->attr[ATTR_EXP]);
+            give_exp(&(game->player), defender->attr[ATTR_EXP]);
         }
     }
 

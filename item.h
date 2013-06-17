@@ -44,12 +44,14 @@ typedef enum item_subtype_bibelot_e
     item_subtype_bibelot_flute
 } item_subtype_bibelot_t;
 
-typedef struct item_s
+typedef struct item_s item_t;
+
+struct item_s
 {
     item_type_t type;
     uint32_t subtype;
     int state;
-} item_t;
+};
 
 void item_name(char *, item_t *);
 

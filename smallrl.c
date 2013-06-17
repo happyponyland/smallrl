@@ -34,6 +34,8 @@ int main(int argc, char ** argv)
     init_pair(color_magenta, COLOR_MAGENTA, COLOR_BLACK);
 
 
+    game_t * game = NULL;
+
     if (LINES < 24 || COLS < 80)
     {
         shutdown();
@@ -44,9 +46,16 @@ int main(int argc, char ** argv)
     do
     {
       erase();
-      new_game();
+
+      if(game != NULL) {
+          free_game(game);
+      }
+
+      game = new_game();
     }
-    while (play());
+    while (play(game));
+
+    free_game(game);
 
     shutdown();
 
@@ -54,7 +63,7 @@ int main(int argc, char ** argv)
 }
 
 
-static void shutdown(void)
+static void shutdown()
 {
     endwin();
     return;

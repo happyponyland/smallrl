@@ -3,6 +3,7 @@
 #include "level.h"
 #include "player.h"
 #include "combat.h"
+#include "game.h"
 
 level_t * levels;
 level_t * current_level;
@@ -139,37 +140,6 @@ tile_type_t get_tile_type(level_t * level, int y, int x)
     return tile_void;
 }
 
-bool try_move_mob(level_t * level, mob_t * mob_to_move, int y_speed, int x_speed)
-{
-    int new_y = mob_to_move->position.y + y_speed;
-    int new_x = mob_to_move->position.x + x_speed;
-
-    if (on_map(level, new_y, new_x) &&
-        !(level->map[new_y * level->width + new_x].flags & tile_unpassable))
-    {
-        if(new_y == player.mob->position.y && new_x == player.mob->position.x)
-        {
-            attack(mob_to_move, player.mob);
-            return 0;
-        }
-
-        for(int i = 1; i < MAX_MOBS_PER_LEVEL; ++i)
-        {
-            if(level->mobs[i].type == mob_none)
-                continue;
-
-            if(new_y == level->mobs[i].position.y && new_x == level->mobs[i].position.x)
-                return 0;
-        }
-
-        mob_to_move->position.y = new_y;
-        mob_to_move->position.x = new_x;
-
-        return true;
-    }
-
-    return false;
-}
 
 static void describe_mob(mob_t * mob)
 {
